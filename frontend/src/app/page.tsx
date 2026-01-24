@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import SettingsModal from "./components/SettingsModal";
 
 import { useTheme } from "next-themes";
 import { useState, useEffect } from "react";
@@ -16,6 +17,7 @@ export default function Home() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
@@ -130,7 +132,7 @@ export default function Home() {
                 { icon: 'share', label: 'Share', action: handleShare },
                 { icon: 'qr_code_scanner', label: 'QR Scan' },
                 { icon: mounted && theme === 'dark' ? 'light_mode' : 'dark_mode', label: 'Theme', action: toggleTheme },
-                { icon: 'settings', label: 'Settings' },
+                { icon: 'settings', label: 'Settings', action: () => setIsSettingsOpen(true) },
               ].map((item, idx) => (
                 <motion.button
                   key={idx}
@@ -615,6 +617,7 @@ export default function Home() {
           </div>
         )}
       </AnimatePresence>
+      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </div>
   );
 }
