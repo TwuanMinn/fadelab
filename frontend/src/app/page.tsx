@@ -460,7 +460,7 @@ export default function Home() {
                       </AnimatePresence>
 
                       {/* Password (Always visible) */}
-                      <div className={authMode === 'signup' ? '' : 'md:col-span-2'}>
+                      <div className="md:col-span-2">
                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Password</label>
                         <div className="relative">
                           <input
@@ -487,6 +487,7 @@ export default function Home() {
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: 20 }}
+                            className="md:col-span-2"
                           >
                             <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Confirm Password</label>
                             <div className="relative">
