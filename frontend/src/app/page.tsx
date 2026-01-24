@@ -75,16 +75,18 @@ export default function Home() {
     <div className="relative flex min-h-screen w-full flex-col bg-white dark:bg-slate-950 transition-colors duration-300 pb-[90px] md:pb-0">
       <motion.div
         layout
-        className="fixed bottom-8 left-1/2 z-50 flex items-center gap-2 px-3 py-3 rounded-full bg-white dark:bg-slate-900 backdrop-blur-2xl border-2 border-black shadow-xl shadow-black/10 transition-colors duration-300"
-        style={{ x: "-50%", width: isSearchOpen ? 'min(90vw, 500px)' : 'auto' }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className="fixed bottom-8 left-1/2 z-50 flex items-center gap-2 px-3 py-3 rounded-full bg-white dark:bg-slate-900 backdrop-blur-2xl border-2 border-black shadow-xl shadow-black/10 transition-colors duration-300 origin-center"
+        style={{ x: "-50%", width: isSearchOpen ? 'min(90vw, 500px)' : 'fit-content' }}
       >
-        <AnimatePresence mode="wait">
+        <AnimatePresence>
           {!isSearchOpen ? (
             <motion.div
+              layout
               key="icons"
-              initial={{ opacity: 0, x: -50, scale: 0.9 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              exit={{ opacity: 0, x: 50, scale: 0.8 }}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
               className="flex items-center gap-2"
             >
               {/* Profile / Brand Icon */}
@@ -143,10 +145,11 @@ export default function Home() {
             </motion.div>
           ) : (
             <motion.div
+              layout
               key="searchbar"
-              initial={{ opacity: 0, x: 50, scale: 0.95 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              exit={{ opacity: 0, x: -50, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
               className="flex items-center justify-center w-full px-4"
             >
               <div className="flex-1 flex items-center justify-center max-w-md mx-auto relative">
