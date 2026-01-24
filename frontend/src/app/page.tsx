@@ -81,15 +81,15 @@ export default function Home() {
         layout
         initial={false}
         animate={{
-          x: "-50%",
-          width: isSearchOpen ? 'min(90vw, 500px)' : 'auto'
+          width: isSearchOpen ? 'min(90vw, 500px)' : 'auto',
+          opacity: 1
         }}
         transition={{
           layout: { type: "spring", stiffness: 300, damping: 30 },
           width: { type: "spring", stiffness: 300, damping: 30 },
           opacity: { duration: 0.2 }
         }}
-        className="fixed bottom-8 left-1/2 z-50 flex items-center px-4 py-3 rounded-full bg-white dark:bg-slate-900 border-2 border-black shadow-xl shadow-black/10 transition-colors duration-300 pointer-events-auto"
+        className="fixed bottom-8 left-0 right-0 mx-auto w-max z-50 flex items-center px-4 py-3 rounded-full bg-white dark:bg-slate-900 border-2 border-black shadow-xl shadow-black/10 transition-colors duration-300 pointer-events-auto max-w-[95vw]"
       >
         <AnimatePresence mode="popLayout" initial={false}>
           {!isSearchOpen ? (
@@ -98,7 +98,7 @@ export default function Home() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
-              className="flex items-center gap-2 whitespace-nowrap"
+              className="flex items-center gap-2 lg:gap-3 whitespace-nowrap overflow-x-auto hide-scrollbar max-w-full px-1"
             >
               {/* Profile / Brand Icon */}
               <motion.button
