@@ -150,13 +150,16 @@ export default function Home() {
                 <AnimatePresence mode="wait">
                   <motion.h1
                     key={heroTextIndex}
-                    initial={{ y: 80, opacity: 0 }}
+                    initial={{ y: 60, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: -80, opacity: 0 }}
+                    exit={{ y: -60, opacity: 0 }}
                     transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                    className="text-6xl md:text-9xl font-black leading-none bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-white/70 uppercase tracking-tighter"
+                    className={`leading-none bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-white/70 ${heroTextIndex === 0
+                        ? 'text-6xl md:text-9xl font-black uppercase tracking-tighter'
+                        : 'text-4xl md:text-7xl font-bold tracking-tight'
+                      }`}
                   >
-                    {['FURNZA.', 'NORDIC.'][heroTextIndex]}
+                    {['FURNZA.', 'Minimalist Living.'][heroTextIndex]}
                   </motion.h1>
                 </AnimatePresence>
               </div>
