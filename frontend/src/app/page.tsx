@@ -408,14 +408,35 @@ export default function Home() {
                         initial={{ opacity: 0, height: 0, marginBottom: 0 }}
                         animate={{ opacity: 1, height: 'auto', marginBottom: 20 }}
                         exit={{ opacity: 0, height: 0, marginBottom: 0 }}
-                        className="overflow-hidden"
+                        className="overflow-hidden space-y-5"
                       >
-                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Full Name</label>
-                        <input
-                          type="text"
-                          placeholder="Enter your name"
-                          className="w-full px-5 py-3.5 rounded-2xl border border-slate-100 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium"
-                        />
+                        <div>
+                          <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Full Name</label>
+                          <input
+                            type="text"
+                            placeholder="Enter your name"
+                            className="w-full px-5 py-3.5 rounded-2xl border border-slate-100 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium"
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Phone</label>
+                            <input
+                              type="tel"
+                              placeholder="012-345-678"
+                              className="w-full px-5 py-3.5 rounded-2xl border border-slate-100 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Gender</label>
+                            <select className="w-full px-5 py-3.5 rounded-2xl border border-slate-100 bg-slate-50/50 text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium appearance-none cursor-pointer">
+                              <option value="" disabled selected>Select</option>
+                              <option value="male">Male</option>
+                              <option value="female">Female</option>
+                              <option value="other">Other</option>
+                            </select>
+                          </div>
+                        </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -452,9 +473,9 @@ export default function Home() {
                 </div>
 
                 <motion.button
-                  whileHover={{ scale: 1.02 }}
+                  whileHover={{ scale: 1.02, boxShadow: "0 20px 25px -5px rgb(59 130 246 / 0.5)" }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full bg-gradient-to-r from-primary to-secondary text-white font-bold py-4 rounded-2xl mt-8 shadow-glow shadow-primary/20 transition-all text-sm"
+                  className="w-full bg-gradient-to-tr from-primary via-blue-500 to-secondary text-white font-bold py-4 rounded-2xl mt-8 shadow-xl shadow-primary/40 transition-all text-sm tracking-wide uppercase"
                 >
                   {authMode === 'signin' ? 'Sign In' : 'Sign Up'}
                 </motion.button>
@@ -468,9 +489,9 @@ export default function Home() {
                   </div>
                 </div>
 
-                <button className="w-full flex items-center justify-center gap-3 py-3.5 border border-slate-100 rounded-2xl hover:bg-slate-50 transition-colors">
+                <button className="w-full flex items-center justify-center gap-3 py-4 border border-slate-200 rounded-2xl hover:bg-slate-50 transition-all shadow-sm hover:shadow-md">
                   <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" alt="Google" className="w-5 h-5" />
-                  <span className="text-sm font-bold text-slate-700">Google</span>
+                  <span className="text-sm font-bold text-slate-700">Continue with Google</span>
                 </button>
 
                 <p className="mt-8 text-center text-xs font-semibold text-slate-400">
