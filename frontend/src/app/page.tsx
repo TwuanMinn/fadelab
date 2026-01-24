@@ -404,64 +404,28 @@ export default function Home() {
                   </div>
 
                   <div className="space-y-5">
-                    <AnimatePresence mode="wait">
-                      {authMode === 'signup' && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0, marginBottom: 0 }}
-                          animate={{ opacity: 1, height: 'auto', marginBottom: 20 }}
-                          exit={{ opacity: 0, height: 0, marginBottom: 0 }}
-                          className="overflow-hidden space-y-5"
-                        >
-                          <div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-5">
+                      {/* Name (Signup only) */}
+                      <AnimatePresence mode="popLayout">
+                        {authMode === 'signup' && (
+                          <motion.div
+                            key="name"
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                          >
                             <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Full Name</label>
                             <input
                               type="text"
                               placeholder="Enter your name"
                               className="w-full px-5 py-3.5 rounded-2xl border-2 border-black/10 bg-slate-50/30 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-black transition-all text-sm font-medium"
                             />
-                          </div>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Phone</label>
-                              <input
-                                type="tel"
-                                placeholder="012-345-678"
-                                className="w-full px-5 py-3.5 rounded-2xl border-2 border-black/10 bg-slate-50/30 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-black transition-all text-sm font-medium"
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Gender</label>
-                              <select className="w-full px-5 py-3.5 rounded-2xl border-2 border-black/10 bg-slate-50/30 text-slate-900 focus:outline-none focus:border-black transition-all text-sm font-medium appearance-none cursor-pointer">
-                                <option value="" disabled selected>Select</option>
-                                <option value="male">Male</option>
-                                <option value="female">Female</option>
-                                <option value="other">Other</option>
-                              </select>
-                            </div>
-                          </div>
-                          <div>
-                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Confirm Password</label>
-                            <div className="relative">
-                              <input
-                                type={showConfirmPassword ? "text" : "password"}
-                                placeholder="Confirm your password"
-                                className="w-full px-5 py-3.5 rounded-2xl border-2 border-black/10 bg-slate-50/30 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-black transition-all text-sm font-medium"
-                              />
-                              <button
-                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
-                              >
-                                <span className="material-symbols-outlined text-xl">
-                                  {showConfirmPassword ? 'visibility_off' : 'visibility'}
-                                </span>
-                              </button>
-                            </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
-                      <div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+
+                      {/* Email (Always visible) */}
+                      <div className={authMode === 'signup' ? '' : 'md:col-span-2'}>
                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Email</label>
                         <input
                           type="email"
@@ -469,7 +433,34 @@ export default function Home() {
                           className="w-full px-5 py-3.5 rounded-2xl border-2 border-black/10 bg-slate-50/30 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-black transition-all text-sm font-medium"
                         />
                       </div>
-                      <div>
+
+                      {/* Phone & Gender (Signup only) */}
+                      <AnimatePresence mode="popLayout">
+                        {authMode === 'signup' && (
+                          <>
+                            <motion.div key="phone" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}>
+                              <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Phone</label>
+                              <input
+                                type="tel"
+                                placeholder="012-345-678"
+                                className="w-full px-5 py-3.5 rounded-2xl border-2 border-black/10 bg-slate-50/30 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-black transition-all text-sm font-medium"
+                              />
+                            </motion.div>
+                            <motion.div key="gender" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}>
+                              <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Gender</label>
+                              <select className="w-full px-5 py-3.5 rounded-2xl border-2 border-black/10 bg-slate-50/30 text-slate-900 focus:outline-none focus:border-black transition-all text-sm font-medium appearance-none cursor-pointer">
+                                <option value="" disabled selected>Select</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                              </select>
+                            </motion.div>
+                          </>
+                        )}
+                      </AnimatePresence>
+
+                      {/* Password (Always visible) */}
+                      <div className={authMode === 'signup' ? '' : 'md:col-span-2'}>
                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Password</label>
                         <div className="relative">
                           <input
@@ -487,6 +478,35 @@ export default function Home() {
                           </button>
                         </div>
                       </div>
+
+                      {/* Confirm Password (Signup only) */}
+                      <AnimatePresence mode="popLayout">
+                        {authMode === 'signup' && (
+                          <motion.div
+                            key="confirm"
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 20 }}
+                          >
+                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Confirm Password</label>
+                            <div className="relative">
+                              <input
+                                type={showConfirmPassword ? "text" : "password"}
+                                placeholder="Confirm your password"
+                                className="w-full px-5 py-3.5 rounded-2xl border-2 border-black/10 bg-slate-50/30 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-black transition-all text-sm font-medium"
+                              />
+                              <button
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                              >
+                                <span className="material-symbols-outlined text-xl">
+                                  {showConfirmPassword ? 'visibility_off' : 'visibility'}
+                                </span>
+                              </button>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   </div>
 
