@@ -427,7 +427,7 @@ export default function Home() {
                 </div>
 
                 <button className="w-full flex items-center justify-center gap-3 py-3.5 border border-slate-100 rounded-2xl hover:bg-slate-50 transition-colors">
-                  <Image src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" alt="Google" width={20} height={20} />
+                  <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" alt="Google" className="w-5 h-5" />
                   <span className="text-sm font-bold text-slate-700">Google</span>
                 </button>
 
