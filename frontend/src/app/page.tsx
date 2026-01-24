@@ -13,6 +13,7 @@ export default function Home() {
   const [copied, setCopied] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
 
   useEffect(() => {
@@ -437,6 +438,34 @@ export default function Home() {
                             </select>
                           </div>
                         </div>
+                        <div>
+                          <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Confirm Password</label>
+                          <div className="relative">
+                            <input
+                              type={showConfirmPassword ? "text" : "password"}
+                              placeholder="Confirm your password"
+                              className="w-full px-5 py-3.5 rounded-2xl border border-slate-100 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium"
+                            />
+                            <button
+                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                            >
+                              <span className="material-symbols-outlined text-xl">
+                                {showConfirmPassword ? 'visibility_off' : 'visibility'}
+                              </span>
+                            </button>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3 mt-2 px-1">
+                          <input
+                            type="checkbox"
+                            className="mt-1 size-4 rounded border-slate-200 text-primary focus:ring-primary transition-all cursor-pointer"
+                            id="tos"
+                          />
+                          <label htmlFor="tos" className="text-[11px] font-semibold text-slate-500 leading-tight cursor-pointer">
+                            I agree to the <button className="text-primary hover:underline">Terms of Service</button> and <button className="text-primary hover:underline">Privacy Policy</button>
+                          </label>
+                        </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -468,9 +497,11 @@ export default function Home() {
                   </div>
                 </div>
 
-                <div className="flex justify-end mt-3">
-                  <button className="text-primary text-xs font-bold hover:underline">Forgot Password?</button>
-                </div>
+                {authMode === 'signin' && (
+                  <div className="flex justify-end mt-3">
+                    <button className="text-primary text-xs font-bold hover:underline">Forgot Password?</button>
+                  </div>
+                )}
 
                 <motion.button
                   whileHover={{ scale: 1.02, boxShadow: "0 20px 25px -5px rgb(59 130 246 / 0.5)" }}
