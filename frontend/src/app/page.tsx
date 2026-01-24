@@ -150,9 +150,9 @@ export default function Home() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="flex items-center justify-center w-full px-4"
+              className="flex items-center w-full px-4"
             >
-              <div className="flex-1 flex items-center justify-center max-w-md mx-auto relative">
+              <div className="flex-1 flex items-center relative">
                 <span className="material-symbols-outlined text-black dark:text-white absolute left-0 font-bold">search</span>
                 <input
                   autoFocus
@@ -161,7 +161,7 @@ export default function Home() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && setIsSearchOpen(false)}
                   placeholder="Search premium furniture..."
-                  className="bg-transparent border-none outline-none text-black dark:text-white w-full font-bold text-sm placeholder:text-slate-400 text-center px-10"
+                  className="bg-transparent border-none outline-none text-black dark:text-white w-full font-bold text-sm placeholder:text-slate-400 text-left pl-10 pr-4"
                 />
               </div>
               <button
