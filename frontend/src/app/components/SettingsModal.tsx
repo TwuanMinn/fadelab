@@ -774,8 +774,8 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                     key={tab}
                                     onClick={() => setActiveTab(tab)}
                                     className={`px-6 py-3.5 rounded-2xl text-[13px] font-black transition-all whitespace-nowrap shadow-sm border font-outfit ${activeTab === tab
-                                            ? "bg-[#2563EB] text-white border-blue-600 shadow-blue-500/20 scale-105"
-                                            : "bg-white dark:bg-slate-800 text-slate-400 border-slate-50 dark:border-slate-800 hover:text-slate-600 dark:hover:text-slate-200"
+                                        ? "bg-[#2563EB] text-white border-blue-600 shadow-blue-500/20 scale-105"
+                                        : "bg-white dark:bg-slate-800 text-slate-400 border-slate-50 dark:border-slate-800 hover:text-slate-600 dark:hover:text-slate-200"
                                         }`}
                                 >
                                     {tab}
@@ -785,23 +785,14 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     </div>
 
                     {/* Main Content Area */}
-                    <div className="flex-1 overflow-y-auto px-6 py-8 sub-view-container custom-scroll">
+                    <div className="flex-1 overflow-y-auto px-6 py-8 sub-view-container no-scrollbar">
                         <style jsx>{`
-              .custom-scroll::-webkit-scrollbar {
-                width: 6px;
+              .no-scrollbar::-webkit-scrollbar {
+                display: none;
               }
-              .custom-scroll::-webkit-scrollbar-track {
-                background: transparent;
-                margin: 20px;
-              }
-              .custom-scroll::-webkit-scrollbar-thumb {
-                background: #cbd5e1;
-                border: 2px solid transparent;
-                border-radius: 100px;
-                background-clip: padding-box;
-              }
-              .dark .custom-scroll::-webkit-scrollbar-thumb {
-                background: #334155;
+              .no-scrollbar {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
               }
             `}</style>
 
