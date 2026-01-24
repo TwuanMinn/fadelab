@@ -125,8 +125,10 @@ export default function Home() {
                 { icon: 'shopping_bag', label: 'Cart', badge: 2 },
                 { icon: 'favorite', label: 'Saved' },
                 { icon: 'auto_awesome', label: 'Design AI' },
+                { icon: 'barcode_scanner', label: 'Scan Code' },
                 { icon: 'translate', label: 'Translate' },
                 { icon: copied ? 'check_circle' : 'content_copy', label: copied ? 'Copied' : 'Copy Link', action: handleCopy },
+                { icon: 'share', label: 'Share', action: handleShare },
                 { icon: mounted && theme === 'dark' ? 'light_mode' : 'dark_mode', label: 'Theme', action: toggleTheme },
                 { icon: 'settings', label: 'Settings' },
               ].map((item, idx) => (
