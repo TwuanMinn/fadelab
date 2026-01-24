@@ -170,7 +170,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                             className="object-cover"
                         />
                         <button className="absolute top-4 right-4 size-10 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-primary shadow-lg">
-                            <span className="material-symbols-outlined text-[20px] fill-current">favorite</span>
+                            <span className="material-symbols-outlined text-[20px]">location_on</span>
                         </button>
                     </div>
                     <div className="p-6">

@@ -133,7 +133,7 @@ export default function Home() {
                 { icon: 'grid_view', label: 'Catalog' },
                 { icon: 'search', label: 'Search', action: () => setIsSearchOpen(true) },
                 { icon: 'shopping_bag', label: 'Cart', badge: 2 },
-                { icon: 'favorite', label: 'Saved' },
+                { icon: 'location_on', label: 'Stores' },
                 { icon: 'auto_awesome', label: 'Design AI' },
                 { icon: 'translate', label: 'Translate' },
                 { icon: copied ? 'check_circle' : 'content_copy', label: copied ? 'Copied' : 'Copy Link', action: handleCopy },
@@ -329,9 +329,9 @@ export default function Home() {
                     <motion.button
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
-                      className="absolute top-3 right-3 size-9 rounded-full bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm flex items-center justify-center text-slate-400 hover:text-red-500 transition-colors shadow-sm z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      className="absolute top-3 right-3 size-9 rounded-full bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm flex items-center justify-center text-slate-400 hover:text-primary transition-colors shadow-sm z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                     >
-                      <span className="material-symbols-outlined text-[20px]">favorite</span>
+                      <span className="material-symbols-outlined text-[20px]">location_on</span>
                     </motion.button>
                     {product.discount && (
                       <div className="absolute top-3 left-3 bg-red-500 px-2.5 py-1 rounded-lg text-white shadow-sm z-10">
