@@ -235,6 +235,16 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                 </div>
                                 <span className="material-symbols-outlined text-slate-400">chevron_right</span>
                             </button>
+
+                            <button className="w-full flex items-center justify-between p-4 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all">
+                                <div className="flex items-center gap-3">
+                                    <div className="size-10 bg-blue-50 dark:bg-blue-900/20 rounded-xl flex items-center justify-center">
+                                        <span className="material-symbols-outlined text-primary">lock_reset</span>
+                                    </div>
+                                    <p className="font-bold text-sm text-slate-900 dark:text-white">Change Password</p>
+                                </div>
+                                <span className="material-symbols-outlined text-slate-400 group-hover:translate-x-1 transition-transform">chevron_right</span>
+                            </button>
                         </div>
                     </motion.div>
                 );
@@ -334,8 +344,8 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                     key={tab}
                                     onClick={() => setActiveTab(tab)}
                                     className={`whitespace-nowrap pb-2 text-sm font-semibold transition-all relative ${activeTab === tab
-                                            ? "text-primary px-1"
-                                            : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                                        ? "text-primary px-1"
+                                        : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
                                         }`}
                                 >
                                     {tab}
