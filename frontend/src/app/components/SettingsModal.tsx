@@ -425,7 +425,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                             </div>
                         </div>
 
-                        <button className="w-full text-center text-red-500 font-bold text-xs mt-4 hover:underline">
+                        <button className="w-full py-4 text-center text-red-500 font-black text-sm mt-8 bg-red-50 dark:bg-red-950/30 rounded-2xl hover:bg-red-100 dark:hover:bg-red-900/20 transition-all border border-red-100 dark:border-red-900/30">
                             Cancel Subscription
                         </button>
                     </motion.div>
@@ -473,8 +473,8 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                     key={tab}
                                     onClick={() => setActiveTab(tab)}
                                     className={`whitespace-nowrap pb-3 text-[13px] font-bold transition-all relative ${activeTab === tab
-                                            ? "text-primary px-1"
-                                            : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                                        ? "text-primary px-1"
+                                        : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
                                         }`}
                                 >
                                     {tab}
@@ -504,8 +504,8 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                         </div>
 
                         {/* General Log Out */}
-                        <div className="py-4 text-center shrink-0">
-                            <button className="text-red-500 font-bold hover:text-red-600 transition-colors text-sm">
+                        <div className="py-6 text-center shrink-0">
+                            <button className="w-full py-4 text-red-500 font-black text-lg bg-red-50 dark:bg-red-950/30 rounded-2xl border border-red-100 dark:border-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/20 transition-all">
                                 Log Out
                             </button>
                         </div>
