@@ -10,7 +10,7 @@ interface SettingsModalProps {
 }
 
 export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
-    const [activeTab, setActiveTab] = useState("Privacy");
+    const [activeTab, setActiveTab] = useState("General");
     const [notifications, setNotifications] = useState(true);
     const [twoFactor, setTwoFactor] = useState(false);
     const [onlineStatus, setOnlineStatus] = useState(false);
@@ -18,12 +18,116 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     const [personalizedAds, setPersonalizedAds] = useState(true);
     const [analyticsCookies, setAnalyticsCookies] = useState(true);
 
-    const tabs = ["Security", "Privacy", "Subscriptions"];
+    const tabs = ["General", "Security", "Privacy", "Subscriptions"];
 
     if (!isOpen) return null;
 
     const renderContent = () => {
         switch (activeTab) {
+            case "General":
+                return (
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="space-y-6"
+                    >
+                        {/* Profile Section */}
+                        <div className="flex flex-col items-center pt-4">
+                            <div className="relative group">
+                                <div className="size-24 rounded-full overflow-hidden border-4 border-white dark:border-slate-800 shadow-soft">
+                                    <Image
+                                        src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"
+                                        alt="Profile"
+                                        width={96}
+                                        height={96}
+                                        className="object-cover"
+                                    />
+                                </div>
+                                <button className="absolute bottom-1 right-1 size-8 bg-primary rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center shadow-soft hover:scale-110 transition-transform">
+                                    <span className="material-symbols-outlined text-white text-base">edit</span>
+                                </button>
+                            </div>
+                            <h3 className="mt-4 text-xl font-bold text-slate-900 dark:text-white">Alex Johnson</h3>
+                            <p className="text-sm text-slate-500">alex.johnson@example.com</p>
+                        </div>
+
+                        {/* Personal Details */}
+                        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-800 space-y-4">
+                            <div className="flex items-center gap-2 text-primary font-bold text-sm mb-2">
+                                <span className="material-symbols-outlined text-xl">person</span>
+                                Personal Details
+                            </div>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-1 block">Full Name</label>
+                                    <input
+                                        type="text"
+                                        defaultValue="Alex Johnson"
+                                        className="w-full bg-slate-50 dark:bg-slate-800/50 border-none rounded-2xl px-4 py-3 text-sm dark:text-white outline-none focus:ring-2 focus:ring-primary/20"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-1 block">Email Address</label>
+                                    <input
+                                        type="email"
+                                        defaultValue="alex.johnson@example.com"
+                                        className="w-full bg-slate-50 dark:bg-slate-800/50 border-none rounded-2xl px-4 py-3 text-sm dark:text-white outline-none focus:ring-2 focus:ring-primary/20"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-1 block">Phone Number</label>
+                                    <input
+                                        type="text"
+                                        defaultValue="+1 (555) 000-0000"
+                                        className="w-full bg-slate-50 dark:bg-slate-800/50 border-none rounded-2xl px-4 py-3 text-sm dark:text-white outline-none focus:ring-2 focus:ring-primary/20"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Notifications */}
+                        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-800">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="size-10 bg-primary/10 rounded-xl flex items-center justify-center">
+                                        <span className="material-symbols-outlined text-primary">notifications</span>
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-sm text-slate-900 dark:text-white">Order Updates</p>
+                                        <p className="text-[10px] text-slate-500">Get notified about order status</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setNotifications(!notifications)}
+                                    className={`w-11 h-6 rounded-full transition-all relative ${notifications ? "bg-primary" : "bg-slate-200 dark:bg-slate-700"}`}
+                                >
+                                    <div className={`absolute top-1 size-4 bg-white rounded-full transition-all ${notifications ? "right-1" : "left-1"}`} />
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <button className="w-full flex items-center justify-between p-4 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl group hover:bg-slate-50 dark:hover:bg-slate-800/5 transition-all">
+                                <div className="flex items-center gap-3">
+                                    <div className="size-10 bg-blue-50 dark:bg-blue-900/20 rounded-xl flex items-center justify-center">
+                                        <span className="material-symbols-outlined text-primary">language</span>
+                                    </div>
+                                    <p className="font-bold text-sm text-slate-900 dark:text-white">Language & Region</p>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs text-slate-400">English (US)</span>
+                                    <span className="material-symbols-outlined text-slate-400 group-hover:translate-x-1 transition-transform">chevron_right</span>
+                                </div>
+                            </button>
+                        </div>
+
+                        <button className="w-full bg-primary text-white font-bold py-4 rounded-2xl shadow-lg shadow-primary/20 hover:scale-[1.01] transition-all">
+                            Save Changes
+                        </button>
+                    </motion.div>
+                );
+
             case "Security":
                 return (
                     <motion.div
@@ -133,9 +237,9 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     <motion.div
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className="space-y-6 pt-4"
+                        className="space-y-6"
                     >
-                        <div className="px-1">
+                        <div className="px-1 pt-4">
                             <h3 className="text-2xl font-black text-slate-900 dark:text-white">Privacy & Data</h3>
                             <p className="text-xs text-slate-500 mt-1">Manage how your data is used and shared.</p>
                         </div>
@@ -221,9 +325,6 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                         <div className={`absolute top-1 size-4 bg-white rounded-full transition-all ${analyticsCookies ? "right-1" : "left-1"}`} />
                                     </button>
                                 </div>
-                                <button className="w-full text-center text-primary font-bold text-xs mt-2 hover:underline">
-                                    Manage All Cookies
-                                </button>
                             </div>
                         </div>
 
@@ -295,7 +396,6 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                             ))}
                         </div>
 
-                        {/* Included in Pro */}
                         <div className="bg-slate-50 dark:bg-slate-800/50 rounded-3xl p-6 space-y-4 border border-slate-100 dark:border-slate-800">
                             <h4 className="text-sm font-bold text-slate-900 dark:text-white">Included in Pro</h4>
                             <div className="space-y-3">
@@ -348,7 +448,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     initial={{ y: 50, scale: 0.95 }}
                     animate={{ y: 0, scale: 1 }}
                     exit={{ y: 50, scale: 0.95 }}
-                    className="relative w-full max-w-md h-[90vh] md:h-[850px] overflow-hidden bg-slate-50 dark:bg-slate-950 rounded-[2.5rem] shadow-2xl flex flex-col border border-slate-200 dark:border-slate-900"
+                    className="relative w-full max-w-md h-[90vh] md:h-[800px] overflow-hidden bg-slate-50 dark:bg-slate-950 rounded-[2.5rem] shadow-2xl flex flex-col border border-slate-200 dark:border-slate-900"
                 >
                     {/* Header */}
                     <div className="flex items-center justify-between px-6 py-5 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shrink-0">
@@ -402,28 +502,12 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                                 </motion.div>
                             </AnimatePresence>
                         </div>
-                    </div>
 
-                    {/* Bottom Navigation Mockup - Optional if you want to match screenshot fully, but usually settings is an overlay */}
-                    <div className="px-8 py-6 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center shrink-0">
-                        <div className="flex flex-col items-center gap-1 opacity-40">
-                            <span className="material-symbols-outlined text-xl">home</span>
-                            <span className="text-[8px] font-bold uppercase tracking-widest">Home</span>
-                        </div>
-                        <div className="flex flex-col items-center gap-1 opacity-40">
-                            <span className="material-symbols-outlined text-xl">grid_view</span>
-                            <span className="text-[8px] font-bold uppercase tracking-widest">Catalog</span>
-                        </div>
-                        <div className="size-12 bg-primary rounded-full flex items-center justify-center text-white shadow-lg shadow-primary/30 -mt-10 border-4 border-slate-50 dark:border-slate-950">
-                            <span className="material-symbols-outlined text-3xl font-bold">add</span>
-                        </div>
-                        <div className="flex flex-col items-center gap-1 opacity-40">
-                            <span className="material-symbols-outlined text-xl">favorite</span>
-                            <span className="text-[8px] font-bold uppercase tracking-widest">Saved</span>
-                        </div>
-                        <div className="flex flex-col items-center gap-1 text-primary">
-                            <span className="material-symbols-outlined text-xl">person</span>
-                            <span className="text-[8px] font-bold uppercase tracking-widest">Profile</span>
+                        {/* General Log Out */}
+                        <div className="py-4 text-center shrink-0">
+                            <button className="text-red-500 font-bold hover:text-red-600 transition-colors text-sm">
+                                Log Out
+                            </button>
                         </div>
                     </div>
                 </motion.div>
