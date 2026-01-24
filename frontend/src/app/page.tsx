@@ -102,6 +102,7 @@ export default function Home() {
           { icon: 'shopping_bag', label: 'Cart', badge: 2 },
           { icon: 'favorite', label: 'Saved' },
           { icon: 'auto_awesome', label: 'Design AI' },
+          { icon: 'translate', label: 'Translate' },
           { icon: copied ? 'check_circle' : 'content_copy', label: copied ? 'Copied' : 'Copy Link', action: handleCopy },
           { icon: 'share', label: 'Share', action: handleShare },
           { icon: mounted && theme === 'dark' ? 'light_mode' : 'dark_mode', label: 'Theme', action: toggleTheme },
@@ -146,17 +147,17 @@ export default function Home() {
               >
                 New Collection
               </motion.span>
-              <div className="h-[140px] md:h-[200px] mb-4 flex items-center overflow-hidden">
+              <div className="h-[100px] md:h-[140px] mb-4 flex items-center overflow-hidden">
                 <AnimatePresence mode="wait">
                   <motion.h1
                     key={heroTextIndex}
-                    initial={{ y: 60, opacity: 0 }}
+                    initial={{ y: 40, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: -60, opacity: 0 }}
+                    exit={{ y: -40, opacity: 0 }}
                     transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                     className={`leading-none bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-white/70 ${heroTextIndex === 0
-                        ? 'text-6xl md:text-9xl font-black uppercase tracking-tighter'
-                        : 'text-4xl md:text-7xl font-bold tracking-tight'
+                        ? 'text-5xl md:text-7xl font-black uppercase tracking-tighter'
+                        : 'text-3xl md:text-5xl font-bold tracking-tight'
                       }`}
                   >
                     {['FURNZA.', 'Minimalist Living.'][heroTextIndex]}
