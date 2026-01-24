@@ -186,7 +186,7 @@ export default function Home() {
                 transition={{ delay: 0.5 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-gradient-to-r from-primary to-secondary text-white font-semibold py-3.5 px-8 rounded-xl shadow-glow transition-all w-full md:w-auto inline-flex items-center justify-center gap-2"
+                className="bg-gradient-to-r from-primary to-secondary text-white font-semibold py-3.5 px-8 rounded-xl shadow-glow transition-all w-full md:w-auto inline-flex items-center justify-center gap-2 border-2 border-white/20"
               >
                 Shop Now
                 <span className="material-symbols-outlined text-sm">arrow_forward</span>
@@ -220,7 +220,7 @@ export default function Home() {
                 { icon: 'kitchen', label: 'Kitchen' },
               ].map((cat, idx) => (
                 <motion.div variants={item} key={idx} className="flex flex-col items-center gap-3 shrink-0 group cursor-pointer">
-                  <div className={`size-[72px] md:size-[100px] rounded-full flex items-center justify-center shadow-sm border transition-all duration-300 ${cat.label === 'All' ? 'bg-gradient-to-tr from-primary to-secondary border-transparent shadow-glow' : 'bg-slate-50 dark:bg-slate-900 border-slate-100 dark:border-slate-800 group-hover:border-primary/30 group-hover:bg-blue-50/50 dark:group-hover:bg-blue-900/20'}`}>
+                  <div className={`size-[72px] md:size-[100px] rounded-full flex items-center justify-center shadow-sm border-2 transition-all duration-300 ${cat.label === 'All' ? 'bg-gradient-to-tr from-primary to-secondary border-white/30 shadow-glow' : 'bg-slate-50 dark:bg-slate-900 border-slate-100 dark:border-slate-800 group-hover:border-primary/30 group-hover:bg-blue-50/50 dark:group-hover:bg-blue-900/20'}`}>
                     <span className={`material-symbols-outlined text-3xl md:text-4xl transition-colors ${cat.label === 'All' ? 'text-white' : 'text-slate-700 dark:text-slate-300 group-hover:text-primary'}`}>{cat.icon}</span>
                   </div>
                   <span className={`text-xs md:text-sm font-semibold transition-colors ${cat.label === 'All' ? 'text-primary font-bold' : 'text-slate-700 dark:text-slate-400 group-hover:text-primary'}`}>{cat.label}</span>
@@ -509,7 +509,7 @@ export default function Home() {
                 <motion.button
                   whileHover={{ scale: 1.02, boxShadow: "0 20px 25px -5px rgb(59 130 246 / 0.5)" }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full bg-gradient-to-tr from-primary via-blue-500 to-secondary text-white font-bold py-4 rounded-2xl mt-8 shadow-xl shadow-primary/40 transition-all text-sm tracking-wide uppercase"
+                  className="w-full bg-gradient-to-tr from-primary via-blue-500 to-secondary text-white font-bold py-4 rounded-2xl mt-8 shadow-xl shadow-primary/40 transition-all text-sm tracking-wide uppercase border-2 border-white/10"
                 >
                   {authMode === 'signin' ? 'Sign In' : 'Sign Up'}
                 </motion.button>
@@ -523,7 +523,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <button className="w-full flex items-center justify-center gap-3 py-4 border border-slate-200 rounded-2xl hover:bg-slate-50 transition-all shadow-sm hover:shadow-md">
+                <button className="w-full flex items-center justify-center gap-3 py-4 border-2 border-slate-200 rounded-2xl hover:bg-slate-50 transition-all shadow-sm hover:shadow-md">
                   <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" alt="Google" className="w-5 h-5" />
                   <span className="text-sm font-bold text-slate-700">Continue with Google</span>
                 </button>
