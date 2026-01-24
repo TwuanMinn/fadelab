@@ -73,18 +73,37 @@ export default function Home() {
 
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-white dark:bg-slate-950 transition-colors duration-300 pb-[90px] md:pb-0">
+      {/* Search Overlay/Backdrop */}
+      <AnimatePresence>
+        {isSearchOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsSearchOpen(false)}
+            className="fixed inset-0 z-[45] bg-black/30 backdrop-blur-md pointer-events-auto"
+          />
+        )}
+      </AnimatePresence>
+
       <motion.div
-        layout
-        className="fixed bottom-8 left-1/2 z-50 flex items-center gap-2 px-3 py-3 rounded-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-2 border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/60 dark:shadow-black/50 transition-colors duration-300"
-        style={{ x: "-50%", width: isSearchOpen ? 'min(90vw, 500px)' : 'auto' }}
+        animate={{
+          bottom: isSearchOpen ? "50%" : "32px",
+          y: isSearchOpen ? "50%" : "0%",
+          x: "-50%",
+          width: isSearchOpen ? 'min(90vw, 600px)' : 'auto',
+          borderRadius: isSearchOpen ? "28px" : "9999px",
+        }}
+        transition={{ type: "spring", stiffness: 400, damping: 35 }}
+        className={`fixed left-1/2 z-50 flex items-center gap-2 px-3 py-3 bg-white/95 dark:bg-slate-900/95 backdrop-blur-3xl border-2 border-black shadow-2xl transition-colors duration-300`}
       >
         <AnimatePresence mode="wait">
           {!isSearchOpen ? (
             <motion.div
               key="icons"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9, x: 20 }}
               className="flex items-center gap-2"
             >
               {/* Profile / Brand Icon */}
@@ -144,29 +163,29 @@ export default function Home() {
           ) : (
             <motion.div
               key="searchbar"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="flex items-center w-full px-2"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="flex items-center w-full px-4 py-1"
             >
-              <span className="material-symbols-outlined text-slate-400 mr-3">search</span>
+              <span className="material-symbols-outlined text-slate-500 mr-4 text-2xl font-bold">search</span>
               <input
                 autoFocus
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && setIsSearchOpen(false)}
-                placeholder="Search furniture, styles, or brands..."
-                className="bg-transparent border-none outline-none text-slate-700 dark:text-white w-full font-medium text-sm placeholder:text-slate-400"
+                placeholder="What are you looking for?"
+                className="bg-transparent border-none outline-none text-slate-800 dark:text-white w-full font-bold text-lg placeholder:text-slate-400"
               />
               <button
                 onClick={() => {
                   setIsSearchOpen(false);
                   setSearchQuery("");
                 }}
-                className="size-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 transition-colors"
+                className="size-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 transition-all ml-2"
               >
-                <span className="material-symbols-outlined text-xl">close</span>
+                <span className="material-symbols-outlined text-2xl font-bold">close</span>
               </button>
             </motion.div>
           )}
