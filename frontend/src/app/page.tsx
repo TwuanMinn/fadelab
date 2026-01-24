@@ -10,8 +10,9 @@ export default function Home() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [heroTextIndex, setHeroTextIndex] = useState(0);
-
   const [copied, setCopied] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -47,6 +48,10 @@ export default function Home() {
     }
   };
 
+  const handleProfileClick = () => {
+    setIsAuthModalOpen(true);
+  };
+
   const container = {
     hidden: { opacity: 0 },
     show: {
@@ -73,6 +78,7 @@ export default function Home() {
       >
         {/* Profile / Brand Icon */}
         <motion.button
+          onClick={handleProfileClick}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           className="relative size-12 mr-2 group cursor-pointer"
@@ -156,8 +162,8 @@ export default function Home() {
                     exit={{ y: -40, opacity: 0 }}
                     transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                     className={`leading-none bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-white/70 ${heroTextIndex === 0
-                        ? 'text-5xl md:text-7xl font-black uppercase tracking-tighter'
-                        : 'text-3xl md:text-5xl font-bold tracking-tight'
+                      ? 'text-5xl md:text-7xl font-black uppercase tracking-tighter'
+                      : 'text-3xl md:text-5xl font-bold tracking-tight'
                       }`}
                   >
                     {['FURNZA.', 'Minimalist Living.'][heroTextIndex]}
@@ -330,6 +336,109 @@ export default function Home() {
         </div>
       </main>
 
+      {/* Auth Modal */}
+      <AnimatePresence>
+        {isAuthModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsAuthModalOpen(false)}
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-[420px] bg-white rounded-[32px] overflow-hidden shadow-2xl"
+            >
+              {/* Modal Header Image */}
+              <div className="relative h-[240px] w-full">
+                <Image
+                  src="https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                  alt="Login Header"
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                <div className="absolute bottom-6 left-8 text-white">
+                  <h2 className="text-3xl font-bold mb-1">Welcome Back</h2>
+                  <p className="text-white/80 text-sm font-medium">Log in to access your premium comfort.</p>
+                </div>
+                <button
+                  onClick={() => setIsAuthModalOpen(false)}
+                  className="absolute top-4 right-4 size-8 rounded-full bg-white/20 backdrop-blur-lg flex items-center justify-center text-white hover:bg-white/40 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-xl">close</span>
+                </button>
+              </div>
+
+              {/* Modal Content */}
+              <div className="p-8 pb-10">
+                <div className="space-y-5">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Email</label>
+                    <input
+                      type="email"
+                      placeholder="Enter your email address"
+                      className="w-full px-5 py-3.5 rounded-2xl border border-slate-100 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Password</label>
+                    <div className="relative">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Enter your password"
+                        className="w-full px-5 py-3.5 rounded-2xl border border-slate-100 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium"
+                      />
+                      <button
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                      >
+                        <span className="material-symbols-outlined text-xl">
+                          {showPassword ? 'visibility_off' : 'visibility'}
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end mt-3">
+                  <button className="text-primary text-xs font-bold hover:underline">Forgot Password?</button>
+                </div>
+
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full bg-gradient-to-r from-primary to-secondary text-white font-bold py-4 rounded-2xl mt-8 shadow-glow shadow-primary/20 transition-all text-sm"
+                >
+                  Sign In
+                </motion.button>
+
+                <div className="relative my-8">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-slate-100"></div>
+                  </div>
+                  <div className="relative flex justify-center text-[10px] uppercase tracking-widest font-bold bg-white px-4 text-slate-400">
+                    Or Continue With
+                  </div>
+                </div>
+
+                <button className="w-full flex items-center justify-center gap-3 py-3.5 border border-slate-100 rounded-2xl hover:bg-slate-50 transition-colors">
+                  <Image src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" alt="Google" width={20} height={20} />
+                  <span className="text-sm font-bold text-slate-700">Google</span>
+                </button>
+
+                <p className="mt-8 text-center text-xs font-semibold text-slate-400">
+                  New to ModernHome? <button className="text-primary hover:underline ml-1">Create an Account</button>
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
