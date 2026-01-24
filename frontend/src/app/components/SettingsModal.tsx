@@ -768,7 +768,39 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                         </div>
 
                         {/* Navigation Tabs (Pills) */}
-                        <div className="px-6 pb-6 overflow-x-auto hide-scrollbar flex gap-3">
+                        <div
+                            className="px-6 pb-6 overflow-x-auto hide-scrollbar flex gap-3 cursor-grab active:cursor-grabbing select-none"
+                            onMouseDown={(e) => {
+                                const slider = e.currentTarget;
+                                const startX = e.pageX - slider.offsetLeft;
+                                const scrollLeft = slider.scrollLeft;
+                                let isDragging = false;
+
+                                const onMouseMove = (moveEvent: MouseEvent) => {
+                                    moveEvent.preventDefault();
+                                    const x = moveEvent.pageX - slider.offsetLeft;
+                                    const walk = (x - startX) * 2;
+                                    if (Math.abs(walk) > 5) isDragging = true;
+                                    slider.scrollLeft = scrollLeft - walk;
+                                };
+
+                                const onMouseUp = () => {
+                                    window.removeEventListener('mousemove', onMouseMove);
+                                    window.removeEventListener('mouseup', onMouseUp);
+                                    if (isDragging) {
+                                        // Prevent the next click event if we dragged
+                                        const preventClick = (clickEvent: MouseEvent) => {
+                                            clickEvent.stopImmediatePropagation();
+                                            slider.removeEventListener('click', preventClick, true);
+                                        };
+                                        slider.addEventListener('click', preventClick, true);
+                                    }
+                                };
+
+                                window.addEventListener('mousemove', onMouseMove);
+                                window.addEventListener('mouseup', onMouseUp);
+                            }}
+                        >
                             {tabs.map((tab) => (
                                 <button
                                     key={tab}
@@ -785,7 +817,28 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     </div>
 
                     {/* Main Content Area */}
-                    <div className="flex-1 overflow-y-auto px-6 py-8 sub-view-container hide-scrollbar">
+                    <div
+                        className="flex-1 overflow-y-auto px-6 py-8 sub-view-container hide-scrollbar cursor-grab active:cursor-grabbing select-none"
+                        onMouseDown={(e) => {
+                            const slider = e.currentTarget;
+                            const startY = e.pageY - slider.offsetTop;
+                            const scrollTop = slider.scrollTop;
+
+                            const onMouseMove = (moveEvent: MouseEvent) => {
+                                const y = moveEvent.pageY - slider.offsetTop;
+                                const walk = (y - startY) * 2;
+                                slider.scrollTop = scrollTop - walk;
+                            };
+
+                            const onMouseUp = () => {
+                                window.removeEventListener('mousemove', onMouseMove);
+                                window.removeEventListener('mouseup', onMouseUp);
+                            };
+
+                            window.addEventListener('mousemove', onMouseMove);
+                            window.addEventListener('mouseup', onMouseUp);
+                        }}
+                    >
 
                         <AnimatePresence mode="wait">
                             {activeTab === "General" && renderGeneral()}
