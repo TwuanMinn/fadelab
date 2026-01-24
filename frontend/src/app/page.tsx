@@ -74,10 +74,12 @@ export default function Home() {
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-white dark:bg-slate-950 transition-colors duration-300 pb-[90px] md:pb-0">
       <motion.div
-        layout
+        animate={{
+          x: "-50%",
+          width: isSearchOpen ? 'min(90vw, 500px)' : 'auto'
+        }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="fixed bottom-8 left-1/2 z-50 flex items-center gap-2 px-3 py-3 rounded-full bg-white dark:bg-slate-900 backdrop-blur-2xl border-2 border-black shadow-xl shadow-black/10 transition-colors duration-300 pointer-events-auto"
-        style={{ x: "-50%" }}
+        className="fixed bottom-8 left-1/2 z-50 flex items-center px-4 py-3 rounded-full bg-white dark:bg-slate-900 border-2 border-black shadow-xl shadow-black/10 transition-colors duration-300 pointer-events-auto overflow-hidden"
       >
         <AnimatePresence>
           {!isSearchOpen ? (
@@ -144,31 +146,28 @@ export default function Home() {
             </motion.div>
           ) : (
             <motion.div
-              layout
               key="searchbar"
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="flex items-center w-[min(90vw,500px)] px-4"
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="flex items-center w-full relative"
             >
-              <div className="flex-1 flex items-center justify-center relative">
-                <span className="material-symbols-outlined text-black dark:text-white absolute left-2 font-bold">search</span>
-                <input
-                  autoFocus
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && setIsSearchOpen(false)}
-                  placeholder="Search premium furniture..."
-                  className="bg-transparent border-none outline-none text-black dark:text-white w-full font-bold text-sm placeholder:text-slate-400 text-center px-10"
-                />
-              </div>
+              <span className="material-symbols-outlined text-black dark:text-white absolute left-0 font-bold pointer-events-none">search</span>
+              <input
+                autoFocus
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && setIsSearchOpen(false)}
+                placeholder="Search premium furniture..."
+                className="bg-transparent border-none outline-none text-black dark:text-white w-full font-bold text-sm placeholder:text-slate-400 text-center px-12 h-10"
+              />
               <button
                 onClick={() => {
                   setIsSearchOpen(false);
                   setSearchQuery("");
                 }}
-                className="size-8 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-black dark:text-white transition-all hover:rotate-90 ml-2"
+                className="absolute right-0 size-8 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-black dark:text-white transition-all hover:rotate-90"
               >
                 <span className="material-symbols-outlined text-xl font-bold">close</span>
               </button>
