@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import SettingsModal from "./components/SettingsModal";
+import QRCodeModal from "./components/QRCodeModal";
 
 import { useTheme } from "next-themes";
 import { useState, useEffect } from "react";
@@ -18,6 +19,7 @@ export default function Home() {
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isQRCodeOpen, setIsQRCodeOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
@@ -130,7 +132,7 @@ export default function Home() {
                 { icon: 'translate', label: 'Translate' },
                 { icon: copied ? 'check_circle' : 'content_copy', label: copied ? 'Copied' : 'Copy Link', action: handleCopy },
                 { icon: 'share', label: 'Share', action: handleShare },
-                { icon: 'qr_code_scanner', label: 'QR Scan' },
+                { icon: 'qr_code_scanner', label: 'QR Scan', action: () => setIsQRCodeOpen(true) },
                 { icon: mounted && theme === 'dark' ? 'light_mode' : 'dark_mode', label: 'Theme', action: toggleTheme },
                 { icon: 'settings', label: 'Settings', action: () => setIsSettingsOpen(true) },
               ].map((item, idx) => (
@@ -618,6 +620,7 @@ export default function Home() {
         )}
       </AnimatePresence>
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+      <QRCodeModal isOpen={isQRCodeOpen} onClose={() => setIsQRCodeOpen(false)} url="https://mine-ptfl.vercel.app" />
     </div>
   );
 }
