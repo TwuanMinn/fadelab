@@ -15,6 +15,8 @@ export default function Home() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     setMounted(true);
@@ -71,67 +73,104 @@ export default function Home() {
 
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-white dark:bg-slate-950 transition-colors duration-300 pb-[90px] md:pb-0">
-      {/* Floating Dock */}
       <motion.div
-        initial={{ y: 100, x: "-50%", opacity: 0 }}
-        animate={{ y: 0, x: "-50%", opacity: 1 }}
-        transition={{ delay: 0.5, type: "spring", stiffness: 200, damping: 20 }}
-        className="fixed bottom-8 left-1/2 z-50 flex items-center gap-2 px-3 py-3 rounded-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/60 dark:shadow-black/50 transition-colors duration-300"
+        layout
+        className="fixed bottom-8 left-1/2 z-50 flex items-center gap-2 px-3 py-3 rounded-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-2 border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/60 dark:shadow-black/50 transition-colors duration-300"
+        style={{ x: "-50%", width: isSearchOpen ? 'min(90vw, 500px)' : 'auto' }}
       >
-        {/* Profile / Brand Icon */}
-        <motion.button
-          onClick={handleProfileClick}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          className="relative size-12 mr-2 group cursor-pointer"
-        >
-          <div className="w-full h-full rounded-full overflow-hidden border-2 border-white dark:border-slate-700 shadow-soft">
-            <Image
-              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
-              alt="Profile"
-              width={48}
-              height={48}
-              className="object-cover w-full h-full"
-            />
-          </div>
-          <span className="absolute -top-10 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition-transform bg-white/90 dark:bg-slate-800/90 backdrop-blur-md text-slate-900 dark:text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-sm border border-slate-100 dark:border-slate-700 whitespace-nowrap pointer-events-none">
-            Profile
-          </span>
-        </motion.button>
+        <AnimatePresence mode="wait">
+          {!isSearchOpen ? (
+            <motion.div
+              key="icons"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              className="flex items-center gap-2"
+            >
+              {/* Profile / Brand Icon */}
+              <motion.button
+                onClick={handleProfileClick}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="relative size-12 mr-2 group cursor-pointer"
+              >
+                <div className="w-full h-full rounded-full overflow-hidden border-2 border-white dark:border-slate-700 shadow-soft">
+                  <Image
+                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
+                    alt="Profile"
+                    width={48}
+                    height={48}
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+                <span className="absolute -top-10 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition-transform bg-white/90 dark:bg-slate-800/90 backdrop-blur-md text-slate-900 dark:text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-sm border border-slate-100 dark:border-slate-700 whitespace-nowrap pointer-events-none">
+                  Profile
+                </span>
+              </motion.button>
 
-        {/* Divider */}
-        <div className="w-px h-8 bg-slate-200 dark:bg-slate-700 mx-1"></div>
+              {/* Divider */}
+              <div className="w-px h-8 bg-slate-200 dark:bg-slate-700 mx-1"></div>
 
-        {/* Dock Items */}
-        {[
-          { icon: 'home', label: 'Home', active: true },
-          { icon: 'grid_view', label: 'Catalog' },
-          { icon: 'search', label: 'Search' },
-          { icon: 'shopping_bag', label: 'Cart', badge: 2 },
-          { icon: 'favorite', label: 'Saved' },
-          { icon: 'auto_awesome', label: 'Design AI' },
-          { icon: 'translate', label: 'Translate' },
-          { icon: copied ? 'check_circle' : 'content_copy', label: copied ? 'Copied' : 'Copy Link', action: handleCopy },
-          { icon: 'share', label: 'Share', action: handleShare },
-          { icon: mounted && theme === 'dark' ? 'light_mode' : 'dark_mode', label: 'Theme', action: toggleTheme },
-          { icon: 'settings', label: 'Settings' },
-        ].map((item, idx) => (
-          <motion.button
-            key={idx}
-            onClick={item.action}
-            whileHover={{ scale: 1.2, y: -5 }}
-            whileTap={{ scale: 0.9 }}
-            className={`relative size-10 flex items-center justify-center rounded-full transition-all group ${item.active ? 'bg-blue-50 dark:bg-blue-900/20' : 'hover:bg-slate-50 dark:hover:bg-slate-800'}`}
-          >
-            <span className={`material-symbols-outlined text-[26px] font-bold ${item.active ? 'bg-gradient-to-tr from-primary to-secondary bg-clip-text text-transparent' : 'text-slate-600 dark:text-slate-400 group-hover:text-primary transition-colors'}`}>
-              {item.icon}
-            </span>
-            {item.badge && (
-              <span className="absolute top-0 right-0 size-2.5 bg-red-500 rounded-full border border-white dark:border-slate-900"></span>
-            )}
-            <span className="absolute -top-10 scale-0 group-hover:scale-100 transition-transform bg-white/90 dark:bg-slate-800/90 backdrop-blur-md text-slate-900 dark:text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-sm border border-slate-100 dark:border-slate-700">{item.label}</span>
-          </motion.button>
-        ))}
+              {/* Dock Items */}
+              {[
+                { icon: 'home', label: 'Home', active: true },
+                { icon: 'grid_view', label: 'Catalog' },
+                { icon: 'search', label: 'Search', action: () => setIsSearchOpen(true) },
+                { icon: 'shopping_bag', label: 'Cart', badge: 2 },
+                { icon: 'favorite', label: 'Saved' },
+                { icon: 'auto_awesome', label: 'Design AI' },
+                { icon: 'translate', label: 'Translate' },
+                { icon: copied ? 'check_circle' : 'content_copy', label: copied ? 'Copied' : 'Copy Link', action: handleCopy },
+                { icon: mounted && theme === 'dark' ? 'light_mode' : 'dark_mode', label: 'Theme', action: toggleTheme },
+                { icon: 'settings', label: 'Settings' },
+              ].map((item, idx) => (
+                <motion.button
+                  key={idx}
+                  onClick={item.action}
+                  whileHover={{ scale: 1.2, y: -5 }}
+                  whileTap={{ scale: 0.9 }}
+                  className={`relative size-10 flex items-center justify-center rounded-full transition-all group ${item.active ? 'bg-blue-50 dark:bg-blue-900/20' : 'hover:bg-slate-50 dark:hover:bg-slate-800'}`}
+                >
+                  <span className={`material-symbols-outlined text-[26px] font-bold ${item.active ? 'bg-gradient-to-tr from-primary to-secondary bg-clip-text text-transparent' : 'text-slate-600 dark:text-slate-400 group-hover:text-primary transition-colors'}`}>
+                    {item.icon}
+                  </span>
+                  {item.badge && (
+                    <span className="absolute top-0 right-0 size-2.5 bg-red-500 rounded-full border border-white dark:border-slate-900"></span>
+                  )}
+                  <span className="absolute -top-10 scale-0 group-hover:scale-100 transition-transform bg-white/90 dark:bg-slate-800/90 backdrop-blur-md text-slate-900 dark:text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-sm border border-slate-100 dark:border-slate-700">{item.label}</span>
+                </motion.button>
+              ))}
+            </motion.div>
+          ) : (
+            <motion.div
+              key="searchbar"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="flex items-center w-full px-2"
+            >
+              <span className="material-symbols-outlined text-slate-400 mr-3">search</span>
+              <input
+                autoFocus
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && setIsSearchOpen(false)}
+                placeholder="Search furniture, styles, or brands..."
+                className="bg-transparent border-none outline-none text-slate-700 dark:text-white w-full font-medium text-sm placeholder:text-slate-400"
+              />
+              <button
+                onClick={() => {
+                  setIsSearchOpen(false);
+                  setSearchQuery("");
+                }}
+                className="size-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 transition-colors"
+              >
+                <span className="material-symbols-outlined text-xl">close</span>
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.div>
 
       <main className="w-full pb-12">
