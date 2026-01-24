@@ -768,7 +768,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                         </div>
 
                         {/* Navigation Tabs (Pills) */}
-                        <div className="px-6 pb-6 overflow-x-auto no-scrollbar flex gap-3">
+                        <div className="px-6 pb-6 overflow-x-auto hide-scrollbar flex gap-3">
                             {tabs.map((tab) => (
                                 <button
                                     key={tab}
@@ -785,16 +785,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     </div>
 
                     {/* Main Content Area */}
-                    <div className="flex-1 overflow-y-auto px-6 py-8 sub-view-container no-scrollbar">
-                        <style jsx>{`
-              .no-scrollbar::-webkit-scrollbar {
-                display: none;
-              }
-              .no-scrollbar {
-                -ms-overflow-style: none;
-                scrollbar-width: none;
-              }
-            `}</style>
+                    <div className="flex-1 overflow-y-auto px-6 py-8 sub-view-container hide-scrollbar">
 
                         <AnimatePresence mode="wait">
                             {activeTab === "General" && renderGeneral()}
