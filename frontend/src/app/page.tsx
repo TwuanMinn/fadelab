@@ -13,6 +13,7 @@ export default function Home() {
   const [copied, setCopied] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
 
   useEffect(() => {
     setMounted(true);
@@ -363,8 +364,10 @@ export default function Home() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                 <div className="absolute bottom-6 left-8 text-white">
-                  <h2 className="text-3xl font-bold mb-1">Welcome Back</h2>
-                  <p className="text-white/80 text-sm font-medium">Log in to access your premium comfort.</p>
+                  <h2 className="text-3xl font-bold mb-1">{authMode === 'signin' ? 'Welcome Back' : 'Create Account'}</h2>
+                  <p className="text-white/80 text-sm font-medium">
+                    {authMode === 'signin' ? 'Log in to access your premium comfort.' : 'Join Furnza today for exclusive access.'}
+                  </p>
                 </div>
                 <button
                   onClick={() => setIsAuthModalOpen(false)}
@@ -376,7 +379,46 @@ export default function Home() {
 
               {/* Modal Content */}
               <div className="p-8 pb-10">
+                {/* Auth Mode Toggle */}
+                <div className="mb-8 p-1 bg-slate-100 rounded-2xl flex relative overflow-hidden">
+                  <motion.div
+                    animate={{ x: authMode === 'signin' ? 0 : '100%' }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    className="absolute inset-y-1 left-1 w-[calc(50%-4px)] bg-white rounded-xl shadow-sm z-0"
+                  />
+                  <button
+                    onClick={() => setAuthMode('signin')}
+                    className={`relative z-10 flex-1 py-2.5 text-xs font-bold transition-colors ${authMode === 'signin' ? 'text-primary' : 'text-slate-500'}`}
+                  >
+                    SIGN IN
+                  </button>
+                  <div className="w-px h-4 bg-slate-200 self-center z-10" />
+                  <button
+                    onClick={() => setAuthMode('signup')}
+                    className={`relative z-10 flex-1 py-2.5 text-xs font-bold transition-colors ${authMode === 'signup' ? 'text-primary' : 'text-slate-500'}`}
+                  >
+                    SIGN UP
+                  </button>
+                </div>
+
                 <div className="space-y-5">
+                  <AnimatePresence mode="wait">
+                    {authMode === 'signup' && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+                        animate={{ opacity: 1, height: 'auto', marginBottom: 20 }}
+                        exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                        className="overflow-hidden"
+                      >
+                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Full Name</label>
+                        <input
+                          type="text"
+                          placeholder="Enter your name"
+                          className="w-full px-5 py-3.5 rounded-2xl border border-slate-100 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-medium"
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                   <div>
                     <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Email</label>
                     <input
@@ -414,7 +456,7 @@ export default function Home() {
                   whileTap={{ scale: 0.98 }}
                   className="w-full bg-gradient-to-r from-primary to-secondary text-white font-bold py-4 rounded-2xl mt-8 shadow-glow shadow-primary/20 transition-all text-sm"
                 >
-                  Sign In
+                  {authMode === 'signin' ? 'Sign In' : 'Sign Up'}
                 </motion.button>
 
                 <div className="relative my-8">
@@ -432,7 +474,13 @@ export default function Home() {
                 </button>
 
                 <p className="mt-8 text-center text-xs font-semibold text-slate-400">
-                  New to ModernHome? <button className="text-primary hover:underline ml-1">Create an Account</button>
+                  {authMode === 'signin' ? "New to Furnza?" : "Already have an account?"}
+                  <button
+                    onClick={() => setAuthMode(authMode === 'signin' ? 'signup' : 'signin')}
+                    className="text-primary hover:underline ml-1"
+                  >
+                    {authMode === 'signin' ? "Create an Account" : "Sign In"}
+                  </button>
                 </p>
               </div>
             </motion.div>
