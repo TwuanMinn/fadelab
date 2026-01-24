@@ -116,6 +116,12 @@ export default function Home() {
                     className="object-cover w-full h-full"
                   />
                 </div>
+
+                {/* Hover Label */}
+                <div className="absolute -top-14 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-slate-900/90 dark:bg-white/90 backdrop-blur-md text-white dark:text-slate-900 text-[10px] font-black rounded-xl opacity-0 scale-50 translate-y-4 group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none whitespace-nowrap shadow-2xl z-[60] border border-white/10 dark:border-black/5 flex flex-col items-center">
+                  Profile
+                  <div className="absolute top-[90%] left-1/2 -translate-x-1/2 border-[6px] border-transparent border-t-slate-900/90 dark:border-t-white/90" />
+                </div>
               </motion.button>
 
               {/* Divider */}
@@ -149,6 +155,12 @@ export default function Home() {
                   {item.badge && (
                     <span className="absolute top-0 right-0 size-2.5 bg-red-500 rounded-full border border-white dark:border-slate-900"></span>
                   )}
+
+                  {/* Hover Label */}
+                  <div className="absolute -top-14 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-slate-900/90 dark:bg-white/90 backdrop-blur-md text-white dark:text-slate-900 text-[10px] font-black rounded-xl opacity-0 scale-50 translate-y-4 group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none whitespace-nowrap shadow-2xl z-[60] border border-white/10 dark:border-black/5 flex flex-col items-center">
+                    {item.label}
+                    <div className="absolute top-[90%] left-1/2 -translate-x-1/2 border-[6px] border-transparent border-t-slate-900/90 dark:border-t-white/90" />
+                  </div>
                 </motion.button>
               ))}
             </motion.div>
