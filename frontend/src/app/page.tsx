@@ -74,28 +74,34 @@ export default function Home() {
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-white dark:bg-slate-950 transition-colors duration-300 pb-[90px] md:pb-0">
       <motion.div
+        layout
+        initial={false}
         animate={{
           x: "-50%",
           width: isSearchOpen ? 'min(90vw, 500px)' : 'auto'
         }}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="fixed bottom-8 left-1/2 z-50 flex items-center px-4 py-3 rounded-full bg-white dark:bg-slate-900 border-2 border-black shadow-xl shadow-black/10 transition-colors duration-300 pointer-events-auto overflow-hidden"
+        transition={{
+          layout: { type: "spring", stiffness: 300, damping: 30 },
+          width: { type: "spring", stiffness: 300, damping: 30 },
+          opacity: { duration: 0.2 }
+        }}
+        className="fixed bottom-8 left-1/2 z-50 flex items-center px-4 py-3 rounded-full bg-white dark:bg-slate-900 border-2 border-black shadow-xl shadow-black/10 transition-colors duration-300 pointer-events-auto"
       >
-        <AnimatePresence>
+        <AnimatePresence mode="popLayout" initial={false}>
           {!isSearchOpen ? (
             <motion.div
               key="icons"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="flex items-center gap-2"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              className="flex items-center gap-2 whitespace-nowrap"
             >
               {/* Profile / Brand Icon */}
               <motion.button
                 onClick={handleProfileClick}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
-                className="relative size-12 mr-2 group cursor-pointer"
+                className="relative size-12 mr-2 group cursor-pointer flex-shrink-0"
               >
                 <div className="w-full h-full rounded-full overflow-hidden border-2 border-white dark:border-slate-700 shadow-soft">
                   <Image
@@ -106,13 +112,10 @@ export default function Home() {
                     className="object-cover w-full h-full"
                   />
                 </div>
-                <span className="absolute -top-10 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition-transform bg-white/90 dark:bg-slate-800/90 backdrop-blur-md text-slate-900 dark:text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-sm border border-slate-100 dark:border-slate-700 whitespace-nowrap pointer-events-none">
-                  Profile
-                </span>
               </motion.button>
 
               {/* Divider */}
-              <div className="w-px h-8 bg-slate-200 dark:bg-slate-700 mx-1"></div>
+              <div className="w-px h-8 bg-slate-200 dark:bg-slate-700 mx-1 flex-shrink-0"></div>
 
               {/* Dock Items */}
               {[
@@ -132,7 +135,7 @@ export default function Home() {
                   onClick={item.action}
                   whileHover={{ scale: 1.2, y: -5 }}
                   whileTap={{ scale: 0.9 }}
-                  className={`relative size-10 flex items-center justify-center rounded-full transition-all group ${item.active ? 'bg-blue-50 dark:bg-blue-900/20' : 'hover:bg-slate-50 dark:hover:bg-slate-800'}`}
+                  className={`relative size-10 flex items-center justify-center rounded-full transition-all group flex-shrink-0 ${item.active ? 'bg-blue-50 dark:bg-blue-900/20' : 'hover:bg-slate-50 dark:hover:bg-slate-800'}`}
                 >
                   <span className={`material-symbols-outlined text-[26px] font-bold ${item.active ? 'bg-gradient-to-tr from-primary to-secondary bg-clip-text text-transparent' : 'text-slate-600 dark:text-slate-400 group-hover:text-primary transition-colors'}`}>
                     {item.icon}
@@ -140,16 +143,15 @@ export default function Home() {
                   {item.badge && (
                     <span className="absolute top-0 right-0 size-2.5 bg-red-500 rounded-full border border-white dark:border-slate-900"></span>
                   )}
-                  <span className="absolute -top-10 scale-0 group-hover:scale-100 transition-transform bg-white/90 dark:bg-slate-800/90 backdrop-blur-md text-slate-900 dark:text-white text-[10px] font-bold px-2 py-1 rounded-md shadow-sm border border-slate-100 dark:border-slate-700">{item.label}</span>
                 </motion.button>
               ))}
             </motion.div>
           ) : (
             <motion.div
               key="searchbar"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
               className="flex items-center w-full relative"
             >
               <span className="material-symbols-outlined text-black dark:text-white absolute left-0 font-bold pointer-events-none">search</span>
