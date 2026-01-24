@@ -147,24 +147,26 @@ export default function Home() {
               initial={{ opacity: 0, x: 50, scale: 0.95 }}
               animate={{ opacity: 1, x: 0, scale: 1 }}
               exit={{ opacity: 0, x: -50, scale: 0.95 }}
-              className="flex items-center w-full px-2"
+              className="flex items-center justify-center w-full px-4"
             >
-              <span className="material-symbols-outlined text-black dark:text-white mr-3 font-bold">search</span>
-              <input
-                autoFocus
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && setIsSearchOpen(false)}
-                placeholder="Search premium furniture..."
-                className="bg-transparent border-none outline-none text-black dark:text-white w-full font-bold text-sm placeholder:text-slate-400"
-              />
+              <div className="flex-1 flex items-center justify-center max-w-md mx-auto relative">
+                <span className="material-symbols-outlined text-black dark:text-white absolute left-0 font-bold">search</span>
+                <input
+                  autoFocus
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && setIsSearchOpen(false)}
+                  placeholder="Search premium furniture..."
+                  className="bg-transparent border-none outline-none text-black dark:text-white w-full font-bold text-sm placeholder:text-slate-400 text-center px-10"
+                />
+              </div>
               <button
                 onClick={() => {
                   setIsSearchOpen(false);
                   setSearchQuery("");
                 }}
-                className="size-8 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-black dark:text-white transition-all hover:rotate-90"
+                className="size-8 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-black dark:text-white transition-all hover:rotate-90 ml-2"
               >
                 <span className="material-symbols-outlined text-xl font-bold">close</span>
               </button>
