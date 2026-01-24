@@ -456,16 +456,6 @@ export default function Home() {
                             </button>
                           </div>
                         </div>
-                        <div className="flex items-start gap-3 mt-2 px-1">
-                          <input
-                            type="checkbox"
-                            className="mt-1 size-4 rounded border-slate-200 text-primary focus:ring-primary transition-all cursor-pointer"
-                            id="tos"
-                          />
-                          <label htmlFor="tos" className="text-[11px] font-semibold text-slate-500 leading-tight cursor-pointer">
-                            I agree to the <button className="text-primary hover:underline">Terms of Service</button> and <button className="text-primary hover:underline">Privacy Policy</button>
-                          </label>
-                        </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -500,6 +490,19 @@ export default function Home() {
                 {authMode === 'signin' && (
                   <div className="flex justify-end mt-3">
                     <button className="text-primary text-xs font-bold hover:underline">Forgot Password?</button>
+                  </div>
+                )}
+
+                {authMode === 'signup' && (
+                  <div className="flex items-start gap-3 mt-6 px-1">
+                    <input
+                      type="checkbox"
+                      className="mt-1 size-4 rounded border-slate-200 text-primary focus:ring-primary transition-all cursor-pointer"
+                      id="tos"
+                    />
+                    <label htmlFor="tos" className="text-[11px] font-semibold text-slate-500 leading-tight cursor-pointer">
+                      I agree to the <button className="text-primary hover:underline">Terms of Service</button> and <button className="text-primary hover:underline">Privacy Policy</button>
+                    </label>
                   </div>
                 )}
 
