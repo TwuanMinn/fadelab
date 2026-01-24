@@ -76,13 +76,12 @@ export default function Home() {
       <motion.div
         layout
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="fixed bottom-8 left-1/2 z-50 flex items-center gap-2 px-3 py-3 rounded-full bg-white dark:bg-slate-900 backdrop-blur-2xl border-2 border-black shadow-xl shadow-black/10 transition-colors duration-300 origin-center"
-        style={{ x: "-50%", width: isSearchOpen ? 'min(90vw, 500px)' : 'fit-content' }}
+        className="fixed bottom-8 left-1/2 z-50 flex items-center gap-2 px-3 py-3 rounded-full bg-white dark:bg-slate-900 backdrop-blur-2xl border-2 border-black shadow-xl shadow-black/10 transition-colors duration-300 pointer-events-auto"
+        style={{ x: "-50%" }}
       >
         <AnimatePresence>
           {!isSearchOpen ? (
             <motion.div
-              layout
               key="icons"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -150,7 +149,7 @@ export default function Home() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="flex items-center w-full px-4"
+              className="flex items-center w-[min(90vw,500px)] px-4"
             >
               <div className="flex-1 flex items-center relative">
                 <span className="material-symbols-outlined text-black dark:text-white absolute left-0 font-bold">search</span>
