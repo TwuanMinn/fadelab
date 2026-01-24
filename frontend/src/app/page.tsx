@@ -2,13 +2,17 @@
 
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 import SettingsModal from "./components/SettingsModal";
 import QRCodeModal from "./components/QRCodeModal";
+import PriceDropModal from "./components/PriceDropModal";
 
 import { useTheme } from "next-themes";
-import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useState, useEffect, useRef } from "react";
 
 export default function Home() {
+  const router = useRouter();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [heroTextIndex, setHeroTextIndex] = useState(0);
@@ -20,14 +24,32 @@ export default function Home() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isQRCodeOpen, setIsQRCodeOpen] = useState(false);
+  const [currentUrl, setCurrentUrl] = useState("https://furnza.vercel.app");
   const [searchQuery, setSearchQuery] = useState("");
+  const [isPriceDropOpen, setIsPriceDropOpen] = useState(false);
+
+  // Drag Scroll Logic
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const [isDown, setIsDown] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
 
   useEffect(() => {
     setMounted(true);
+    setCurrentUrl(window.location.href);
     const interval = setInterval(() => {
       setHeroTextIndex((prev) => (prev + 1) % 2);
     }, 4000);
-    return () => clearInterval(interval);
+
+    // Trigger Price Drop Modal after 5 seconds for demo
+    const modalTimer = setTimeout(() => {
+      setIsPriceDropOpen(true);
+    }, 5000);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(modalTimer);
+    };
   }, []);
 
   // Prevent hydration mismatch
@@ -76,7 +98,20 @@ export default function Home() {
   };
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-white dark:bg-slate-950 transition-colors duration-300 pb-[90px] md:pb-0">
+    <div className="relative flex min-h-screen w-full flex-col bg-slate-50 dark:bg-black transition-colors duration-300 pb-[90px] md:pb-0">
+      <PriceDropModal
+        isOpen={isPriceDropOpen}
+        onClose={() => setIsPriceDropOpen(false)}
+        product={{
+          name: "Nordic Sofa",
+          variant: "3-Seater Velvet",
+          oldPrice: "$900.00",
+          newPrice: "$720.00",
+          discount: "20%",
+          image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBamfDzpr2QM_QjL9SpHzw60z1VtUxTimLAduwASUqQINCyatI7E6U1RnBctBQQSfAxETxeZQLsBts4eyYf8cO_Rstl-hGWBMge3lcibSWVGiAtHy354h2vnhw17f7a-cLHHNzGsqG6NCewiBRfBWZLV0-KLobvmRqy6FVSVfJo13vfvEYdjkFxlOPSxWHg-tJeH0VsEMJgXyBAaN66a-aoDE7tHTmPyT5IkxSBDy4lZHIPmCQ3pr3l1SpfhTHzK6QBWY5xr-zJOJk"
+        }}
+      />
+
       <motion.div
         layout
         initial={false}
@@ -130,16 +165,23 @@ export default function Home() {
               {/* Dock Items */}
               {[
                 { icon: 'home', label: 'Home', active: true },
-                { icon: 'grid_view', label: 'Catalog' },
-                { icon: 'search', label: 'Search', action: () => setIsSearchOpen(true) },
-                { icon: 'shopping_bag', label: 'Cart', badge: 2 },
-                { icon: 'location_on', label: 'Stores' },
-                { icon: 'auto_awesome', label: 'Design AI' },
+                { icon: 'grid_view', label: 'Catalog', action: () => router.push('/catalog') },
+                { icon: 'search', label: 'Search', action: () => router.push('/search') },
+                { icon: 'shopping_bag', label: 'Cart', badge: 2, action: () => router.push('/cart') },
+                { icon: 'compare_arrows', label: 'Compare', action: () => router.push('/compare') },
+                { icon: 'notifications', label: 'Inbox', badge: 2, action: () => router.push('/notifications') },
+                { icon: 'local_shipping', label: 'Track', action: () => router.push('/tracking') },
+                { icon: 'workspace_premium', label: 'Rewards', action: () => router.push('/rewards') },
+                { icon: 'article', label: 'Blog', action: () => router.push('/blog') },
+                { icon: 'location_on', label: 'Stores', action: () => router.push('/stores') },
+                { icon: 'work', label: 'Careers', action: () => router.push('/careers') },
+                { icon: 'auto_awesome', label: 'Design AI', action: () => router.push('/design-ai') },
                 { icon: 'translate', label: 'Translate' },
                 { icon: copied ? 'check_circle' : 'content_copy', label: copied ? 'Copied' : 'Copy Link', action: handleCopy },
                 { icon: 'share', label: 'Share', action: handleShare },
                 { icon: 'qr_code_scanner', label: 'QR Scan', action: () => setIsQRCodeOpen(true) },
                 { icon: mounted && theme === 'dark' ? 'light_mode' : 'dark_mode', label: 'Theme', action: toggleTheme },
+                { icon: 'help', label: 'Help', action: () => router.push('/help') },
                 { icon: 'settings', label: 'Settings', action: () => setIsSettingsOpen(true) },
               ].map((item, idx) => (
                 <motion.button
@@ -260,17 +302,36 @@ export default function Home() {
         {/* Content Container */}
         <div className="max-w-7xl mx-auto px-4">
           {/* Categories */}
-          <div className="mb-12">
+          <div className="mb-14">
             <div className="flex items-center justify-between px-1 mb-6">
-              <h3 className="text-slate-900 dark:text-white text-xl font-bold">Categories</h3>
-              <button className="text-primary text-sm font-semibold hover:underline">See All</button>
+              <h3 className="text-charcoal dark:text-white text-3xl font-display font-medium tracking-tight">Browse by Category</h3>
+              <button className="text-bronze dark:text-secondary text-sm font-bold hover:underline">View All</button>
             </div>
             <motion.div
               variants={container}
               initial="hidden"
               whileInView="show"
               viewport={{ once: true }}
-              className="flex overflow-x-auto hide-scrollbar gap-6 md:gap-12 pb-4 md:justify-start"
+              className="flex overflow-x-auto hide-scrollbar gap-4 pb-6 select-none cursor-grab active:cursor-grabbing"
+              ref={sliderRef}
+              onMouseDown={(e) => {
+                setIsDown(true);
+                if (sliderRef.current) {
+                  setStartX(e.pageX - sliderRef.current.offsetLeft);
+                  setScrollLeft(sliderRef.current.scrollLeft);
+                }
+              }}
+              onMouseLeave={() => setIsDown(false)}
+              onMouseUp={() => setIsDown(false)}
+              onMouseMove={(e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                if (sliderRef.current) {
+                  const x = e.pageX - sliderRef.current.offsetLeft;
+                  const walk = (x - startX) * 2; // Scroll-fast
+                  sliderRef.current.scrollLeft = scrollLeft - walk;
+                }
+              }}
             >
               {[
                 { icon: 'apps', label: 'All' },
@@ -281,28 +342,30 @@ export default function Home() {
                 { icon: 'bed', label: 'Bedroom' },
                 { icon: 'kitchen', label: 'Kitchen' },
               ].map((cat, idx) => (
-                <motion.div variants={item} key={idx} className="flex flex-col items-center gap-3 shrink-0 group cursor-pointer">
-                  <div className={`size-[72px] md:size-[100px] rounded-full flex items-center justify-center shadow-sm border-2 transition-all duration-300 ${cat.label === 'All' ? 'bg-gradient-to-tr from-primary to-secondary border-white/30 shadow-glow' : 'bg-slate-50 dark:bg-slate-900 border-slate-100 dark:border-slate-800 group-hover:border-primary/30 group-hover:bg-blue-50/50 dark:group-hover:bg-blue-900/20'}`}>
-                    <span className={`material-symbols-outlined text-3xl md:text-4xl transition-colors ${cat.label === 'All' ? 'text-white' : 'text-slate-700 dark:text-slate-300 group-hover:text-primary'}`}>{cat.icon}</span>
+                <motion.div variants={item} key={idx} className="flex-shrink-0 group cursor-pointer">
+                  <div className={`px-6 py-3 rounded-full border transition-all duration-500 ease-out flex items-center gap-2.5 ${cat.label === 'All'
+                    ? 'bg-charcoal text-white border-charcoal shadow-lg shadow-charcoal/20 dark:bg-white dark:text-charcoal dark:border-white'
+                    : 'bg-white text-slate-600 border-slate-200 hover:border-transparent hover:text-white hover:bg-gradient-to-tr hover:from-blue-600 hover:to-blue-400 hover:shadow-glow hover:-translate-y-0.5 dark:bg-white/5 dark:text-slate-300 dark:border-white/10 dark:hover:border-blue-400/50 dark:hover:bg-blue-900/40'}`}>
+                    <span className={`material-symbols-outlined text-[20px] transition-colors duration-300 ${cat.label === 'All' ? 'text-white dark:text-charcoal' : 'text-slate-400 group-hover:text-white dark:text-slate-500 dark:group-hover:text-white'}`}>{cat.icon}</span>
+                    <span className="text-sm font-bold whitespace-nowrap">{cat.label}</span>
                   </div>
-                  <span className={`text-xs md:text-sm font-semibold transition-colors ${cat.label === 'All' ? 'text-primary font-bold' : 'text-slate-700 dark:text-slate-400 group-hover:text-primary'}`}>{cat.label}</span>
                 </motion.div>
               ))}
-              <motion.div variants={item} className="flex flex-col items-center gap-3 shrink-0 group cursor-pointer">
-                <div className="size-[72px] md:size-[100px] rounded-full bg-slate-50 dark:bg-slate-900 flex items-center justify-center shadow-sm border border-slate-100 dark:border-slate-800 group-active:scale-95 group-hover:border-primary/30 transition-all duration-200">
-                  <span className="material-symbols-outlined text-3xl md:text-4xl text-slate-400">arrow_forward</span>
+              <motion.div variants={item} className="flex-shrink-0 group cursor-pointer">
+                <div className="px-6 py-3 rounded-full bg-slate-50 border border-slate-200 text-slate-500 hover:bg-slate-100 dark:bg-white/5 dark:border-white/10 dark:text-slate-400 dark:hover:bg-white/10 transition-all flex items-center gap-2">
+                  <span className="text-sm font-bold whitespace-nowrap">More</span>
+                  <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
                 </div>
-                <span className="text-xs md:text-sm font-semibold text-slate-400">More</span>
               </motion.div>
             </motion.div>
           </div>
 
           {/* Featured Products */}
           <div className="mb-12">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-slate-900 dark:text-white text-xl font-bold">Featured Products</h3>
+            <div className="flex items-center justify-between mb-8">
+              <h3 className="text-charcoal dark:text-white text-3xl font-display font-medium tracking-tight">Featured Products</h3>
               <div className="flex gap-2">
-                <span className="text-xs text-slate-400 font-medium bg-slate-50 dark:bg-slate-900 px-3 py-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition-colors">Sort by: Newest</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400 bg-slate-50 dark:bg-white/5 px-4 py-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 cursor-pointer transition-colors border border-transparent hover:border-slate-200 dark:hover:border-white/10">Sort by: Newest</span>
               </div>
             </div>
             <motion.div
@@ -310,90 +373,137 @@ export default function Home() {
               initial="hidden"
               whileInView="show"
               viewport={{ once: true }}
-              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10"
+              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
             >
               {[
-                { name: 'Velvet Lounge Chair', price: '120', category: 'Living Room', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCuVDrSubKte5588gemwXr5aZI0uxNVE0TurSQghRLtdd5N5sdD-wSfuTnTs2TmgW2srpcWHyRCgVju-NrJ_IG6X8eDOtVEh-rx9x17XdZMCQs2wwa1qynSzs2jJllW0cQbf37L4a-tc_wa0gmQKxUUuZB7904bI05PjWKhu94qBIIAu7-yPi4fmig3Ze4PYPH3BsEb9tJXfnK7sxopeLVG92IxkoXcgel5U5HYDj1bW5dWQBEBuZPqb3GGnm5j-_rflwdlm1y28gM' },
-                { name: 'Nordic Dining Chair', price: '85', category: 'Kitchen', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDZiUF46DFLrvWmZdx99oU5qnXMX4UopZS8-diEUvqJuzUfcoBzTFKwGZbGdVjEPxhw01OLIkQ-IJ5ZKyjsX9thFLKBmqWIWZN5laSlePJQL-vca07wYzUPfvRzJK2h1AlPRcuyPJ47ZQZd_nqY64nSpxNdaZA7tzUmtmSvvzgZK922oPPhgBze9PJZG7VMYnvP2uxR0hI9fZd-farWcN1tzCweclVwCJXPRksAVyskaHzxnlCttQJkO32C4Ez2g9kBhoOvXGxDAC4' },
-                { name: 'Arc Floor Lamp', price: '160', category: 'Lighting', oldPrice: '200', discount: '-20%', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDQ0OKIkIYsdLF7fbcCBbmdnTdpGlbuyR0F0CNic1k-S4C0FkN5fQ0ukU0Zm11Zs4y2rJwby0SYDN6YuNrcSmH8jgLuUTyNCoeyYjX_-qJVtPk6KYVyNsylbK0PXblnUKFfzutRzI6AuHDXeeWtwVfYrM3B-UyO-yObrtFrganzUjZRepfEw-5yH0HxpqseRvDgvdusyEmUVRY9Y4YvE9mL6VaooV75brLoJVcBdJ731hsSLWup6bq98zN3ON_S4euSlUb86hrsEKI' },
-                { name: 'Oak Side Table', price: '95', category: 'Bedroom', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAYNtGl0I4Db-MZ8w98XyKbbN5oPi_yvtZtrjRTYIbqTCn7nux8Njl02HrWUfdHo-gIgU7YA_a3K8b-tfuoqyfu8m6CDxqKqtsAFGiXGri588PYwF55pRJUERjYqnUqqF7-JP5tyvlSim4N0ekExRRUn3U64bgPkvRmDnxn1LU7Ya-ePykYAXxHzn_uQNKyi5PkJXq6SGNJpb5aiDJLaPfE4fwflsDxa5xRG0izCqrqDjH2pGM1ZUXv4aJS_X_I0sUdRWmlpDTtGkQ' },
-                { name: 'Modern Sofa', price: '890', category: 'Living Room', img: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80' },
-                { name: 'Wooden Shelf', price: '210', category: 'Storage', img: 'https://images.unsplash.com/photo-1594620302200-9a762244a156?ixlib=rb-4.0.3&auto=format&fit=crop&w=1139&q=80' },
-                { name: 'Ceramic Vase', price: '45', category: 'Decoration', img: 'https://images.unsplash.com/photo-1580480055273-228ff5388ef8?ixlib=rb-4.0.3&auto=format&fit=crop&w=774&q=80' },
-                { name: 'Abstract Art', price: '120', category: 'Art', img: 'https://images.unsplash.com/photo-1549490349-8643362247b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=774&q=80' },
-                { name: 'Geometric Wool Rug', price: '240', category: 'Rug', img: 'https://images.unsplash.com/photo-1575414003591-ece8d14161bb?ixlib=rb-4.0.3&auto=format&fit=crop&w=774&q=80' },
+                { name: 'Velvet Lounge Chair', price: '120', category: 'Living Room', rating: 4.8, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCuVDrSubKte5588gemwXr5aZI0uxNVE0TurSQghRLtdd5N5sdD-wSfuTnTs2TmgW2srpcWHyRCgVju-NrJ_IG6X8eDOtVEh-rx9x17XdZMCQs2wwa1qynSzs2jJllW0cQbf37L4a-tc_wa0gmQKxUUuZB7904bI05PjWKhu94qBIIAu7-yPi4fmig3Ze4PYPH3BsEb9tJXfnK7sxopeLVG92IxkoXcgel5U5HYDj1bW5dWQBEBuZPqb3GGnm5j-_rflwdlm1y28gM' },
+                { name: 'Nordic Dining Chair', price: '85', category: 'Kitchen', rating: 4.5, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDZiUF46DFLrvWmZdx99oU5qnXMX4UopZS8-diEUvqJuzUfcoBzTFKwGZbGdVjEPxhw01OLIkQ-IJ5ZKyjsX9thFLKBmqWIWZN5laSlePJQL-vca07wYzUPfvRzJK2h1AlPRcuyPJ47ZQZd_nqY64nSpxNdaZA7tzUmtmSvvzgZK922oPPhgBze9PJZG7VMYnvP2uxR0hI9fZd-farWcN1tzCweclVwCJXPRksAVyskaHzxnlCttQJkO32C4Ez2g9kBhoOvXGxDAC4' },
+                { name: 'Arc Floor Lamp', price: '160', category: 'Lighting', rating: 4.9, oldPrice: '200', discount: '-20%', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDQ0OKIkIYsdLF7fbcCBbmdnTdpGlbuyR0F0CNic1k-S4C0FkN5fQ0ukU0Zm11Zs4y2rJwby0SYDN6YuNrcSmH8jgLuUTyNCoeyYjX_-qJVtPk6KYVyNsylbK0PXblnUKFfzutRzI6AuHDXeeWtwVfYrM3B-UyO-yObrtFrganzUjZRepfEw-5yH0HxpqseRvDgvdusyEmUVRY9Y4YvE9mL6VaooV75brLoJVcBdJ731hsSLWup6bq98zN3ON_S4euSlUb86hrsEKI' },
+                { name: 'Oak Side Table', price: '95', category: 'Bedroom', rating: 4.6, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAYNtGl0I4Db-MZ8w98XyKbbN5oPi_yvtZtrjRTYIbqTCn7nux8Njl02HrWUfdHo-gIgU7YA_a3K8b-tfuoqyfu8m6CDxqKqtsAFGiXGri588PYwF55pRJUERjYqnUqqF7-JP5tyvlSim4N0ekExRRUn3U64bgPkvRmDnxn1LU7Ya-ePykYAXxHzn_uQNKyi5PkJXq6SGNJpb5aiDJLaPfE4fwflsDxa5xRG0izCqrqDjH2pGM1ZUXv4aJS_X_I0sUdRWmlpDTtGkQ' },
+                { name: 'Modern Sofa', price: '890', category: 'Living Room', rating: 4.7, img: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80' },
+                { name: 'Wooden Shelf', price: '210', category: 'Storage', rating: 4.4, img: 'https://images.unsplash.com/photo-1594620302200-9a762244a156?ixlib=rb-4.0.3&auto=format&fit=crop&w=1139&q=80' },
+                { name: 'Ceramic Vase', price: '45', category: 'Decoration', rating: 4.8, img: 'https://images.unsplash.com/photo-1580480055273-228ff5388ef8?ixlib=rb-4.0.3&auto=format&fit=crop&w=774&q=80' },
+                { name: 'Abstract Art', price: '120', category: 'Art', rating: 5.0, img: 'https://images.unsplash.com/photo-1549490349-8643362247b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=774&q=80' },
+                { name: 'Geometric Wool Rug', price: '240', category: 'Rug', rating: 4.3, img: 'https://images.unsplash.com/photo-1575414003591-ece8d14161bb?ixlib=rb-4.0.3&auto=format&fit=crop&w=774&q=80' },
               ].map((product, idx) => (
-                <motion.div variants={item} key={idx} className="group flex flex-col gap-3 cursor-pointer">
-                  <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-900 shadow-sm">
-                    <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style={{ backgroundImage: `url("${product.img}")` }}></div>
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      className="absolute top-3 right-3 size-9 rounded-full bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm flex items-center justify-center text-slate-400 hover:text-primary transition-colors shadow-sm z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    >
-                      <span className="material-symbols-outlined text-[20px]">location_on</span>
-                    </motion.button>
+                <motion.div
+                  variants={item}
+                  key={idx}
+                  className="group relative flex flex-col bg-white dark:bg-slate-900 rounded-[2rem] overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.12)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.18)] hover:-translate-y-2 transition-all duration-500 border border-slate-300 dark:border-slate-700 ring-1 ring-slate-900/5 dark:ring-white/10"
+                >
+                  <Link href={`/product/${idx}`} className="absolute inset-0 z-10">
+                    <span className="sr-only">View {product.name}</span>
+                  </Link>
+
+                  {/* Image Section */}
+                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-50 dark:bg-white/5">
+                    {/* Discount Tag */}
                     {product.discount && (
-                      <div className="absolute top-3 left-3 bg-red-500 px-2.5 py-1 rounded-lg text-white shadow-sm z-10">
-                        <span className="text-[10px] font-bold uppercase tracking-wide">{product.discount}</span>
+                      <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1.5 rounded-xl z-20 shadow-lg shadow-red-500/20">
+                        <span className="text-[10px] font-black uppercase tracking-wider">{product.discount}</span>
                       </div>
                     )}
-                    <div className="absolute bottom-3 left-3 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-3 py-1.5 rounded-xl shadow-sm group-hover:scale-105 transition-transform duration-300">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-bold text-slate-900 dark:text-white">${product.price}</span>
-                        {product.oldPrice && <span className="text-[10px] text-slate-400 line-through decoration-slate-400">${product.oldPrice}</span>}
-                      </div>
+
+                    {/* Compare Toggle */}
+                    <button className="absolute top-4 right-4 z-20 size-10 rounded-full bg-white/80 dark:bg-black/40 backdrop-blur-md flex items-center justify-center text-slate-900 dark:text-white hover:bg-primary hover:text-white transition-all shadow-lg border border-white/20 active:scale-95">
+                      <span className="material-symbols-outlined text-[20px]">compare_arrows</span>
+                    </button>
+
+                    {/* Image */}
+                    <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110" style={{ backgroundImage: `url("${product.img}")` }}>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                     </div>
                   </div>
-                  <div>
-                    <h4 className="text-slate-900 dark:text-white font-bold text-base leading-snug group-hover:text-primary transition-colors">{product.name}</h4>
-                    <p className="text-slate-500 text-xs mt-1">{product.category}</p>
+
+                  {/* Content Section */}
+                  <div className="p-6 flex flex-col gap-5">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h4 className="text-charcoal dark:text-white font-display font-bold text-xl leading-snug mb-1.5 group-hover:text-primary transition-colors">{product.name}</h4>
+                        <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">{product.category}</p>
+                      </div>
+                      <div className="flex items-center gap-1.5 bg-amber-50 dark:bg-amber-900/20 px-2.5 py-1 rounded-lg">
+                        <span className="material-symbols-outlined text-[18px] text-amber-500 fill-current">star</span>
+                        <span className="text-sm font-bold text-amber-700 dark:text-amber-400">{product.rating}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between mt-auto">
+                      <div className="flex flex-col">
+                        {product.oldPrice && <span className="text-xs text-slate-400 line-through decoration-slate-400 mb-0.5">${product.oldPrice}</span>}
+                        <span className="text-3xl font-display font-bold text-charcoal dark:text-white">${product.price}</span>
+                      </div>
+                      <div className="opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 ease-out z-20">
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="bg-primary hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg shadow-blue-500/30 flex items-center gap-2.5 transition-colors hover:shadow-blue-500/50"
+                        >
+                          <span className="material-symbols-outlined text-[20px]">shopping_bag</span>
+                          Add
+                        </motion.button>
+                      </div>
+                    </div>
                   </div>
                 </motion.div>
               ))}
             </motion.div>
           </div>
 
-          {/* Promo Banner */}
+          {/* Promo Banner - Bento Grid Style */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
             viewport={{ once: true }}
-            className="grid md:grid-cols-2 gap-6"
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20"
           >
-            <div className="relative overflow-hidden rounded-3xl bg-blue-50/50 dark:bg-slate-900/50 p-8 flex flex-col items-start gap-4 shadow-sm border border-slate-100 dark:border-slate-800 group">
-              <div className="absolute right-[-40px] bottom-[-40px] opacity-[0.05] dark:opacity-[0.1] rotate-12 transition-transform duration-500 group-hover:rotate-0">
-                <span className="material-symbols-outlined text-[250px] text-primary">chair</span>
-              </div>
-              <div className="z-10 relative">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100/50 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-[11px] font-bold uppercase tracking-wider mb-3">
-                  <span className="material-symbols-outlined text-xs">local_fire_department</span>
-                  Summer Sale
+            {/* Primary Promo Card */}
+            <div className="md:col-span-2 relative overflow-hidden rounded-[2rem] bg-charcoal dark:bg-slate-900 text-white p-10 flex flex-col items-start justify-center min-h-[300px] shadow-2xl group">
+              <div className="absolute top-0 right-0 w-[60%] h-full bg-gradient-to-l from-bronze/20 to-transparent"></div>
+              <div className="absolute right-[-20%] top-[-20%] w-[60%] h-[140%] bg-gradient-to-br from-white/5 to-transparent rotate-12 blur-3xl group-hover:rotate-0 transition-all duration-1000"></div>
+
+              <div className="relative z-10 max-w-md">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-xs font-bold uppercase tracking-wider mb-6 text-bronze">
+                  <span className="w-1.5 h-1.5 rounded-full bg-bronze animate-pulse"></span>
+                  Limited Offer
                 </div>
-                <h3 className="text-3xl font-bold text-slate-900 dark:text-white leading-tight mb-3">Up to 50% Off<br />Select Items</h3>
-                <p className="text-slate-600 dark:text-slate-400 text-sm max-w-[240px] mb-4">Refresh your space with our curated summer collection. Limited time only.</p>
+                <h3 className="text-4xl md:text-5xl font-display font-medium leading-[1.1] mb-4">Summer Collection<br /><span className="text-white/40">Up to 50% Off</span></h3>
+                <p className="text-white/70 mb-8 font-light text-lg">Curated pieces for modern living. Elevate your space with our premium selection.</p>
+
                 <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="z-10 bg-gradient-to-r from-primary to-secondary text-white font-bold text-sm py-3.5 px-8 rounded-xl shadow-glow transition-all"
+                  whileHover={{ scale: 1.02, x: 5 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="bg-white text-charcoal px-8 py-4 rounded-xl font-bold text-sm tracking-wide uppercase hover:bg-bronze hover:text-white transition-colors shadow-lg flex items-center gap-3"
                 >
-                  Shop Deals
+                  Shop The Sale
+                  <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
                 </motion.button>
+              </div>
+
+              <div className="absolute right-[-5%] bottom-[-5%] w-[40%] aspect-square opacity-20 grayscale group-hover:grayscale-0 transition-all duration-700">
+                <span className="material-symbols-outlined text-[300px]">chair</span>
               </div>
             </div>
-            <div className="hidden md:block relative overflow-hidden rounded-3xl bg-slate-900 p-8 flex-col items-start gap-4 shadow-sm border border-slate-800 group">
-              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80')] bg-cover bg-center opacity-40 group-hover:scale-105 transition-transform duration-700"></div>
-              <div className="z-10 relative h-full flex flex-col justify-center items-start">
-                <h3 className="text-3xl font-bold text-white leading-tight mb-3">New Arrivals</h3>
-                <p className="text-slate-300 text-sm max-w-[240px] mb-6">Explore the latest trends in interior design.</p>
-                <motion.button
-                  whileHover={{ scale: 1.05, backgroundColor: "#f8fafc" }}
-                  whileTap={{ scale: 0.95 }}
-                  className="z-10 bg-white text-slate-900 font-bold text-sm py-3.5 px-8 rounded-xl shadow-sm hover:bg-slate-50 transition-all"
-                >
-                  View Collection
-                </motion.button>
+
+            {/* Secondary Promo Card */}
+            <div className="relative overflow-hidden rounded-[2rem] bg-gray-100 dark:bg-white/5 p-8 flex flex-col justify-between group shadow-lg border border-transparent hover:border-bronze/20 transition-colors">
+              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80')] bg-cover bg-center opacity-0 group-hover:opacity-10 transition-opacity duration-700">
+                <div className="absolute inset-0 bg-charcoal/40 backdrop-blur-[1px]"></div>
+              </div>
+
+              <div className="relative z-10">
+                <div className="w-12 h-12 rounded-full bg-white dark:bg-white/10 flex items-center justify-center mb-6 shadow-sm group-hover:bg-bronze group-hover:text-white transition-colors">
+                  <span className="material-symbols-outlined">rocket_launch</span>
+                </div>
+                <h3 className="text-2xl font-display font-medium text-charcoal dark:text-white mb-2 group-hover:text-white transition-colors">New Arrivals</h3>
+                <p className="text-slate-500 dark:text-slate-400 text-sm group-hover:text-white/80 transition-colors">Explore the latest trends in interior design.</p>
+              </div>
+
+              <div className="relative z-10 mt-8 flex justify-end">
+                <div className="w-10 h-10 rounded-full border border-slate-300 dark:border-white/20 flex items-center justify-center group-hover:border-white/50 group-hover:bg-white text-charcoal transition-all">
+                  <span className="material-symbols-outlined text-[20px] group-hover:translate-x-0.5 transition-transform">chevron_right</span>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -632,7 +742,7 @@ export default function Home() {
         )}
       </AnimatePresence>
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
-      <QRCodeModal isOpen={isQRCodeOpen} onClose={() => setIsQRCodeOpen(false)} url="https://mine-ptfl.vercel.app" />
+      <QRCodeModal isOpen={isQRCodeOpen} onClose={() => setIsQRCodeOpen(false)} url={currentUrl} />
     </div>
   );
 }

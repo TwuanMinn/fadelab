@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google"; // Use Inter based on code.html
+import { Inter, Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 
-const inter = Inter({ subsets: ["latin"] });
+const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
+const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-jakarta" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
   title: "Furnza - Modern Furniture",
@@ -18,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.className} font-display bg-background-light dark:bg-slate-950 text-slate-900 dark:text-white antialiased selection:bg-primary/20 transition-colors duration-300`}
+        className={`${outfit.variable} ${jakarta.variable} ${inter.variable} font-sans bg-background-light dark:bg-slate-950 text-slate-900 dark:text-white antialiased selection:bg-primary/20 transition-colors duration-300`}
       >
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
         <Providers>

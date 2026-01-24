@@ -3,16 +3,18 @@
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface SettingsModalProps {
     isOpen: boolean;
     onClose: () => void;
 }
 
-type Tab = "General" | "Security" | "Notifications" | "Accessibility" | "Privacy" | "Subscriptions";
+type Tab = "General" | "Security" | "Notifications" | "Accessibility" | "Privacy" | "Subscriptions" | "Legal";
 
 export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     const [activeTab, setActiveTab] = useState<Tab>("General");
+    const router = useRouter();
 
     // General States
     const [fullName, setFullName] = useState("Alex Johnson");
@@ -48,10 +50,11 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     const [profileVisibility, setProfileVisibility] = useState("Friends Only");
     const [onlineStatus, setOnlineStatus] = useState(false);
     const [analyticsCookies, setAnalyticsCookies] = useState(true);
+    const [legalActiveTab, setLegalActiveTab] = useState("Terms");
 
     if (!isOpen) return null;
 
-    const tabs: Tab[] = ["General", "Security", "Notifications", "Accessibility", "Privacy", "Subscriptions"];
+    const tabs: Tab[] = ["General", "Security", "Notifications", "Accessibility", "Privacy", "Subscriptions", "Legal"];
 
     const renderGeneral = () => (
         <motion.div
@@ -145,6 +148,23 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             <button className="w-full bg-[#2563EB] text-white font-black py-4.5 rounded-[1.5rem] shadow-xl shadow-blue-500/30 hover:scale-[1.01] active:scale-95 transition-all text-[15px] font-outfit">
                 Save Changes
             </button>
+
+            <button
+                onClick={() => {
+                    onClose();
+                    router.push('/help');
+                }}
+                className="w-full bg-slate-50 dark:bg-slate-800/50 p-6 rounded-[2.5rem] border border-dashed border-slate-200 dark:border-slate-700 flex items-center justify-between group hover:border-primary transition-all"
+            >
+                <div className="flex items-center gap-4">
+                    <span className="material-symbols-outlined text-primary bg-white dark:bg-slate-800 size-12 rounded-2xl flex items-center justify-center shadow-sm">support_agent</span>
+                    <div className="text-left">
+                        <p className="font-black text-sm uppercase tracking-tighter dark:text-white">Support Center</p>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Live chat, FAQs & feedback</p>
+                    </div>
+                </div>
+                <span className="material-symbols-outlined text-slate-300 group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </button>
         </motion.div>
     );
 
@@ -169,9 +189,6 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                             fill
                             className="object-cover"
                         />
-                        <button className="absolute top-4 right-4 size-10 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-primary shadow-lg">
-                            <span className="material-symbols-outlined text-[20px]">location_on</span>
-                        </button>
                     </div>
                     <div className="p-6">
                         <div className="flex justify-between items-start mb-2">
@@ -298,7 +315,24 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     </button>
                 </div>
 
-                <div className="flex flex-col items-center pt-10 pb-16 space-y-4">
+                <div className="flex flex-col items-center pt-10 pb-16 space-y-6">
+                    <button
+                        onClick={() => {
+                            onClose();
+                            router.push('/help/accessibility');
+                        }}
+                        className="w-full bg-slate-50 dark:bg-slate-800/50 p-6 rounded-[2.5rem] border border-dashed border-slate-200 dark:border-slate-700 flex items-center justify-between group hover:border-primary transition-all"
+                    >
+                        <div className="flex items-center gap-4">
+                            <span className="material-symbols-outlined text-primary bg-white dark:bg-slate-800 size-12 rounded-2xl flex items-center justify-center shadow-sm">help</span>
+                            <div className="text-left">
+                                <p className="font-black text-sm uppercase tracking-tighter dark:text-white">Accessibility Help Hub</p>
+                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Video guides & format requests</p>
+                            </div>
+                        </div>
+                        <span className="material-symbols-outlined text-slate-300 group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                    </button>
+
                     <button className="text-[#2563EB] font-black text-[14px] hover:underline">Reset to Default Settings</button>
                     <p className="text-[11px] text-slate-400 text-center max-w-[280px] leading-relaxed font-medium">
                         Note: System-wide settings may override some configuration.
@@ -622,7 +656,12 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                             </button>
                         </div>
                     </div>
-                    <button className="w-full text-center text-primary font-black text-[14px] pt-2 hover:underline font-outfit">Manage All Cookies</button>
+                    <button
+                        onClick={() => setActiveTab("Legal")}
+                        className="w-full text-center text-primary font-black text-[14px] pt-2 hover:underline font-outfit"
+                    >
+                        View Full Legal Documentation
+                    </button>
                 </div>
             </div>
 
@@ -738,6 +777,162 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         </motion.div>
     );
 
+    const renderLegal = () => {
+        const legalTabs = ["Terms", "Privacy", "Cookies", "Returns", "Licenses"];
+
+        return (
+            <motion.div
+                key="legal"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="space-y-6"
+            >
+                {/* Meta Information */}
+                <div className="pt-2 pb-2">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-full mb-4 border border-slate-200 dark:border-slate-700">
+                        <span className="material-symbols-outlined text-sm text-primary">history</span>
+                        <span className="text-xs font-medium text-slate-500 dark:text-gray-400">Last updated: October 24, 2023</span>
+                    </div>
+                    <h2 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white font-outfit">Legal & Privacy</h2>
+                    <p className="mt-2 text-slate-500 dark:text-gray-400 text-sm leading-relaxed font-outfit">
+                        Please read these terms carefully. By using Furnza, you agree to be bound by these conditions.
+                    </p>
+                </div>
+
+                {/* Internal Legal Tabs */}
+                <div className="flex overflow-x-auto no-scrollbar space-x-6 border-b border-slate-100 dark:border-slate-800">
+                    {legalTabs.map((tab) => (
+                        <button
+                            key={tab}
+                            onClick={() => setLegalActiveTab(tab)}
+                            className="relative flex flex-col items-center justify-center pb-3 pt-4 min-w-fit group outline-none"
+                        >
+                            <span className={`text-sm font-bold tracking-tight transition-colors ${legalActiveTab === tab ? "text-primary" : "text-slate-400 group-hover:text-slate-600 dark:group-hover:text-white"}`}>
+                                {tab}
+                            </span>
+                            {legalActiveTab === tab && (
+                                <motion.span layoutId="activeLegalTab" className="absolute bottom-0 h-0.5 w-full bg-primary rounded-t-full" />
+                            )}
+                        </button>
+                    ))}
+                </div>
+
+                {legalActiveTab === "Terms" && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8 pt-4">
+                        {/* Table of Contents */}
+                        <div className="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-5 border border-slate-100 dark:border-slate-800">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">On this page</h3>
+                                <span className="material-symbols-outlined text-slate-400 text-lg">list</span>
+                            </div>
+                            <ul className="space-y-3">
+                                {["1. Introduction", "2. User Accounts", "3. Purchases & Payments", "4. Shipping Policy"].map((item, i) => (
+                                    <li key={i}>
+                                        <a className="flex items-center text-slate-600 dark:text-slate-300 text-[13px] font-bold hover:text-primary transition-colors" href={`#sec-${i + 1}`}>
+                                            <span className={`w-1.5 h-1.5 rounded-full mr-3 ${i === 0 ? 'bg-primary' : 'bg-slate-300 dark:bg-slate-600'}`}></span>
+                                            {item}
+                                        </a>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        {/* Sections */}
+                        <div className="space-y-10">
+                            <section id="sec-1">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10 text-primary text-xs font-black">1</span>
+                                    <h3 className="text-lg font-black text-slate-900 dark:text-white font-outfit">Introduction</h3>
+                                </div>
+                                <div className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed space-y-4 font-outfit">
+                                    <p>
+                                        Welcome to Furnza. By accessing our mobile application and website, you agree to be bound by these Terms of Service and all applicable laws and regulations.
+                                    </p>
+                                    <p>
+                                        We reserve the right to review and amend any of these Terms of Service at our sole discretion. Any changes will take effect immediately from the date of publication.
+                                    </p>
+                                </div>
+                            </section>
+
+                            <section id="sec-2">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 text-xs font-black">2</span>
+                                    <h3 className="text-lg font-black text-slate-900 dark:text-white font-outfit">User Accounts</h3>
+                                </div>
+                                <div className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed space-y-4 font-outfit">
+                                    <p>
+                                        You must provide accurate and complete information when creating an account. You are responsible for safeguarding your password and all activities under your account.
+                                    </p>
+                                    <div className="bg-blue-50 dark:bg-blue-900/20 p-5 rounded-2xl border-l-4 border-primary my-6 shadow-sm">
+                                        <div className="flex gap-3">
+                                            <span className="material-symbols-outlined text-primary text-xl">gpp_maybe</span>
+                                            <p className="text-xs text-blue-800 dark:text-blue-200 font-bold leading-relaxed">
+                                                Important: We will never ask for your password via email or SMS. Always ensure you are on the official Furnza platform.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section id="sec-3">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 text-xs font-black">3</span>
+                                    <h3 className="text-lg font-black text-slate-900 dark:text-white font-outfit">Purchases & Payments</h3>
+                                </div>
+                                <div className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed space-y-4 font-outfit">
+                                    <p>
+                                        We use secure third-party payment processors. We do not store your credit card details on our servers. All transactions are encrypted.
+                                    </p>
+                                </div>
+                            </section>
+
+                            <section id="sec-4">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 text-xs font-black">4</span>
+                                    <h3 className="text-lg font-black text-slate-900 dark:text-white font-outfit">Shipping & Returns</h3>
+                                </div>
+                                <div className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed font-outfit">
+                                    <p className="mb-4">Standard delivery estimates:</p>
+                                    <ul className="space-y-2 mb-4">
+                                        {["Standard: 5-7 business days", "White glove: 10-14 business days", "Custom orders: 4-6 weeks"].map((text, i) => (
+                                            <li key={i} className="flex items-center gap-3">
+                                                <span className="size-1.5 rounded-full bg-primary" />
+                                                <span className="font-bold">{text}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </section>
+                        </div>
+
+                        {/* Contact Box */}
+                        <div className="mt-8 bg-slate-50 dark:bg-slate-900/80 rounded-[2.5rem] p-8 text-center border border-slate-100 dark:border-slate-800 shadow-sm">
+                            <div className="size-16 bg-white dark:bg-slate-800 rounded-2xl flex items-center justify-center shadow-lg mx-auto mb-6">
+                                <span className="material-symbols-outlined text-3xl text-primary">support_agent</span>
+                            </div>
+                            <h4 className="text-xl font-black text-slate-900 dark:text-white mb-2 font-outfit">Still have questions?</h4>
+                            <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 font-medium">Our legal team is available to help clarify any concerns.</p>
+                            <button className="w-full bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 text-slate-900 dark:text-white font-black py-4 rounded-2xl shadow-sm hover:scale-[1.02] active:scale-95 transition-all font-outfit uppercase tracking-widest text-xs">
+                                Contact Legal Support
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+
+                {legalActiveTab !== "Terms" && (
+                    <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
+                        <div className="size-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center">
+                            <span className="material-symbols-outlined text-4xl text-slate-400">gavel</span>
+                        </div>
+                        <h4 className="text-lg font-black dark:text-white">{legalActiveTab} Section</h4>
+                        <p className="text-sm text-slate-500 max-w-xs">Detailed {legalActiveTab.toLowerCase()} content is currently being updated for the 2024 season.</p>
+                    </div>
+                )}
+            </motion.div>
+        );
+    };
+
     return (
         <AnimatePresence>
             <motion.div
@@ -847,6 +1042,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                             {activeTab === "Notifications" && renderNotifications()}
                             {activeTab === "Privacy" && renderPrivacy()}
                             {activeTab === "Subscriptions" && renderSubscriptions()}
+                            {activeTab === "Legal" && renderLegal()}
                         </AnimatePresence>
                     </div>
                 </motion.div>
