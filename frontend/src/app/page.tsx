@@ -265,7 +265,6 @@ export default function Home() {
                 { icon: 'notifications', label: 'Inbox', badge: 2, action: () => router.push('/notifications') },
                 ...(isSignedIn ? [
                   { icon: 'local_shipping', label: 'Track', action: () => router.push('/tracking') },
-                  { icon: 'workspace_premium', label: 'Rewards', action: () => router.push('/rewards') },
                 ] : []),
                 { icon: 'article', label: 'Blog', action: () => router.push('/blog') },
                 { icon: 'location_on', label: 'Stores', action: () => router.push('/stores') },
