@@ -55,8 +55,8 @@ export default function Stores() {
                 </div>
 
                 {/* Search Bar Floating */}
-                <div className="absolute top-20 md:top-6 inset-x-4 md:left-auto md:right-6 md:w-96 z-10">
-                    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg flex items-center px-4 h-12 border border-slate-200 dark:border-white/10">
+                <div className="absolute top-[80px] md:top-6 inset-x-4 md:left-auto md:right-6 md:w-96 z-10">
+                    <div className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm rounded-xl shadow-lg flex items-center px-4 h-12 border border-slate-200 dark:border-white/10">
                         <span className="material-symbols-outlined text-slate-400">search</span>
                         <input
                             type="text"
@@ -69,11 +69,11 @@ export default function Stores() {
 
                 {/* Map Pins */}
                 {stores.map((store) => (
-                    <div key={store.id} className="absolute -translate-x-1/2 -translate-y-full flex flex-col items-center gap-1 cursor-pointer group" style={{ top: store.coordinates.top, left: store.coordinates.left }}>
+                    <div key={store.id} className="absolute -translate-x-1/2 -translate-y-full flex flex-col items-center gap-1 cursor-pointer group hover:z-20 z-0" style={{ top: store.coordinates.top, left: store.coordinates.left }}>
                         <div className={`px-2 py-0.5 rounded-md bg-blue-600 text-white text-[10px] font-bold shadow-md transform transition-all group-hover:scale-110 ${store.id === 1 ? 'block' : 'hidden'}`}>
                             $1.2M Stock
                         </div>
-                        <span className="material-symbols-outlined text-4xl text-blue-600 drop-shadow-md">location_on</span>
+                        <span className="material-symbols-outlined text-4xl text-blue-600 drop-shadow-md transition-transform group-hover:-translate-y-1">location_on</span>
                     </div>
                 ))}
             </div>
