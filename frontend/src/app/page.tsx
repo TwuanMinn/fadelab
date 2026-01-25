@@ -111,9 +111,15 @@ export default function Home() {
     }, 4000);
 
     // Trigger Price Drop Modal after 5 seconds for demo
-    const modalTimer = setTimeout(() => {
-      setIsPriceDropOpen(true);
-    }, 5000);
+    // Trigger Price Drop Modal after 5 seconds for demo (Once per user)
+    let modalTimer: NodeJS.Timeout;
+    const hasSeenPromo = localStorage.getItem('hasSeenPromo');
+    if (!hasSeenPromo) {
+      modalTimer = setTimeout(() => {
+        setIsPriceDropOpen(true);
+        localStorage.setItem('hasSeenPromo', 'true');
+      }, 5000);
+    }
 
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
