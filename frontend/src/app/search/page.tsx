@@ -6,12 +6,20 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, useMemo, Suspense } from "react";
 import { PRODUCTS } from "../data/products";
+import ProductCard from "../components/ProductCard";
+import { EmptySearch } from "../components/EmptyStates";
+import { SearchResultSkeleton } from "../components/Skeleton";
 
 function SearchContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [query, setQuery] = useState(searchParams.get("q") || "");
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const categories = ["All", "Chairs", "Lighting", "Tables", "Sofa", "Bedroom", "Kitchen"];
 
@@ -83,8 +91,8 @@ function SearchContent() {
                             key={cat}
                             onClick={() => handleCategoryClick(cat)}
                             className={`flex h-10 shrink-0 items-center justify-center rounded-xl px-5 text-xs font-black uppercase tracking-wider transition-all active:scale-95 ${selectedCategory === cat
-                                    ? "bg-primary text-white shadow-lg shadow-primary/25"
-                                    : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
+                                ? "bg-primary text-white shadow-lg shadow-primary/25"
+                                : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
                                 }`}
                         >
                             {cat}
@@ -92,9 +100,11 @@ function SearchContent() {
                     ))}
                 </div>
 
-                {/* Results */}
+                {/* Results Section */}
                 <div className="px-6 py-6 flex-1">
-                    {searchResults.length > 0 ? (
+                    {!mounted ? (
+                        <SearchResultSkeleton />
+                    ) : searchResults.length > 0 ? (
                         <>
                             <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">
                                 {searchResults.length} {searchResults.length === 1 ? 'result' : 'results'} {query && `for "${query}"`}
@@ -102,51 +112,13 @@ function SearchContent() {
                             <div className="grid grid-cols-2 gap-4">
                                 <AnimatePresence mode="popLayout">
                                     {searchResults.map((product) => (
-                                        <motion.div
-                                            key={product.id}
-                                            layout
-                                            initial={{ opacity: 0, scale: 0.9 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            exit={{ opacity: 0, scale: 0.9 }}
-                                            onClick={() => router.push(`/product/${product.id}`)}
-                                            className="group bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-lg transition-all cursor-pointer"
-                                        >
-                                            <div className="relative aspect-square w-full overflow-hidden bg-slate-50 dark:bg-slate-800">
-                                                <div
-                                                    className="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-500"
-                                                    style={{ backgroundImage: `url("${product.img}")` }}
-                                                />
-                                            </div>
-                                            <div className="p-3">
-                                                <p className="text-[10px] font-bold text-primary uppercase tracking-wider mb-1">{product.category}</p>
-                                                <h4 className="text-sm font-bold text-slate-900 dark:text-white line-clamp-1 group-hover:text-primary transition-colors">{product.name}</h4>
-                                                <div className="flex items-center justify-between mt-2">
-                                                    <span className="text-lg font-black text-slate-900 dark:text-white">${product.price}</span>
-                                                    <div className="flex items-center gap-1 text-amber-500">
-                                                        <span className="material-symbols-outlined text-[14px] filled">star</span>
-                                                        <span className="text-xs font-bold">{product.rating}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </motion.div>
+                                        <ProductCard key={product.id} product={product} />
                                     ))}
                                 </AnimatePresence>
                             </div>
                         </>
                     ) : (
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="flex flex-col items-center justify-center py-16"
-                        >
-                            <div className="size-24 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-6">
-                                <span className="material-symbols-outlined text-4xl text-slate-400">search_off</span>
-                            </div>
-                            <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2">No matches found</h3>
-                            <p className="text-sm text-slate-500 text-center max-w-xs">
-                                Try a different search term or browse our categories above.
-                            </p>
-                        </motion.div>
+                        <EmptySearch query={query} />
                     )}
                 </div>
 

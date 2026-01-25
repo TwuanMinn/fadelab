@@ -13,6 +13,7 @@ import { SortBottomSheet, CategoryBottomSheet } from "./components/BottomSheet";
 import { PRODUCTS } from "./data/products";
 import { useAuth } from "@/lib/auth-context";
 import { useCartStore } from "@/lib/cart-store";
+import { ProductGridSkeleton } from "./components/Skeleton";
 
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
@@ -48,6 +49,7 @@ export default function Home() {
   const [isCategorySheetOpen, setIsCategorySheetOpen] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     setVisibleCount(6);
   }, [selectedCategory, sortBy]);
 
@@ -506,9 +508,15 @@ export default function Home() {
               className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-8"
             >
               <AnimatePresence mode="popLayout">
-                {sortedProducts.slice(0, visibleCount).map((product: any) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
+                {!mounted ? (
+                  <div className="col-span-full">
+                    <ProductGridSkeleton count={8} />
+                  </div>
+                ) : (
+                  sortedProducts.slice(0, visibleCount).map((product: any) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))
+                )}
               </AnimatePresence>
             </motion.div>
 

@@ -3,13 +3,17 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
+import { useCartStore } from "@/lib/cart-store";
+import { toast } from "sonner";
 
 export default function Checkout() {
     const router = useRouter();
+    const { items, getCartTotal, clearCart } = useCartStore();
     const [paymentMethod, setPaymentMethod] = useState<'card' | 'apple' | 'paypal'>('card');
     const [isEditingShipping, setIsEditingShipping] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const [shippingInfo, setShippingInfo] = useState({
         name: "Isabella Anderson",
         phone: "(555) 123-4567",
@@ -20,8 +24,37 @@ export default function Checkout() {
         zip: "94103",
         country: "United States"
     });
-    const [quantity, setQuantity] = useState(1);
     const [saveCard, setSaveCard] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const subtotal = getCartTotal();
+    const tax = subtotal * 0.08;
+    const total = subtotal + tax;
+
+    if (mounted && items.length === 0) {
+        router.push('/cart');
+        return null;
+    }
+
+    if (!mounted) return null;
+
+    const handlePlaceOrder = () => {
+        toast.promise(
+            new Promise((resolve) => setTimeout(resolve, 2000)),
+            {
+                loading: 'Processing your payment...',
+                success: () => {
+                    clearCart();
+                    router.push('/success');
+                    return 'Order placed successfully!';
+                },
+                error: 'Payment failed. Please try again.',
+            }
+        );
+    };
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-8">
@@ -292,41 +325,31 @@ export default function Checkout() {
                         <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-none sticky top-24">
                             <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6">Order Summary</h2>
 
-                            <div className="flex gap-4 mb-6">
-                                <div className="size-24 bg-slate-100 dark:bg-slate-800 rounded-2xl flex-shrink-0 relative overflow-hidden">
-                                    <Image
-                                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDv0zdGltID2eiYiwCPgtL-eleC7-9h_uXINyKOzhL33uLSG-RSCXSirw9R6UBviklwOfZllqZ3PM7wr2B9unccMWZKKkCSGGKLdHgDCg1XNdMpYRY6EmjO2o1B3D_DTCCvYzEa_FaSGqAlVtUFQQjUBaPjexg7QTw1SGAkYK4mQzmAo0xzikEZeV10uN1lPjtqkY5pWfMIf7CL2QXxbwV4v8qJiNjBxGQy1ykw-QVU0DS9WnUjupapUTgpskO2JyR8Q1qZD9BgpFQ"
-                                        alt="Lowe Armchair"
-                                        fill
-                                        className="object-cover"
-                                    />
-                                </div>
-                                <div>
-                                    <h4 className="font-bold text-slate-900 dark:text-white text-lg leading-tight">Lowe Armchair</h4>
-                                    <p className="text-sm text-slate-500 mt-1">Beige Woven Fabric</p>
-                                    <div className="flex items-center gap-3 mt-2 bg-slate-100 dark:bg-slate-800 rounded-lg p-1 w-fit">
-                                        <button
-                                            onClick={() => quantity > 1 && setQuantity(quantity - 1)}
-                                            className="size-6 flex items-center justify-center bg-white dark:bg-slate-700 rounded-md shadow-sm hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors"
-                                        >
-                                            <span className="material-symbols-outlined text-[14px]">remove</span>
-                                        </button>
-                                        <span className="text-sm font-bold w-4 text-center">{quantity}</span>
-                                        <button
-                                            onClick={() => setQuantity(quantity + 1)}
-                                            className="size-6 flex items-center justify-center bg-white dark:bg-slate-700 rounded-md shadow-sm hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors"
-                                        >
-                                            <span className="material-symbols-outlined text-[14px]">add</span>
-                                        </button>
+                            <div className="flex flex-col gap-6 mb-6">
+                                {items.map((item) => (
+                                    <div key={item.id} className="flex gap-4">
+                                        <div className="size-20 bg-slate-100 dark:bg-slate-800 rounded-2xl flex-shrink-0 relative overflow-hidden">
+                                            <Image
+                                                src={item.img}
+                                                alt={item.name}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        </div>
+                                        <div className="flex-1">
+                                            <h4 className="font-bold text-slate-900 dark:text-white text-sm leading-tight line-clamp-1">{item.name}</h4>
+                                            <p className="text-xs text-slate-500 mt-1">{item.category}</p>
+                                            <p className="text-xs font-bold text-slate-900 dark:text-white mt-1">Qty: {item.quantity}</p>
+                                        </div>
+                                        <div className="font-bold text-slate-900 dark:text-white text-sm">${(item.price * item.quantity).toFixed(2)}</div>
                                     </div>
-                                </div>
-                                <div className="ml-auto font-bold text-slate-900 dark:text-white text-lg">${(899 * quantity).toLocaleString()}.00</div>
+                                ))}
                             </div>
 
                             <div className="space-y-3 py-6 border-t border-dashed border-slate-200 dark:border-slate-800">
                                 <div className="flex justify-between text-slate-500">
                                     <span>Subtotal</span>
-                                    <span className="font-medium text-slate-900 dark:text-white">${(899 * quantity).toLocaleString()}.00</span>
+                                    <span className="font-medium text-slate-900 dark:text-white">${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
                                 </div>
                                 <div className="flex justify-between text-slate-500">
                                     <span>Shipping</span>
@@ -334,14 +357,14 @@ export default function Checkout() {
                                 </div>
                                 <div className="flex justify-between text-slate-500">
                                     <span>Estimated Tax</span>
-                                    <span className="font-medium text-slate-900 dark:text-white">${(72 * quantity).toLocaleString()}.00</span>
+                                    <span className="font-medium text-slate-900 dark:text-white">${tax.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
                                 </div>
                             </div>
 
                             <div className="pt-6 border-t border-slate-200 dark:border-slate-800">
                                 <div className="flex items-end justify-between mb-2">
                                     <p className="text-slate-500 font-medium">Total Amount</p>
-                                    <h3 className="text-3xl font-black text-slate-900 dark:text-white">${(971 * quantity).toLocaleString()}.00</h3>
+                                    <h3 className="text-3xl font-black text-slate-900 dark:text-white">${total.toLocaleString('en-US', { minimumFractionDigits: 2 })}</h3>
                                 </div>
                                 <div className="flex items-center gap-2 text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/10 p-3 rounded-xl mb-6">
                                     <span className="material-symbols-outlined text-[20px] fill-current">lock</span>
@@ -349,7 +372,7 @@ export default function Checkout() {
                                 </div>
 
                                 <button
-                                    onClick={() => router.push('/success')}
+                                    onClick={handlePlaceOrder}
                                     className="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold h-16 rounded-2xl shadow-lg shadow-blue-600/30 flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98] text-lg group"
                                 >
                                     Place Order

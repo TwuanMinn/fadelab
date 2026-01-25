@@ -7,15 +7,25 @@ import { useState, useRef, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getProductById } from "../../data/products";
 import WriteReviewModal from "../../components/WriteReviewModal";
+import { useCartStore } from "@/lib/cart-store";
+import { toast } from "sonner";
 
 export default function ProductDetail() {
     const { id } = useParams();
     const router = useRouter();
+    const { items, addToCart, wishlist, toggleWishlist, isInWishlist } = useCartStore();
     const [quantity, setQuantity] = useState(1);
     const [activeImageIndex, setActiveImageIndex] = useState(0);
     const [activeColor, setActiveColor] = useState("Ocean Blue");
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const inWishlist = mounted ? isInWishlist(Number(id)) : false;
 
     const rawProduct = getProductById(id as string);
 
@@ -78,7 +88,23 @@ export default function ProductDetail() {
                         Back to Catalog
                     </button>
                     <div className="flex gap-4">
-                        <button className="size-12 rounded-full border border-slate-200 dark:border-slate-800 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                        <button
+                            onClick={() => {
+                                toggleWishlist({
+                                    id: Number(id),
+                                    name: product.name,
+                                    price: product.price,
+                                    img: product.img,
+                                    category: product.category,
+                                    rating: product.rating
+                                });
+                                toast.success(isInWishlist(Number(id)) ? "Removed from wishlist" : "Added to wishlist");
+                            }}
+                            className={`size-12 rounded-full border border-slate-200 dark:border-slate-800 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors ${inWishlist ? "text-red-500 bg-red-50 dark:bg-red-900/10" : "text-slate-500"}`}
+                        >
+                            <span className={`material-symbols-outlined ${inWishlist ? "filled" : ""}`}>favorite</span>
+                        </button>
+                        <button className="size-12 rounded-full border border-slate-200 dark:border-slate-800 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-slate-500">
                             <span className="material-symbols-outlined">share</span>
                         </button>
                     </div>
@@ -208,13 +234,40 @@ export default function ProductDetail() {
                                         <span className="material-symbols-outlined">add</span>
                                     </button>
                                 </div>
-                                <button
-                                    onClick={() => router.push('/checkout')}
-                                    className="h-14 flex-1 bg-primary hover:bg-blue-600 text-white font-black rounded-2xl shadow-xl shadow-primary/30 flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-95"
-                                >
-                                    <span className="material-symbols-outlined">payments</span>
-                                    Buy Now — ${(product.price * quantity).toFixed(2)}
-                                </button>
+                                <div className="flex flex-col gap-2 flex-1">
+                                    <button
+                                        onClick={() => {
+                                            addToCart({
+                                                id: Number(id),
+                                                name: product.name,
+                                                price: product.price,
+                                                img: product.img,
+                                                category: product.category
+                                            }, quantity);
+                                            toast.success(`Added ${quantity} ${product.name} to cart`);
+                                        }}
+                                        className="h-14 w-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-black rounded-2xl flex items-center justify-center gap-3 transition-all"
+                                    >
+                                        <span className="material-symbols-outlined">add_shopping_cart</span>
+                                        Add to Cart
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            addToCart({
+                                                id: Number(id),
+                                                name: product.name,
+                                                price: product.price,
+                                                img: product.img,
+                                                category: product.category
+                                            }, quantity);
+                                            router.push('/checkout');
+                                        }}
+                                        className="h-14 w-full bg-primary hover:bg-blue-600 text-white font-black rounded-2xl shadow-xl shadow-primary/30 flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-95"
+                                    >
+                                        <span className="material-symbols-outlined">payments</span>
+                                        Buy Now — ${(product.price * quantity).toFixed(2)}
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -437,7 +490,32 @@ export default function ProductDetail() {
                             </button>
                         </div>
                         <button
-                            onClick={() => router.push('/checkout')}
+                            onClick={() => {
+                                addToCart({
+                                    id: Number(id),
+                                    name: product.name,
+                                    price: product.price,
+                                    img: product.img,
+                                    category: product.category
+                                }, quantity);
+                                router.push('/cart');
+                            }}
+                            className="relative flex h-12 flex-1 items-center justify-center gap-2 overflow-hidden rounded-xl bg-slate-900 dark:bg-slate-800 text-white shadow-lg transition active:scale-[0.98]"
+                        >
+                            <span className="material-symbols-outlined text-[20px]">shopping_cart</span>
+                            <span className="font-bold">Add to Cart</span>
+                        </button>
+                        <button
+                            onClick={() => {
+                                addToCart({
+                                    id: Number(id),
+                                    name: product.name,
+                                    price: product.price,
+                                    img: product.img,
+                                    category: product.category
+                                }, quantity);
+                                router.push('/checkout');
+                            }}
                             className="relative flex h-12 flex-1 items-center justify-center gap-2 overflow-hidden rounded-xl bg-primary text-white shadow-lg shadow-primary/25 transition active:scale-[0.98]"
                         >
                             <span className="material-symbols-outlined text-[20px]">payments</span>
