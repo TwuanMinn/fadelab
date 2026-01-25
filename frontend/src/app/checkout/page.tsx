@@ -9,6 +9,12 @@ import Image from "next/image";
 export default function Checkout() {
     const router = useRouter();
     const [paymentMethod, setPaymentMethod] = useState<'card' | 'apple' | 'paypal'>('card');
+    const [isEditingShipping, setIsEditingShipping] = useState(false);
+    const [shippingInfo, setShippingInfo] = useState({
+        name: "Isabella Anderson",
+        address: "1254 Oakwood Avenue, Suite 4B",
+        cityStateZip: "San Francisco, CA 94103"
+    });
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-8">
@@ -58,17 +64,65 @@ export default function Checkout() {
                                     <span className="material-symbols-outlined text-blue-600">local_shipping</span>
                                     Shipping Information
                                 </h2>
-                                <button className="text-sm font-bold text-blue-600 hover:text-blue-700 bg-blue-50 dark:bg-blue-900/20 px-4 py-2 rounded-lg transition-colors">Edit</button>
+                                {!isEditingShipping && (
+                                    <button
+                                        onClick={() => setIsEditingShipping(true)}
+                                        className="text-sm font-bold text-blue-600 hover:text-blue-700 bg-blue-50 dark:bg-blue-900/20 px-4 py-2 rounded-lg transition-colors"
+                                    >
+                                        Edit
+                                    </button>
+                                )}
                             </div>
-                            <div className="bg-slate-50 dark:bg-slate-950 p-5 rounded-2xl flex items-start gap-4 border border-slate-100 dark:border-slate-800">
-                                <div className="size-10 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center border border-slate-200 dark:border-slate-800 shadow-sm text-slate-500">
-                                    <span className="material-symbols-outlined">location_on</span>
+
+                            {isEditingShipping ? (
+                                <div className="space-y-4">
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider ml-1">Full Name</label>
+                                        <input
+                                            type="text"
+                                            value={shippingInfo.name}
+                                            onChange={(e) => setShippingInfo({ ...shippingInfo, name: e.target.value })}
+                                            className="w-full h-12 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 outline-none focus:border-blue-500 transition-all font-medium"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider ml-1">Address</label>
+                                        <input
+                                            type="text"
+                                            value={shippingInfo.address}
+                                            onChange={(e) => setShippingInfo({ ...shippingInfo, address: e.target.value })}
+                                            className="w-full h-12 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 outline-none focus:border-blue-500 transition-all font-medium"
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider ml-1">City/State/Zip</label>
+                                            <input
+                                                type="text"
+                                                value={shippingInfo.cityStateZip}
+                                                onChange={(e) => setShippingInfo({ ...shippingInfo, cityStateZip: e.target.value })}
+                                                className="w-full h-12 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 outline-none focus:border-blue-500 transition-all font-medium"
+                                            />
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => setIsEditingShipping(false)}
+                                        className="w-full bg-blue-600 text-white font-bold h-12 rounded-2xl hover:bg-blue-700 transition-colors mt-2"
+                                    >
+                                        Save Changes
+                                    </button>
                                 </div>
-                                <div>
-                                    <p className="font-bold text-slate-900 dark:text-white text-lg">Isabella Anderson</p>
-                                    <p className="text-slate-500 leading-relaxed mt-1">1254 Oakwood Avenue, Suite 4B<br />San Francisco, CA 94103</p>
+                            ) : (
+                                <div className="bg-slate-50 dark:bg-slate-950 p-5 rounded-2xl flex items-start gap-4 border border-slate-100 dark:border-slate-800">
+                                    <div className="size-10 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center border border-slate-200 dark:border-slate-800 shadow-sm text-slate-500">
+                                        <span className="material-symbols-outlined">location_on</span>
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-slate-900 dark:text-white text-lg">{shippingInfo.name}</p>
+                                        <p className="text-slate-500 leading-relaxed mt-1">{shippingInfo.address}<br />{shippingInfo.cityStateZip}</p>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                         </div>
 
                         {/* Payment Method */}
