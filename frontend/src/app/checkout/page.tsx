@@ -12,8 +12,13 @@ export default function Checkout() {
     const [isEditingShipping, setIsEditingShipping] = useState(false);
     const [shippingInfo, setShippingInfo] = useState({
         name: "Isabella Anderson",
-        address: "1254 Oakwood Avenue, Suite 4B",
-        cityStateZip: "San Francisco, CA 94103"
+        phone: "(555) 123-4567",
+        address: "1254 Oakwood Avenue",
+        apartment: "Suite 4B",
+        city: "San Francisco",
+        state: "CA",
+        zip: "94103",
+        country: "United States"
     });
     const [quantity, setQuantity] = useState(1);
     const [saveCard, setSaveCard] = useState(false);
@@ -78,35 +83,102 @@ export default function Checkout() {
 
                             {isEditingShipping ? (
                                 <div className="space-y-4">
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider ml-1">Full Name</label>
-                                        <input
-                                            type="text"
-                                            value={shippingInfo.name}
-                                            onChange={(e) => setShippingInfo({ ...shippingInfo, name: e.target.value })}
-                                            className="w-full h-12 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 outline-none focus:border-blue-500 transition-all font-medium"
-                                        />
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider ml-1">Full Name</label>
+                                            <input
+                                                type="text"
+                                                value={shippingInfo.name}
+                                                onChange={(e) => setShippingInfo({ ...shippingInfo, name: e.target.value })}
+                                                className="w-full h-12 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 outline-none focus:border-blue-500 transition-all font-medium"
+                                                placeholder="e.g. Alex Johnson"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider ml-1">Phone Number</label>
+                                            <input
+                                                type="text"
+                                                value={shippingInfo.phone}
+                                                onChange={(e) => setShippingInfo({ ...shippingInfo, phone: e.target.value })}
+                                                className="w-full h-12 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 outline-none focus:border-blue-500 transition-all font-medium"
+                                                placeholder="(555) 000-0000"
+                                            />
+                                        </div>
                                     </div>
+
                                     <div className="space-y-2">
-                                        <label className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider ml-1">Address</label>
+                                        <label className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider ml-1">Street Address</label>
                                         <input
                                             type="text"
                                             value={shippingInfo.address}
                                             onChange={(e) => setShippingInfo({ ...shippingInfo, address: e.target.value })}
                                             className="w-full h-12 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 outline-none focus:border-blue-500 transition-all font-medium"
+                                            placeholder="123 Main St"
                                         />
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider ml-1">City/State/Zip</label>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div className="space-y-2 md:col-span-2">
+                                            <label className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider ml-1">Apartment / Suite</label>
                                             <input
                                                 type="text"
-                                                value={shippingInfo.cityStateZip}
-                                                onChange={(e) => setShippingInfo({ ...shippingInfo, cityStateZip: e.target.value })}
+                                                value={shippingInfo.apartment}
+                                                onChange={(e) => setShippingInfo({ ...shippingInfo, apartment: e.target.value })}
                                                 className="w-full h-12 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 outline-none focus:border-blue-500 transition-all font-medium"
+                                                placeholder="Apt 4B (Optional)"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider ml-1">Zip Code</label>
+                                            <input
+                                                type="text"
+                                                value={shippingInfo.zip}
+                                                onChange={(e) => setShippingInfo({ ...shippingInfo, zip: e.target.value })}
+                                                className="w-full h-12 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 outline-none focus:border-blue-500 transition-all font-medium"
+                                                placeholder="10001"
                                             />
                                         </div>
                                     </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider ml-1">City</label>
+                                            <input
+                                                type="text"
+                                                value={shippingInfo.city}
+                                                onChange={(e) => setShippingInfo({ ...shippingInfo, city: e.target.value })}
+                                                className="w-full h-12 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 outline-none focus:border-blue-500 transition-all font-medium"
+                                                placeholder="New York"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider ml-1">State / Province</label>
+                                            <input
+                                                type="text"
+                                                value={shippingInfo.state}
+                                                onChange={(e) => setShippingInfo({ ...shippingInfo, state: e.target.value })}
+                                                className="w-full h-12 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 outline-none focus:border-blue-500 transition-all font-medium"
+                                                placeholder="NY"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider ml-1">Country</label>
+                                        <div className="relative">
+                                            <select
+                                                value={shippingInfo.country}
+                                                onChange={(e) => setShippingInfo({ ...shippingInfo, country: e.target.value })}
+                                                className="w-full h-12 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 outline-none focus:border-blue-500 transition-all font-medium appearance-none"
+                                            >
+                                                <option>United States</option>
+                                                <option>Canada</option>
+                                                <option>United Kingdom</option>
+                                            </select>
+                                            <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">expand_more</span>
+                                        </div>
+                                    </div>
+
                                     <button
                                         onClick={() => setIsEditingShipping(false)}
                                         className="w-full bg-blue-600 text-white font-bold h-12 rounded-2xl hover:bg-blue-700 transition-colors mt-2"
@@ -119,9 +191,19 @@ export default function Checkout() {
                                     <div className="size-10 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center border border-slate-200 dark:border-slate-800 shadow-sm text-slate-500">
                                         <span className="material-symbols-outlined">location_on</span>
                                     </div>
-                                    <div>
-                                        <p className="font-bold text-slate-900 dark:text-white text-lg">{shippingInfo.name}</p>
-                                        <p className="text-slate-500 leading-relaxed mt-1">{shippingInfo.address}<br />{shippingInfo.cityStateZip}</p>
+                                    <div className="flex-1">
+                                        <div className="flex justify-between items-start">
+                                            <p className="font-bold text-slate-900 dark:text-white text-lg">{shippingInfo.name}</p>
+                                            <span className="text-xs font-bold bg-slate-200 dark:bg-slate-800 text-slate-500 px-2 py-1 rounded-md">{shippingInfo.country === "United States" ? "US" : shippingInfo.country}</span>
+                                        </div>
+                                        <p className="text-slate-500 leading-relaxed mt-1">
+                                            {shippingInfo.address}{shippingInfo.apartment ? `, ${shippingInfo.apartment}` : ''}<br />
+                                            {shippingInfo.city}, {shippingInfo.state} {shippingInfo.zip}
+                                        </p>
+                                        <p className="text-sm font-medium text-slate-400 mt-2 flex items-center gap-1">
+                                            <span className="material-symbols-outlined text-[14px]">call</span>
+                                            {shippingInfo.phone}
+                                        </p>
                                     </div>
                                 </div>
                             )}
