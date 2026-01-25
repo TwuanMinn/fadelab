@@ -230,19 +230,19 @@ export default function Home() {
                 onClick={handleProfileClick}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
-                className="relative size-9 md:size-12 mr-1 md:mr-2 group cursor-pointer flex-shrink-0"
+                className="relative size-14 md:size-16 mr-2 md:mr-3 group cursor-pointer flex-shrink-0"
               >
                 <div className="w-full h-full rounded-full overflow-hidden border-2 border-black/10 dark:border-white/10 shadow-soft bg-slate-50 dark:bg-slate-800 flex items-center justify-center">
                   {isSignedIn ? (
                     <Image
                       src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
                       alt="Profile"
-                      width={48}
-                      height={48}
+                      width={64}
+                      height={64}
                       className="object-cover w-full h-full"
                     />
                   ) : (
-                    <span className="material-symbols-outlined text-slate-600 dark:text-slate-400 text-[22px] md:text-[28px] font-bold group-hover:text-primary transition-colors">account_circle</span>
+                    <span className="material-symbols-outlined text-slate-600 dark:text-slate-400 text-[32px] md:text-[40px] font-bold group-hover:text-primary transition-colors">account_circle</span>
                   )}
                 </div>
 
