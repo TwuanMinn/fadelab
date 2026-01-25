@@ -134,9 +134,9 @@ export default function HelpCenterPage() {
                 </div>
 
                 {/* Browse Topics */}
-                <div className="px-8 pt-8 pb-4">
-                    <h3 className="text-sm font-black font-outfit uppercase tracking-[0.2em] text-slate-400 mb-6">Explore Knowledge</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-10">
+                <div className="px-4 md:px-8 pt-6 md:pt-8 pb-4">
+                    <h3 className="text-xs md:text-sm font-black font-outfit uppercase tracking-[0.2em] text-slate-400 mb-4 md:mb-6">Explore Knowledge</h3>
+                    <div className="grid grid-cols-2 gap-2 md:gap-4 pb-10">
                         {topics.map((topic, i) => (
                             <motion.button
                                 key={i}
@@ -144,17 +144,17 @@ export default function HelpCenterPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: i * 0.1 }}
                                 onClick={() => router.push(topic.link)}
-                                className={`group flex flex-col items-start gap-4 p-6 bg-white dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/50 rounded-[2.5rem] shadow-sm hover:shadow-2xl hover:shadow-primary/5 hover:border-primary/30 transition-all text-left overflow-hidden relative`}
+                                className={`group flex flex-col items-start gap-2 md:gap-4 p-4 md:p-6 bg-white dark:bg-slate-800/40 border border-slate-100 dark:border-slate-700/50 rounded-2xl md:rounded-[2.5rem] shadow-sm hover:shadow-2xl hover:shadow-primary/5 hover:border-primary/30 transition-all text-left overflow-hidden relative`}
                             >
-                                <div className="flex items-center justify-center size-14 bg-slate-50 dark:bg-slate-800 rounded-2xl text-primary shadow-sm group-hover:bg-primary group-hover:text-white transition-all relative z-10">
-                                    <span className="material-symbols-outlined text-2xl">{topic.icon}</span>
+                                <div className="flex items-center justify-center size-10 md:size-14 bg-slate-50 dark:bg-slate-800 rounded-xl md:rounded-2xl text-primary shadow-sm group-hover:bg-primary group-hover:text-white transition-all relative z-10">
+                                    <span className="material-symbols-outlined text-xl md:text-2xl">{topic.icon}</span>
                                 </div>
                                 <div className="relative z-10">
-                                    <p className="text-slate-900 dark:text-white text-base font-black font-outfit uppercase tracking-tight">{topic.title}</p>
-                                    <p className="text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-widest mt-1.5 leading-tight">{topic.description}</p>
+                                    <p className="text-slate-900 dark:text-white text-sm md:text-base font-black font-outfit uppercase tracking-tight">{topic.title}</p>
+                                    <p className="text-slate-400 dark:text-slate-500 text-[8px] md:text-[10px] font-black uppercase tracking-widest mt-1 md:mt-1.5 leading-tight">{topic.description}</p>
                                 </div>
                                 {/* Subtle Background Icon */}
-                                <span className="absolute -right-4 -bottom-4 material-symbols-outlined text-8xl text-slate-50 dark:text-slate-800/50 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none select-none">
+                                <span className="absolute -right-4 -bottom-4 material-symbols-outlined text-6xl md:text-8xl text-slate-50 dark:text-slate-800/50 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none select-none">
                                     {topic.icon}
                                 </span>
                             </motion.button>
