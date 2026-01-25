@@ -6,14 +6,16 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function ProductCard({ product }: { product: any }) {
-    const router = useRouter();
-    const [isAdded, setIsAdded] = useState(false);
+    const [quantity, setQuantity] = useState(0);
 
     const handleAddToCart = (e: React.MouseEvent) => {
         e.stopPropagation();
-        setIsAdded(true);
-        // Simulate API call
-        setTimeout(() => setIsAdded(false), 2000);
+        setQuantity(1);
+    };
+
+    const adjustQuantity = (e: React.MouseEvent, amount: number) => {
+        e.stopPropagation();
+        setQuantity(prev => Math.max(0, prev + amount));
     };
 
     return (
@@ -63,17 +65,37 @@ export default function ProductCard({ product }: { product: any }) {
                         <span className="text-xl md:text-3xl font-display font-bold text-charcoal dark:text-white">${product.price}</span>
                     </div>
                     <div className="opacity-100 md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0 transition-all duration-500 ease-out z-20">
-                        <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={handleAddToCart}
-                            className={`${isAdded ? 'bg-green-500 hover:bg-green-600' : 'bg-primary hover:bg-blue-600'} text-white p-2 md:px-6 md:py-3 rounded-lg md:rounded-xl font-bold text-sm shadow-lg shadow-blue-500/30 flex items-center gap-0 md:gap-2.5 transition-all hover:shadow-blue-500/50`}
-                        >
-                            <span className="material-symbols-outlined text-[18px] md:text-[20px]">
-                                {isAdded ? 'check' : 'shopping_bag'}
-                            </span>
-                            <span className="hidden md:inline">{isAdded ? 'Added' : 'Add'}</span>
-                        </motion.button>
+                        {quantity === 0 ? (
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={handleAddToCart}
+                                className="bg-primary hover:bg-blue-600 text-white p-2 md:px-6 md:py-3 rounded-lg md:rounded-xl font-bold text-sm shadow-lg shadow-blue-500/30 flex items-center gap-0 md:gap-2.5 transition-colors hover:shadow-blue-500/50"
+                            >
+                                <span className="material-symbols-outlined text-[18px] md:text-[20px]">shopping_bag</span>
+                                <span className="hidden md:inline">Add</span>
+                            </motion.button>
+                        ) : (
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="flex items-center bg-white dark:bg-slate-800 rounded-lg md:rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-1"
+                            >
+                                <button
+                                    onClick={(e) => adjustQuantity(e, -1)}
+                                    className="size-8 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors text-slate-600 dark:text-slate-300"
+                                >
+                                    <span className="material-symbols-outlined text-[18px]">remove</span>
+                                </button>
+                                <span className="w-8 text-center font-bold text-slate-900 dark:text-white text-sm">{quantity}</span>
+                                <button
+                                    onClick={(e) => adjustQuantity(e, 1)}
+                                    className="size-8 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors text-slate-600 dark:text-slate-300"
+                                >
+                                    <span className="material-symbols-outlined text-[18px]">add</span>
+                                </button>
+                            </motion.div>
+                        )}
                     </div>
                 </div>
             </div>
