@@ -187,7 +187,7 @@ export default function Home() {
   };
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-slate-50 dark:bg-black transition-colors duration-300 pb-[90px] md:pb-0">
+    <div className="relative flex min-h-screen w-full flex-col bg-slate-50 dark:bg-black transition-colors duration-300 pb-[90px] md:pb-0 overflow-x-hidden">
       <PriceDropModal
         isOpen={isPriceDropOpen}
         onClose={() => setIsPriceDropOpen(false)}
@@ -468,16 +468,17 @@ export default function Home() {
 
           {/* Featured Products */}
           <div className="mb-12">
-            <div className="flex items-center justify-between mb-8">
-              <h3 className="text-charcoal dark:text-white text-3xl font-display font-medium tracking-tight">Featured Products</h3>
-              <div className="flex items-center gap-4">
+            {/* Featured Products */}
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-4 md:mb-8 gap-4">
+              <h3 className="text-charcoal dark:text-white text-xl md:text-3xl font-display font-medium tracking-tight">Featured Products</h3>
+              <div className="flex items-center gap-2 md:gap-4 w-full md:w-auto overflow-x-auto no-scrollbar pb-2 md:pb-0">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => router.push('/compare')}
-                  className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 bg-white dark:bg-white/5 px-6 py-3 rounded-2xl hover:text-primary transition-all border border-slate-200 dark:border-white/10 flex items-center gap-3 cursor-pointer shadow-sm group"
+                  className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-slate-400 bg-white dark:bg-white/5 px-4 py-2 md:px-6 md:py-3 rounded-xl md:rounded-2xl hover:text-primary transition-all border border-slate-200 dark:border-white/10 flex items-center gap-2 md:gap-3 cursor-pointer shadow-sm group whitespace-nowrap"
                 >
-                  <span className="material-symbols-outlined text-[18px] text-slate-300 group-hover:text-primary transition-colors">compare_arrows</span>
+                  <span className="material-symbols-outlined text-[16px] md:text-[18px] text-slate-300 group-hover:text-primary transition-colors">compare_arrows</span>
                   <span className="group-hover:text-primary transition-colors">Compare</span>
                 </motion.button>
 
@@ -486,11 +487,11 @@ export default function Home() {
                     whileHover={{ scale: 1.05, boxShadow: "0 10px 25px -5px rgba(59, 130, 246, 0.2)" }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setIsSortOpen(!isSortOpen)}
-                    className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 bg-white dark:bg-white/5 px-6 py-3 rounded-2xl hover:text-primary transition-all border border-slate-200 dark:border-white/10 flex items-center gap-3 cursor-pointer shadow-sm group"
+                    className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-slate-400 bg-white dark:bg-white/5 px-4 py-2 md:px-6 md:py-3 rounded-xl md:rounded-2xl hover:text-primary transition-all border border-slate-200 dark:border-white/10 flex items-center gap-2 md:gap-3 cursor-pointer shadow-sm group whitespace-nowrap"
                   >
-                    <span className="text-slate-300 group-hover:text-primary transition-colors">Sort by:</span>
-                    <span className="text-primary">{sortBy === 'newest' ? 'Newest' : sortBy === 'price-low' ? 'Price: Low' : sortBy === 'price-high' ? 'Price: High' : 'Top Rated'}</span>
-                    <span className={`material-symbols-outlined text-[18px] transition-transform ${isSortOpen ? 'rotate-180' : 'group-hover:translate-y-0.5'}`}>expand_more</span>
+                    <span className="text-slate-300 group-hover:text-primary transition-colors">Sort:</span>
+                    <span className="text-primary">{sortBy === 'newest' ? 'Newest' : sortBy === 'price-low' ? 'Low Price' : sortBy === 'price-high' ? 'High Price' : 'Top Rated'}</span>
+                    <span className={`material-symbols-outlined text-[16px] md:text-[18px] transition-transform ${isSortOpen ? 'rotate-180' : 'group-hover:translate-y-0.5'}`}>expand_more</span>
                   </motion.button>
 
                   <AnimatePresence>

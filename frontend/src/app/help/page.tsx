@@ -93,26 +93,51 @@ export default function HelpCenterPage() {
 
                 {/* Authenticated Quick Actions */}
                 {isSignedIn && (
-                    <div className="px-8 py-6">
-                        <div className="bg-slate-900 dark:bg-slate-800 rounded-[2.5rem] p-8 border border-white/10 shadow-2xl relative overflow-hidden group cursor-pointer" onClick={() => router.push('/tracking')}>
-                            {/* Animated Background Glow */}
-                            <div className="absolute top-0 right-0 size-40 bg-primary/20 blur-3xl rounded-full translate-x-20 -translate-y-20 group-hover:bg-primary/40 transition-all duration-700" />
+                    <div className="px-4 md:px-8 py-4 md:py-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                            {/* Delivery Card */}
+                            <div className="bg-slate-900 dark:bg-slate-800 rounded-[2rem] p-6 md:p-8 border border-white/10 shadow-2xl relative overflow-hidden group cursor-pointer" onClick={() => router.push('/tracking')}>
+                                {/* Animated Background Glow */}
+                                <div className="absolute top-0 right-0 size-40 bg-primary/20 blur-3xl rounded-full translate-x-20 -translate-y-20 group-hover:bg-primary/40 transition-all duration-700" />
 
-                            <div className="relative z-10 flex items-center justify-between">
-                                <div className="flex flex-col gap-1">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50">Current Delivery</span>
-                                        <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
+                                <div className="relative z-10 flex items-center justify-between">
+                                    <div className="flex flex-col gap-1">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-white/50">Current Delivery</span>
+                                            <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
+                                        </div>
+                                        <h3 className="text-lg md:text-xl font-black font-outfit uppercase tracking-tight text-white mb-1">Velvet Sectional Sofa</h3>
+                                        <div className="flex items-center gap-3">
+                                            <p className="text-[10px] md:text-[11px] font-black text-primary uppercase tracking-[0.1em]">Arriving Today, 6 PM</p>
+                                            <div className="h-px w-8 bg-white/20" />
+                                            <span className="material-symbols-outlined text-white/40 text-sm">local_shipping</span>
+                                        </div>
                                     </div>
-                                    <h3 className="text-xl font-black font-outfit uppercase tracking-tight text-white mb-1">Velvet Sectional Sofa</h3>
-                                    <div className="flex items-center gap-3">
-                                        <p className="text-[11px] font-black text-primary uppercase tracking-[0.1em]">Arriving Today, 6 PM</p>
-                                        <div className="h-px w-8 bg-white/20" />
-                                        <span className="material-symbols-outlined text-white/40 text-sm">local_shipping</span>
+                                    <div className="size-12 md:size-14 rounded-2xl bg-white/10 flex items-center justify-center text-white border border-white/10 group-hover:scale-110 transition-transform flex-shrink-0">
+                                        <span className="material-symbols-outlined text-xl md:text-2xl">arrow_forward</span>
                                     </div>
                                 </div>
-                                <div className="size-14 rounded-2xl bg-white/10 flex items-center justify-center text-white border border-white/10 group-hover:scale-110 transition-transform">
-                                    <span className="material-symbols-outlined text-2xl">arrow_forward</span>
+                            </div>
+
+                            {/* Rewards Card */}
+                            <div className="bg-gradient-to-br from-[#FFD700]/10 to-[#FFA500]/10 dark:from-[#FFD700]/5 dark:to-[#FFA500]/5 bg-white dark:bg-slate-800 rounded-[2rem] p-6 md:p-8 border border-slate-100 dark:border-white/5 shadow-xl relative overflow-hidden group cursor-pointer" onClick={() => router.push('/rewards')}>
+                                {/* Animated Background Glow */}
+                                <div className="absolute top-0 right-0 size-40 bg-[#FFD700]/20 blur-3xl rounded-full translate-x-20 -translate-y-20 group-hover:bg-[#FFD700]/30 transition-all duration-700" />
+
+                                <div className="relative z-10 flex items-center justify-between">
+                                    <div className="flex flex-col gap-1">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Membership Status</span>
+                                            <span className="material-symbols-outlined text-[#FFD700] text-sm filled">workspace_premium</span>
+                                        </div>
+                                        <h3 className="text-lg md:text-xl font-black font-outfit uppercase tracking-tight text-slate-900 dark:text-white mb-1">Gold Member</h3>
+                                        <div className="flex items-center gap-3">
+                                            <p className="text-[10px] md:text-[11px] font-black text-[#FFA500] uppercase tracking-[0.1em]">2,450 Points Available</p>
+                                        </div>
+                                    </div>
+                                    <div className="size-12 md:size-14 rounded-2xl bg-[#FFD700]/10 flex items-center justify-center text-[#FFD700] border border-[#FFD700]/20 group-hover:scale-110 transition-transform flex-shrink-0">
+                                        <span className="material-symbols-outlined text-xl md:text-2xl">loyalty</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
