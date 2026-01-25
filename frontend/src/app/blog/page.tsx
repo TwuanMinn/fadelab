@@ -59,8 +59,8 @@ export default function BlogPage() {
                             key={cat}
                             onClick={() => setActiveCategory(cat)}
                             className={`px-6 py-2.5 rounded-full text-sm font-black whitespace-nowrap transition-all ${activeCategory === cat
-                                    ? "bg-primary text-white shadow-lg shadow-primary/25"
-                                    : "bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 border border-slate-100 dark:border-slate-800 hover:border-primary/30"
+                                ? "bg-primary text-white shadow-lg shadow-primary/25"
+                                : "bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 border border-slate-100 dark:border-slate-800 hover:border-primary/30"
                                 }`}
                         >
                             {cat}
@@ -104,7 +104,10 @@ export default function BlogPage() {
                                 </div>
                                 <span className="text-sm font-bold text-slate-600 dark:text-slate-300">By Sarah Jenkins</span>
                             </div>
-                            <button className="flex items-center gap-2 bg-primary text-white font-black px-6 py-3 rounded-2xl hover:bg-blue-600 transition-all shadow-lg shadow-primary/20 group/btn">
+                            <button
+                                onClick={() => router.push('/blog/sustainable-furniture')}
+                                className="flex items-center gap-2 bg-primary text-white font-black px-6 py-3 rounded-2xl hover:bg-blue-600 transition-all shadow-lg shadow-primary/20 group/btn"
+                            >
                                 <span>Read More</span>
                                 <span className="material-symbols-outlined text-[18px] group-hover/btn:translate-x-1 transition-transform">arrow_forward</span>
                             </button>
