@@ -193,8 +193,8 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 </div>
             </div>
 
-            <button className="w-full bg-[#2563EB] text-white font-black py-6 rounded-[1.5rem] shadow-xl shadow-blue-500/30 hover:scale-[1.01] active:scale-95 transition-all text-[15px] font-outfit">
-                Save Changes
+            <button className="w-full bg-[#2563EB] text-white font-black py-7 rounded-[2rem] shadow-xl shadow-blue-500/30 hover:scale-[1.01] active:scale-95 transition-all text-lg font-outfit uppercase tracking-wide">
+                Save Preferences
             </button>
 
 
@@ -797,8 +797,10 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 </div>
             </div>
 
-            <div className="text-center py-8">
-                <button className="text-[14px] font-black text-red-500 hover:text-red-600 transition-colors font-outfit">Cancel Subscription</button>
+            <div className="text-center py-8 px-4">
+                <button className="w-full border-2 border-red-100 dark:border-red-900/30 bg-red-50 dark:bg-red-900/10 text-red-500 dark:text-red-400 font-black py-6 rounded-[2rem] hover:bg-red-100 dark:hover:bg-red-950 hover:border-red-200 transition-all active:scale-95 uppercase tracking-widest text-xs font-outfit">
+                    Cancel Subscription
+                </button>
             </div>
         </motion.div>
     );
