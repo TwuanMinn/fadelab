@@ -6,7 +6,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
-export default function SearchPage() {
+import { Suspense } from 'react';
+
+function SearchContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [query, setQuery] = useState(searchParams.get("q") || "Velvet art deco sofa");
@@ -141,5 +143,13 @@ export default function SearchPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function SearchPage() {
+    return (
+        <Suspense>
+            <SearchContent />
+        </Suspense>
     );
 }

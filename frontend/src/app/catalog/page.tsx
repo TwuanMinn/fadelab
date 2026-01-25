@@ -6,7 +6,9 @@ import Image from "next/image";
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
-export default function Catalog() {
+import { Suspense } from 'react';
+
+function CatalogContent() {
     const router = useRouter();
     const [activeFilter, setActiveFilter] = useState<string | null>(null);
     const [selectedPrice, setSelectedPrice] = useState<string>("All");
@@ -436,7 +438,7 @@ export default function Catalog() {
                                     <h3 className="text-slate-900 dark:text-white font-black text-sm uppercase font-outfit tracking-tight line-clamp-2">{product.name}</h3>
                                     <div className="flex items-center gap-1 bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded-lg shrink-0">
                                         <span className="material-symbols-outlined text-[14px] text-amber-500 filled">star</span>
-                                        <span className="text-[10px] font-black text-amber-700 dark:text-amber-400">{product.rating}</span>
+                                        <span className="text-sm font-black text-amber-700 dark:text-amber-400">{product.rating}</span>
                                     </div>
                                 </div>
                                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">{product.brand} • {product.material}</p>
@@ -461,5 +463,13 @@ export default function Catalog() {
                 </AnimatePresence>
             </div>
         </div>
+    );
+}
+
+export default function Catalog() {
+    return (
+        <Suspense>
+            <CatalogContent />
+        </Suspense>
     );
 }
