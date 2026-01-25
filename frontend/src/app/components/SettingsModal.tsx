@@ -145,26 +145,11 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 </div>
             </div>
 
-            <button className="w-full bg-[#2563EB] text-white font-black py-4.5 rounded-[1.5rem] shadow-xl shadow-blue-500/30 hover:scale-[1.01] active:scale-95 transition-all text-[15px] font-outfit">
+            <button className="w-full bg-[#2563EB] text-white font-black py-6 rounded-[1.5rem] shadow-xl shadow-blue-500/30 hover:scale-[1.01] active:scale-95 transition-all text-[15px] font-outfit">
                 Save Changes
             </button>
 
-            <button
-                onClick={() => {
-                    onClose();
-                    router.push('/help');
-                }}
-                className="w-full bg-slate-50 dark:bg-slate-800/50 p-6 rounded-[2.5rem] border border-dashed border-slate-200 dark:border-slate-700 flex items-center justify-between group hover:border-primary transition-all"
-            >
-                <div className="flex items-center gap-4">
-                    <span className="material-symbols-outlined text-primary bg-white dark:bg-slate-800 size-12 rounded-2xl flex items-center justify-center shadow-sm">support_agent</span>
-                    <div className="text-left">
-                        <p className="font-black text-sm uppercase tracking-tighter dark:text-white">Support Center</p>
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Live chat, FAQs & feedback</p>
-                    </div>
-                </div>
-                <span className="material-symbols-outlined text-slate-300 group-hover:translate-x-1 transition-transform">arrow_forward</span>
-            </button>
+
         </motion.div>
     );
 
