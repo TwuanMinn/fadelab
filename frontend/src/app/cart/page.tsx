@@ -51,9 +51,34 @@ export default function Cart() {
         }
     ]);
 
+    const updateQuantity = (id: number, change: number) => {
+        setItems(items.map(item => {
+            if (item.id === id) {
+                const newQuantity = Math.max(1, item.quantity + change);
+                return { ...item, quantity: newQuantity };
+            }
+            return item;
+        }));
+    };
+
+    const removeItem = (id: number) => {
+        setItems(items.filter(item => item.id !== id));
+    };
+
+    const [promoCode, setPromoCode] = useState("");
+    const [discount, setDiscount] = useState(0);
+
+    const applyPromo = () => {
+        if (promoCode.toUpperCase() === "SAVE10") {
+            setDiscount(subtotal * 0.1);
+        } else {
+            setDiscount(0);
+        }
+    };
+
     const subtotal = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-    const tax = subtotal * 0.08;
-    const total = subtotal + tax;
+    const tax = (subtotal - discount) * 0.08;
+    const total = subtotal - discount + tax;
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-8">
@@ -89,7 +114,10 @@ export default function Cart() {
                                         <h3 className="font-bold text-slate-900 dark:text-white leading-tight">{item.name}</h3>
                                         <p className="text-sm text-slate-500 mt-1">{item.variant}</p>
                                     </div>
-                                    <button className="text-slate-400 hover:text-red-500 transition-colors">
+                                    <button
+                                        onClick={() => removeItem(item.id)}
+                                        className="text-slate-400 hover:text-red-500 transition-colors"
+                                    >
                                         <span className="material-symbols-outlined text-[20px]">delete</span>
                                     </button>
                                 </div>
@@ -97,9 +125,19 @@ export default function Cart() {
                                 <div className="flex justify-between items-center">
                                     <h4 className="font-bold text-lg text-slate-900 dark:text-white">${item.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</h4>
                                     <div className="flex items-center gap-3 bg-slate-100 dark:bg-slate-800 rounded-lg px-2 py-1">
-                                        <button className="size-6 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white">−</button>
+                                        <button
+                                            onClick={() => updateQuantity(item.id, -1)}
+                                            className="size-6 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white"
+                                        >
+                                            −
+                                        </button>
                                         <span className="text-sm font-bold w-4 text-center">{item.quantity}</span>
-                                        <button className="size-6 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white">+</button>
+                                        <button
+                                            onClick={() => updateQuantity(item.id, 1)}
+                                            className="size-6 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white"
+                                        >
+                                            +
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -115,12 +153,22 @@ export default function Cart() {
                         <div className="flex gap-2">
                             <div className="flex-1 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center px-4 h-12">
                                 <span className="material-symbols-outlined text-slate-400 text-[20px] mr-2">sell</span>
-                                <input type="text" placeholder="Enter code" className="bg-transparent border-none outline-none w-full text-sm font-medium" />
+                                <input
+                                    type="text"
+                                    placeholder="Try SAVE10"
+                                    value={promoCode}
+                                    onChange={(e) => setPromoCode(e.target.value)}
+                                    className="bg-transparent border-none outline-none w-full text-sm font-medium text-slate-900 dark:text-white"
+                                />
                             </div>
-                            <button className="px-6 h-12 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-900 dark:text-white font-bold text-sm rounded-xl transition-colors">
+                            <button
+                                onClick={applyPromo}
+                                className="px-6 h-12 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-900 dark:text-white font-bold text-sm rounded-xl transition-colors"
+                            >
                                 Apply
                             </button>
                         </div>
+                        {discount > 0 && <p className="text-xs text-green-600 font-bold mt-2 ml-1">Promo code applied!</p>}
                     </div>
 
                     {/* Order Summary */}
@@ -131,6 +179,12 @@ export default function Cart() {
                             <span>Subtotal</span>
                             <span className="font-medium text-slate-900 dark:text-white">${subtotal.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
                         </div>
+                        {discount > 0 && (
+                            <div className="flex justify-between text-green-600 text-sm">
+                                <span>Discount</span>
+                                <span className="font-bold">-${discount.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+                            </div>
+                        )}
                         <div className="flex justify-between text-slate-500 text-sm">
                             <span>Shipping Estimate</span>
                             <span className="font-bold text-green-600">Free</span>
