@@ -58,3 +58,21 @@ body {
 .font-outfit {
   font-family: 'Outfit', sans-serif;
 }
+
+/* Accessibility Filters */
+html.high-contrast {
+  filter: contrast(125%);
+}
+
+html.grayscale-mode {
+  filter: grayscale(100%);
+}
+
+html.bold-text * {
+  font-weight: 700 !important;
+}
+
+html.reduce-motion * {
+  transition: none !important;
+  animation: none !important;
+}

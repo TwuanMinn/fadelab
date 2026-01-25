@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 interface SettingsModalProps {
@@ -34,12 +34,60 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     const [smsSecurity, setSmsSecurity] = useState(true);
 
     // Accessibility States
+    // Accessibility States & Persistence
     const [fontSize, setFontSize] = useState(100);
     const [highContrast, setHighContrast] = useState(false);
     const [boldText, setBoldText] = useState(false);
     const [screenReader, setScreenReader] = useState(false);
     const [reduceMotion, setReduceMotion] = useState(false);
     const [colorCorrection, setColorCorrection] = useState("Off");
+
+    // Load settings from localStorage on mount
+    useEffect(() => {
+        const loadSettings = () => {
+            const storedFontSize = localStorage.getItem('acc_fontSize');
+            if (storedFontSize) setFontSize(parseInt(storedFontSize));
+
+            setHighContrast(localStorage.getItem('acc_highContrast') === 'true');
+            setBoldText(localStorage.getItem('acc_boldText') === 'true');
+            setScreenReader(localStorage.getItem('acc_screenReader') === 'true');
+            setReduceMotion(localStorage.getItem('acc_reduceMotion') === 'true');
+            const storedColor = localStorage.getItem('acc_colorCorrection');
+            if (storedColor) setColorCorrection(storedColor);
+        };
+        loadSettings();
+    }, []);
+
+    // Apply & Save Settings
+    useEffect(() => {
+        document.documentElement.style.fontSize = `${fontSize}%`;
+        localStorage.setItem('acc_fontSize', fontSize.toString());
+    }, [fontSize]);
+
+    useEffect(() => {
+        if (highContrast) document.documentElement.classList.add('high-contrast');
+        else document.documentElement.classList.remove('high-contrast');
+        localStorage.setItem('acc_highContrast', highContrast.toString());
+    }, [highContrast]);
+
+    useEffect(() => {
+        if (boldText) document.documentElement.classList.add('bold-text');
+        else document.documentElement.classList.remove('bold-text');
+        localStorage.setItem('acc_boldText', boldText.toString());
+    }, [boldText]);
+
+    useEffect(() => {
+        if (reduceMotion) document.documentElement.classList.add('reduce-motion');
+        else document.documentElement.classList.remove('reduce-motion');
+        localStorage.setItem('acc_reduceMotion', reduceMotion.toString());
+    }, [reduceMotion]);
+
+    useEffect(() => {
+        // Simple Color Correction Implementation
+        if (colorCorrection === "Grayscale") document.documentElement.classList.add('grayscale-mode');
+        else document.documentElement.classList.remove('grayscale-mode');
+        localStorage.setItem('acc_colorCorrection', colorCorrection);
+    }, [colorCorrection]);
 
     // Security States
     const [twoFactor, setTwoFactor] = useState(false);
