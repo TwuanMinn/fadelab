@@ -16,6 +16,7 @@ export default function Checkout() {
         cityStateZip: "San Francisco, CA 94103"
     });
     const [quantity, setQuantity] = useState(1);
+    const [saveCard, setSaveCard] = useState(false);
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-8">
@@ -194,9 +195,9 @@ export default function Checkout() {
                                     </div>
                                 </div>
 
-                                <label className="flex items-center gap-3 mt-2 cursor-pointer group">
-                                    <div className="size-6 border-2 border-slate-300 dark:border-slate-700 rounded-lg flex items-center justify-center group-hover:border-blue-500 transition-colors bg-white dark:bg-slate-900">
-                                        {/* Checkmark placeholder */}
+                                <label className="flex items-center gap-3 mt-2 cursor-pointer group select-none" onClick={(e) => { e.preventDefault(); setSaveCard(!saveCard); }}>
+                                    <div className={`size-6 border-2 rounded-lg flex items-center justify-center transition-all ${saveCard ? "bg-blue-600 border-blue-600" : "border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 group-hover:border-blue-500"}`}>
+                                        {saveCard && <span className="material-symbols-outlined text-white text-[16px] font-bold">check</span>}
                                     </div>
                                     <span className="text-sm font-medium text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Save this card for future purchases</span>
                                 </label>
