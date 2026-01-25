@@ -34,11 +34,61 @@ export default function Stores() {
             phone: "(555) 321-7654",
             distance: "4.8 mi",
             coordinates: { top: "65%", left: "70%" }
+        },
+        {
+            id: 4,
+            name: "Uptown Design Studio",
+            address: "1025 Lexington Ave, New York, NY",
+            status: "Open",
+            hours: "Until 7:00 PM",
+            phone: "(555) 246-8135",
+            distance: "2.1 mi",
+            coordinates: { top: "35%", left: "60%" }
+        },
+        {
+            id: 5,
+            name: "SoHo Boutique",
+            address: "99 Spring St, New York, NY",
+            status: "Open",
+            hours: "Until 9:00 PM",
+            phone: "(555) 135-7924",
+            distance: "1.8 mi",
+            coordinates: { top: "60%", left: "45%" }
+        },
+        {
+            id: 6,
+            name: "Queens Outlet",
+            address: "35-01 36th Ave, Astoria, NY",
+            status: "Closed",
+            hours: "Opens 11:00 AM",
+            phone: "(555) 864-2097",
+            distance: "5.4 mi",
+            coordinates: { top: "25%", left: "80%" }
+        },
+        {
+            id: 7,
+            name: "Jersey City Warehouse",
+            address: "150 Bay St, Jersey City, NJ",
+            status: "Open",
+            hours: "Until 6:00 PM",
+            phone: "(555) 753-9514",
+            distance: "4.2 mi",
+            coordinates: { top: "50%", left: "15%" }
+        },
+        {
+            id: 8,
+            name: "Staten Island Showroom",
+            address: "2655 Richmond Ave, Staten Island, NY",
+            status: "Open",
+            hours: "Until 8:00 PM",
+            phone: "(555) 951-3572",
+            distance: "12.5 mi",
+            coordinates: { top: "85%", left: "25%" }
         }
     ];
 
     return (
-        <div className="flex flex-col md:flex-row h-screen bg-slate-50 dark:bg-slate-950 overflow-hidden relative">
+        <div className="flex flex-col md:flex-row h-[100dvh] bg-slate-50 dark:bg-slate-950 overflow-hidden relative">
             {/* Header (Floating on Mobile, Sidebar Top on Desktop) */}
             <header className="absolute md:fixed top-0 inset-x-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-sm h-16 flex items-center px-4 justify-between md:w-[400px] md:border-b md:border-slate-200 md:dark:border-white/10">
                 <Link href="/" className="size-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-colors cursor-pointer">
@@ -49,7 +99,7 @@ export default function Stores() {
             </header>
 
             {/* Map Section (Order 2 on Desktop) */}
-            <div className="relative w-full h-[55%] md:h-full md:flex-1 md:order-2 bg-slate-200 overflow-hidden">
+            <div className="relative w-full h-[60%] md:h-full md:flex-1 md:order-2 bg-slate-200 overflow-hidden">
                 {/* Fake Map Background */}
                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1524661135-423995f22d0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2600&q=80')] bg-cover bg-center opacity-80 filter grayscale-[20%]">
                 </div>
@@ -87,7 +137,7 @@ export default function Stores() {
 
                 <div className="px-5 pb-4 md:px-6 flex-1 overflow-y-auto">
                     <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-1">Nearby Stores</h2>
-                    <p className="text-sm text-slate-500 mb-5">3 locations found near you</p>
+                    <p className="text-sm text-slate-500 mb-5">{stores.length} locations found near you</p>
 
                     <div className="flex flex-col gap-4 pb-8">
                         {stores.map((store) => (
