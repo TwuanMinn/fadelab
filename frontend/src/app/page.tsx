@@ -214,7 +214,7 @@ export default function Home() {
           width: { type: "spring", stiffness: 300, damping: 30 },
           opacity: { duration: 0.2 }
         }}
-        className="fixed bottom-8 left-0 right-0 mx-auto w-fit z-50 flex items-center px-4 py-3 rounded-full bg-white dark:bg-slate-900 border-2 border-black shadow-xl shadow-black/10 transition-colors duration-300 pointer-events-auto max-w-[95vw]"
+        className="fixed bottom-4 md:bottom-8 left-0 right-0 mx-auto w-fit z-50 flex items-center px-2 py-2 md:px-4 md:py-3 rounded-full bg-white dark:bg-slate-900 border-2 border-black shadow-xl shadow-black/10 transition-colors duration-300 pointer-events-auto max-w-[95vw]"
       >
         <AnimatePresence mode="wait" initial={false}>
           {!isSearchOpen ? (
@@ -230,7 +230,7 @@ export default function Home() {
                 onClick={handleProfileClick}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
-                className="relative size-12 mr-2 group cursor-pointer flex-shrink-0"
+                className="relative size-9 md:size-12 mr-1 md:mr-2 group cursor-pointer flex-shrink-0"
               >
                 <div className="w-full h-full rounded-full overflow-hidden border-2 border-black/10 dark:border-white/10 shadow-soft bg-slate-50 dark:bg-slate-800 flex items-center justify-center">
                   {isSignedIn ? (
@@ -242,7 +242,7 @@ export default function Home() {
                       className="object-cover w-full h-full"
                     />
                   ) : (
-                    <span className="material-symbols-outlined text-slate-600 dark:text-slate-400 text-[28px] font-bold group-hover:text-primary transition-colors">account_circle</span>
+                    <span className="material-symbols-outlined text-slate-600 dark:text-slate-400 text-[22px] md:text-[28px] font-bold group-hover:text-primary transition-colors">account_circle</span>
                   )}
                 </div>
 
@@ -254,7 +254,7 @@ export default function Home() {
               </motion.button>
 
               {/* Divider */}
-              <div className="w-px h-8 bg-slate-200 dark:bg-slate-700 mx-1 flex-shrink-0"></div>
+              <div className="w-px h-6 md:h-8 bg-slate-200 dark:bg-slate-700 mx-0.5 md:mx-1 flex-shrink-0"></div>
 
               {/* Dock Items */}
               {[
@@ -282,9 +282,9 @@ export default function Home() {
                   onClick={item.action}
                   whileHover={{ scale: 1.2, y: -5 }}
                   whileTap={{ scale: 0.9 }}
-                  className={`relative size-10 flex items-center justify-center rounded-full transition-all group flex-shrink-0 ${item.active ? 'bg-blue-50 dark:bg-blue-900/20' : 'hover:bg-slate-50 dark:hover:bg-slate-800'}`}
+                  className={`relative size-8 md:size-10 flex items-center justify-center rounded-full transition-all group flex-shrink-0 ${item.active ? 'bg-blue-50 dark:bg-blue-900/20' : 'hover:bg-slate-50 dark:hover:bg-slate-800'}`}
                 >
-                  <span className={`material-symbols-outlined text-[26px] font-bold ${item.active ? 'bg-gradient-to-tr from-primary to-secondary bg-clip-text text-transparent' : 'text-slate-600 dark:text-slate-400 group-hover:text-primary transition-colors'}`}>
+                  <span className={`material-symbols-outlined text-[20px] md:text-[26px] font-bold ${item.active ? 'bg-gradient-to-tr from-primary to-secondary bg-clip-text text-transparent' : 'text-slate-600 dark:text-slate-400 group-hover:text-primary transition-colors'}`}>
                     {item.icon}
                   </span>
                   {item.badge && (
@@ -540,7 +540,7 @@ export default function Home() {
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ duration: 0.3 }}
                     key={product.id}
-                    className="group relative flex flex-col bg-white dark:bg-slate-900 rounded-[2.5rem] overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.12)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.18)] hover:-translate-y-2 transition-all duration-500 border border-slate-300 dark:border-slate-700 ring-1 ring-slate-900/5 dark:ring-white/10"
+                    className="group relative flex flex-col bg-white dark:bg-slate-900 rounded-2xl md:rounded-[2.5rem] overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.12)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.18)] hover:-translate-y-2 transition-all duration-500 border border-slate-200 dark:border-slate-700 ring-1 ring-slate-900/5 dark:ring-white/10"
                   >
                     <Link href={`/product/${product.id}`} className="absolute inset-0 z-10">
                       <span className="sr-only">View {product.name}</span>
@@ -550,8 +550,8 @@ export default function Home() {
                     <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-50 dark:bg-white/5">
                       {/* Discount Tag */}
                       {product.discount && (
-                        <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1.5 rounded-xl z-20 shadow-lg shadow-red-500/20">
-                          <span className="text-[10px] font-black uppercase tracking-wider">{product.discount}</span>
+                        <div className="absolute top-2 left-2 md:top-4 md:left-4 bg-red-500 text-white px-2 py-1 md:px-3 md:py-1.5 rounded-lg md:rounded-xl z-20 shadow-lg shadow-red-500/20">
+                          <span className="text-[8px] md:text-[10px] font-black uppercase tracking-wider">{product.discount}</span>
                         </div>
                       )}
 
@@ -562,24 +562,24 @@ export default function Home() {
                     </div>
 
                     {/* Content Section */}
-                    <div className="p-6 flex flex-col gap-5">
+                    <div className="p-3 md:p-6 flex flex-col gap-2 md:gap-5">
                       <div className="flex justify-between items-start">
-                        <div>
-                          <h4 className="text-charcoal dark:text-white font-display font-bold text-xl leading-snug mb-1.5 group-hover:text-primary transition-colors">{product.name}</h4>
-                          <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">{product.category}</p>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-charcoal dark:text-white font-display font-bold text-sm md:text-xl leading-snug mb-0.5 md:mb-1.5 group-hover:text-primary transition-colors line-clamp-2">{product.name}</h4>
+                          <p className="text-slate-400 text-[10px] md:text-xs font-bold uppercase tracking-wider">{product.category}</p>
                         </div>
-                        <div className="flex items-center gap-1.5 bg-amber-50 dark:bg-amber-900/20 px-2.5 py-1 rounded-lg">
-                          <span className="material-symbols-outlined text-[18px] text-amber-500 fill-current">star</span>
-                          <span className="text-sm font-bold text-amber-700 dark:text-amber-400">{product.rating}</span>
+                        <div className="flex items-center gap-1 bg-amber-50 dark:bg-amber-900/20 px-1.5 py-0.5 md:px-2.5 md:py-1 rounded-md md:rounded-lg shrink-0 ml-1">
+                          <span className="material-symbols-outlined text-[14px] md:text-[18px] text-amber-500 fill-current">star</span>
+                          <span className="text-[10px] md:text-sm font-bold text-amber-700 dark:text-amber-400">{product.rating}</span>
                         </div>
                       </div>
 
                       <div className="flex items-center justify-between mt-auto">
                         <div className="flex flex-col">
-                          {product.oldPrice && <span className="text-xs text-slate-400 line-through decoration-slate-400 mb-0.5">${product.oldPrice}</span>}
-                          <span className="text-3xl font-display font-bold text-charcoal dark:text-white">${product.price}</span>
+                          {product.oldPrice && <span className="text-[10px] md:text-xs text-slate-400 line-through decoration-slate-400 mb-0.5">${product.oldPrice}</span>}
+                          <span className="text-xl md:text-3xl font-display font-bold text-charcoal dark:text-white">${product.price}</span>
                         </div>
-                        <div className="opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 ease-out z-20">
+                        <div className="opacity-100 md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0 transition-all duration-500 ease-out z-20">
                           <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
@@ -587,10 +587,10 @@ export default function Home() {
                               e.stopPropagation();
                               router.push('/cart');
                             }}
-                            className="bg-primary hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg shadow-blue-500/30 flex items-center gap-2.5 transition-colors hover:shadow-blue-500/50"
+                            className="bg-primary hover:bg-blue-600 text-white p-2 md:px-6 md:py-3 rounded-lg md:rounded-xl font-bold text-sm shadow-lg shadow-blue-500/30 flex items-center gap-0 md:gap-2.5 transition-colors hover:shadow-blue-500/50"
                           >
-                            <span className="material-symbols-outlined text-[20px]">shopping_bag</span>
-                            Add
+                            <span className="material-symbols-outlined text-[18px] md:text-[20px]">shopping_bag</span>
+                            <span className="hidden md:inline">Add</span>
                           </motion.button>
                         </div>
                       </div>
@@ -600,20 +600,33 @@ export default function Home() {
               </AnimatePresence>
             </motion.div>
 
-            {visibleCount < sortedProducts.length && (
-              <div className="flex justify-center mt-12 w-full">
+            {/* Show More / Show Less Buttons */}
+            <div className="flex justify-center gap-3 mt-8 md:mt-12 w-full">
+              {visibleCount > 6 && (
                 <button
-                  onClick={() => setVisibleCount((prev) => prev + 6)}
-                  className="group relative px-8 py-3 rounded-2xl bg-white dark:bg-white/10 text-slate-900 dark:text-white font-bold text-sm border border-slate-200 dark:border-white/10 hover:border-primary dark:hover:border-primary overflow-hidden transition-all shadow-sm hover:shadow-lg active:scale-95"
+                  onClick={() => setVisibleCount(6)}
+                  className="group relative px-6 py-2.5 md:px-8 md:py-3 rounded-xl md:rounded-2xl bg-white dark:bg-white/10 text-slate-900 dark:text-white font-bold text-xs md:text-sm border border-slate-200 dark:border-white/10 hover:border-slate-400 dark:hover:border-white/30 overflow-hidden transition-all shadow-sm hover:shadow-lg active:scale-95"
                 >
-                  <div className="absolute inset-0 bg-primary/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                  <div className="relative flex items-center gap-2">
-                    Show More Products
-                    <span className="material-symbols-outlined text-[20px] group-hover:translate-y-0.5 transition-transform">expand_more</span>
+                  <div className="absolute inset-0 bg-slate-100 dark:bg-white/5 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                  <div className="relative flex items-center gap-1.5 md:gap-2">
+                    <span className="material-symbols-outlined text-[16px] md:text-[20px] group-hover:-translate-y-0.5 transition-transform">expand_less</span>
+                    <span className="hidden sm:inline">Show Less</span>
                   </div>
                 </button>
-              </div>
-            )}
+              )}
+              {visibleCount < sortedProducts.length && (
+                <button
+                  onClick={() => setVisibleCount((prev) => prev + 6)}
+                  className="group relative px-6 py-2.5 md:px-8 md:py-3 rounded-xl md:rounded-2xl bg-white dark:bg-white/10 text-slate-900 dark:text-white font-bold text-xs md:text-sm border border-slate-200 dark:border-white/10 hover:border-primary dark:hover:border-primary overflow-hidden transition-all shadow-sm hover:shadow-lg active:scale-95"
+                >
+                  <div className="absolute inset-0 bg-primary/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                  <div className="relative flex items-center gap-1.5 md:gap-2">
+                    <span className="hidden sm:inline">Show More</span>
+                    <span className="material-symbols-outlined text-[16px] md:text-[20px] group-hover:translate-y-0.5 transition-transform">expand_more</span>
+                  </div>
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Promo Banner - Bento Grid Style */}

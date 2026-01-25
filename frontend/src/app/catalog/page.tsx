@@ -282,6 +282,12 @@ function CatalogContent() {
         }
     ];
 
+    const [visibleCount, setVisibleCount] = useState(6);
+
+    useEffect(() => {
+        setVisibleCount(6);
+    }, [selectedPrice, selectedColor, selectedMaterial, selectedBrand]);
+
     const filteredProducts = useMemo(() => {
         return products.filter(p => {
             const priceMatch =
@@ -317,26 +323,26 @@ function CatalogContent() {
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-8 font-jakarta">
             {/* Header */}
-            <header className="sticky top-0 z-[60] bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-white/5 px-4 h-16 flex items-center justify-between">
-                <Link href="/" className="size-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-colors">
-                    <span className="material-symbols-outlined text-slate-900 dark:text-white">arrow_back</span>
+            <header className="sticky top-0 z-[60] bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-white/5 px-3 md:px-4 h-14 md:h-16 flex items-center justify-between">
+                <Link href="/" className="size-9 md:size-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-colors">
+                    <span className="material-symbols-outlined text-slate-900 dark:text-white text-[22px] md:text-[24px]">arrow_back</span>
                 </Link>
-                <h1 className="text-lg font-display font-bold text-slate-900 dark:text-white uppercase tracking-widest">Modern Sofas</h1>
-                <div className="flex items-center gap-2">
-                    <Link href="/design-ai" className="size-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-colors">
-                        <span className="material-symbols-outlined text-blue-500">auto_awesome</span>
+                <h1 className="text-sm md:text-lg font-display font-bold text-slate-900 dark:text-white uppercase tracking-widest">Catalog</h1>
+                <div className="flex items-center gap-1 md:gap-2">
+                    <Link href="/design-ai" className="size-9 md:size-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-colors">
+                        <span className="material-symbols-outlined text-blue-500 text-[20px] md:text-[24px]">auto_awesome</span>
                     </Link>
 
-                    <button className="relative size-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-colors">
-                        <span className="material-symbols-outlined text-slate-900 dark:text-white filled">shopping_cart</span>
-                        <span className="absolute top-2 right-2 size-2 bg-red-500 rounded-full border border-white dark:border-slate-900"></span>
+                    <button className="relative size-9 md:size-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-colors">
+                        <span className="material-symbols-outlined text-slate-900 dark:text-white filled text-[20px] md:text-[24px]">shopping_cart</span>
+                        <span className="absolute top-1.5 right-1.5 md:top-2 md:right-2 size-2 bg-red-500 rounded-full border border-white dark:border-slate-900"></span>
                     </button>
                 </div>
             </header>
 
             {/* Filters Area */}
-            <div className="sticky top-16 z-50 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-sm px-4 py-4 border-b border-slate-200 dark:border-white/5">
-                <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
+            <div className="sticky top-14 md:top-16 z-50 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur-sm px-3 md:px-4 py-3 md:py-4 border-b border-slate-200 dark:border-white/5">
+                <div className="flex items-center gap-2 md:gap-3 overflow-x-auto no-scrollbar">
                     <button
                         onClick={() => {
                             setSelectedPrice("All");
@@ -344,9 +350,9 @@ function CatalogContent() {
                             setSelectedMaterial("All");
                             setSelectedBrand("All");
                         }}
-                        className="size-10 flex-shrink-0 bg-white dark:bg-slate-900 rounded-full border border-slate-200 dark:border-white/10 flex items-center justify-center shadow-sm hover:scale-110 active:scale-95 transition-all"
+                        className="size-9 md:size-10 flex-shrink-0 bg-white dark:bg-slate-900 rounded-full border border-slate-200 dark:border-white/10 flex items-center justify-center shadow-sm hover:scale-110 active:scale-95 transition-all"
                     >
-                        <span className="material-symbols-outlined text-slate-700 dark:text-slate-300 text-[20px]">restart_alt</span>
+                        <span className="material-symbols-outlined text-slate-700 dark:text-slate-300 text-[18px] md:text-[20px]">restart_alt</span>
                     </button>
 
                     {Object.keys(filterOptions).map((filter) => {
@@ -357,13 +363,13 @@ function CatalogContent() {
                             <div key={filter} className="relative flex-shrink-0">
                                 <button
                                     onClick={() => setActiveFilter(activeFilter === filter ? null : filter)}
-                                    className={`h-11 px-6 rounded-2xl flex items-center gap-3 text-[11px] font-black uppercase tracking-widest transition-all ${isActive
+                                    className={`h-9 md:h-11 px-4 md:px-6 rounded-xl md:rounded-2xl flex items-center gap-2 md:gap-3 text-[10px] md:text-[11px] font-black uppercase tracking-widest transition-all ${isActive
                                         ? "bg-primary text-white shadow-lg shadow-primary/20 border-transparent"
                                         : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-white/10 hover:border-primary/50"
                                         }`}
                                 >
                                     {isActive ? val : filter}
-                                    <span className={`material-symbols-outlined text-[18px] transition-transform ${activeFilter === filter ? "rotate-180" : ""}`}>
+                                    <span className={`material-symbols-outlined text-[16px] md:text-[18px] transition-transform ${activeFilter === filter ? "rotate-180" : ""}`}>
                                         expand_more
                                     </span>
                                 </button>
@@ -374,13 +380,13 @@ function CatalogContent() {
                                             initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                             animate={{ opacity: 1, y: 0, scale: 1 }}
                                             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                            className="absolute top-full left-0 mt-3 w-56 bg-white dark:bg-slate-900 rounded-[1.5rem] shadow-2xl border border-slate-100 dark:border-slate-800 p-2 z-[70] overflow-hidden"
+                                            className="absolute top-full left-0 mt-3 w-48 md:w-56 bg-white dark:bg-slate-900 rounded-xl md:rounded-[1.5rem] shadow-2xl border border-slate-100 dark:border-slate-800 p-1.5 md:p-2 z-[70] overflow-hidden"
                                         >
                                             {filterOptions[filter as keyof typeof filterOptions].map((opt) => (
                                                 <button
                                                     key={opt}
                                                     onClick={() => handleFilterClick(filter, opt)}
-                                                    className={`w-full text-left px-5 py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${val === opt
+                                                    className={`w-full text-left px-4 py-3 md:px-5 md:py-3.5 rounded-lg md:rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${val === opt
                                                         ? "bg-primary/10 text-primary"
                                                         : "text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800"
                                                         }`}
@@ -398,69 +404,97 @@ function CatalogContent() {
             </div>
 
             {/* Product Grid */}
-            <div className="px-5 pt-8 pb-32 max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                <AnimatePresence mode="popLayout">
-                    {filteredProducts.map((product) => (
-                        <motion.div
-                            layout
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.9 }}
-                            key={product.id}
-                            className="flex flex-col gap-4 group relative"
-                        >
-                            <Link href={`/product/${product.id}`} className="absolute inset-0 z-10">
-                                <span className="sr-only">View {product.name}</span>
-                            </Link>
+            <div className="px-3 md:px-5 pt-6 md:pt-8 pb-32 max-w-7xl mx-auto">
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-8">
+                    <AnimatePresence mode="popLayout">
+                        {filteredProducts.slice(0, visibleCount).map((product) => (
+                            <motion.div
+                                layout
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.9 }}
+                                key={product.id}
+                                className="flex flex-col gap-2 md:gap-4 group relative"
+                            >
+                                <Link href={`/product/${product.id}`} className="absolute inset-0 z-10">
+                                    <span className="sr-only">View {product.name}</span>
+                                </Link>
 
-                            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[2.5rem] bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm group-hover:shadow-2xl transition-all duration-500">
-                                <Image
-                                    src={product.image}
-                                    alt={product.name}
-                                    fill
-                                    className="object-cover transition-transform duration-700 group-hover:scale-110"
-                                />
+                                <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl md:rounded-[2.5rem] bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-sm group-hover:shadow-2xl transition-all duration-500">
+                                    <Image
+                                        src={product.image}
+                                        alt={product.name}
+                                        fill
+                                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                                    />
 
-                                <div className="absolute top-4 inset-x-4 flex justify-between items-start z-20">
-                                    {product.tag && (
-                                        <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest shadow-xl ${product.tag.includes('%') ? 'bg-red-500 text-white' : 'bg-slate-900/80 dark:bg-white/80 backdrop-blur-md text-white dark:text-slate-900'
-                                            }`}>
-                                            {product.tag}
-                                        </span>
-                                    )}
-                                </div>
-
-
-                            </div>
-
-                            <div className="px-2">
-                                <div className="flex justify-between items-start gap-2 mb-1">
-                                    <h3 className="text-slate-900 dark:text-white font-black text-sm uppercase font-outfit tracking-tight line-clamp-2">{product.name}</h3>
-                                    <div className="flex items-center gap-1 bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded-lg shrink-0">
-                                        <span className="material-symbols-outlined text-[14px] text-amber-500 filled">star</span>
-                                        <span className="text-sm font-black text-amber-700 dark:text-amber-400">{product.rating}</span>
-                                    </div>
-                                </div>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">{product.brand} • {product.material}</p>
-
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-baseline gap-2">
-                                        <span className="text-xl font-black text-primary font-outfit tracking-tighter">${product.price}</span>
-                                        {product.originalPrice && (
-                                            <span className="text-xs text-slate-400 line-through font-bold">${product.originalPrice}</span>
+                                    <div className="absolute top-2 inset-x-2 md:top-4 md:inset-x-4 flex justify-between items-start z-20">
+                                        {product.tag && (
+                                            <span className={`px-2 py-1 md:px-4 md:py-1.5 rounded-lg md:rounded-full text-[8px] md:text-[9px] font-black uppercase tracking-widest shadow-xl ${product.tag.includes('%') ? 'bg-red-500 text-white' : 'bg-slate-900/80 dark:bg-white/80 backdrop-blur-md text-white dark:text-slate-900'
+                                                }`}>
+                                                {product.tag}
+                                            </span>
                                         )}
                                     </div>
-                                    <button
-                                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                                        className="size-10 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center hover:bg-primary dark:hover:bg-primary dark:hover:text-white transition-all shadow-xl active:scale-90"
-                                    >
-                                        <span className="material-symbols-outlined text-[20px]">shopping_cart</span>
-                                    </button>
                                 </div>
+
+                                <div className="px-1 md:px-2">
+                                    <div className="flex justify-between items-start gap-1 md:gap-2 mb-0.5 md:mb-1">
+                                        <h3 className="text-slate-900 dark:text-white font-black text-xs md:text-sm uppercase font-outfit tracking-tight line-clamp-2">{product.name}</h3>
+                                        <div className="flex items-center gap-0.5 md:gap-1 bg-amber-50 dark:bg-amber-900/20 px-1.5 py-0.5 md:px-2 md:py-0.5 rounded-md md:rounded-lg shrink-0">
+                                            <span className="material-symbols-outlined text-[12px] md:text-[14px] text-amber-500 filled">star</span>
+                                            <span className="text-[10px] md:text-sm font-black text-amber-700 dark:text-amber-400">{product.rating}</span>
+                                        </div>
+                                    </div>
+                                    <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 md:mb-4">{product.brand} • {product.material}</p>
+
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-baseline gap-1 md:gap-2">
+                                            <span className="text-base md:text-xl font-black text-primary font-outfit tracking-tighter">${product.price}</span>
+                                            {product.originalPrice && (
+                                                <span className="text-[10px] md:text-xs text-slate-400 line-through font-bold">${product.originalPrice}</span>
+                                            )}
+                                        </div>
+                                        <button
+                                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                                            className="size-8 md:size-10 rounded-xl md:rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 flex items-center justify-center hover:bg-primary dark:hover:bg-primary dark:hover:text-white transition-all shadow-xl active:scale-90"
+                                        >
+                                            <span className="material-symbols-outlined text-[16px] md:text-[20px]">shopping_cart</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
+                </div>
+
+                {/* Show More / Show Less Buttons */}
+                <div className="flex justify-center gap-3 mt-8 md:mt-12 w-full">
+                    {visibleCount > 6 && (
+                        <button
+                            onClick={() => setVisibleCount(6)}
+                            className="group relative px-5 py-2 md:px-8 md:py-3 rounded-xl md:rounded-2xl bg-white dark:bg-white/10 text-slate-900 dark:text-white font-bold text-xs md:text-sm border border-slate-200 dark:border-white/10 hover:border-slate-400 dark:hover:border-white/30 overflow-hidden transition-all shadow-sm hover:shadow-lg active:scale-95"
+                        >
+                            <div className="absolute inset-0 bg-slate-100 dark:bg-white/5 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                            <div className="relative flex items-center gap-1.5 md:gap-2">
+                                <span className="material-symbols-outlined text-[16px] md:text-[20px] group-hover:-translate-y-0.5 transition-transform">expand_less</span>
+                                <span className="hidden sm:inline">Show Less</span>
                             </div>
-                        </motion.div>
-                    ))}
-                </AnimatePresence>
+                        </button>
+                    )}
+                    {visibleCount < filteredProducts.length && (
+                        <button
+                            onClick={() => setVisibleCount((prev) => prev + 6)}
+                            className="group relative px-5 py-2 md:px-8 md:py-3 rounded-xl md:rounded-2xl bg-white dark:bg-white/10 text-slate-900 dark:text-white font-bold text-xs md:text-sm border border-slate-200 dark:border-white/10 hover:border-primary dark:hover:border-primary overflow-hidden transition-all shadow-sm hover:shadow-lg active:scale-95"
+                        >
+                            <div className="absolute inset-0 bg-primary/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                            <div className="relative flex items-center gap-1.5 md:gap-2">
+                                <span className="hidden sm:inline">Show More</span>
+                                <span className="material-symbols-outlined text-[16px] md:text-[20px] group-hover:translate-y-0.5 transition-transform">expand_more</span>
+                            </div>
+                        </button>
+                    )}
+                </div>
             </div>
         </div>
     );
