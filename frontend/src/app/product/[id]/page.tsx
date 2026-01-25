@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
+import WriteReviewModal from "../../components/WriteReviewModal";
 
 export default function ProductDetail() {
     const { id } = useParams();
@@ -12,6 +13,7 @@ export default function ProductDetail() {
     const [quantity, setQuantity] = useState(1);
     const [activeImageIndex, setActiveImageIndex] = useState(0);
     const [activeColor, setActiveColor] = useState("Ocean Blue");
+    const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
 
     // Mock product data (in a real app, this would come from an API based on 'id')
@@ -395,7 +397,7 @@ export default function ProductDetail() {
                                             Read All 124 Reviews
                                         </button>
                                         <button
-                                            onClick={() => router.push(`/product/${id}/reviews`)}
+                                            onClick={() => setIsReviewModalOpen(true)}
                                             className="bg-primary hover:bg-blue-600 text-white font-black px-10 py-4 rounded-2xl shadow-xl shadow-primary/25 flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-95"
                                         >
                                             <span className="material-symbols-outlined">rate_review</span>
@@ -436,6 +438,12 @@ export default function ProductDetail() {
                     </div>
                 </div>
             </div>
+
+            <WriteReviewModal
+                isOpen={isReviewModalOpen}
+                onClose={() => setIsReviewModalOpen(false)}
+                productName={product.name}
+            />
         </div>
     );
 }
