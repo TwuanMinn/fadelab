@@ -7,7 +7,10 @@ import SettingsModal from "./components/SettingsModal";
 import QRCodeModal from "./components/QRCodeModal";
 import PriceDropModal from "./components/PriceDropModal";
 import ProductCard from "./components/ProductCard";
+import AuthModal from "./components/AuthModal";
+import UserMenu from "./components/UserMenu";
 import { PRODUCTS } from "./data/products";
+import { useAuth } from "@/lib/auth-context";
 
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
@@ -34,7 +37,8 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [showToolbar, setShowToolbar] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [isSignedIn, setIsSignedIn] = useState(false);
+  const { user, loading: authLoading } = useAuth();
+  const isSignedIn = !!user;
   const [visibleCount, setVisibleCount] = useState(6);
 
   useEffect(() => {
@@ -192,32 +196,27 @@ export default function Home() {
               className="flex items-center gap-2 lg:gap-3 whitespace-nowrap overflow-x-auto hide-scrollbar px-1"
             >
               {/* Profile / Brand Icon */}
-              <motion.button
-                onClick={handleProfileClick}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="relative size-10 md:size-16 mr-1.5 md:mr-3 group cursor-pointer flex-shrink-0"
-              >
-                <div className="w-full h-full rounded-full overflow-hidden border-2 border-black/10 dark:border-white/10 shadow-soft bg-slate-50 dark:bg-slate-800 flex items-center justify-center">
-                  {isSignedIn ? (
-                    <Image
-                      src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
-                      alt="Profile"
-                      width={64}
-                      height={64}
-                      className="object-cover w-full h-full"
-                    />
-                  ) : (
+              {isSignedIn ? (
+                <div className="mr-1.5 md:mr-3 flex-shrink-0">
+                  <UserMenu />
+                </div>
+              ) : (
+                <motion.button
+                  onClick={() => setIsAuthModalOpen(true)}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="relative size-10 md:size-16 mr-1.5 md:mr-3 group cursor-pointer flex-shrink-0"
+                >
+                  <div className="w-full h-full rounded-full overflow-hidden border-2 border-black/10 dark:border-white/10 shadow-soft bg-slate-50 dark:bg-slate-800 flex items-center justify-center">
                     <span className="material-symbols-outlined text-slate-600 dark:text-slate-400 text-[24px] md:text-[40px] font-bold group-hover:text-primary transition-colors">account_circle</span>
-                  )}
-                </div>
-
-                {/* Hover Label */}
-                <div className="absolute -top-14 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-slate-900/90 dark:bg-white/90 backdrop-blur-md text-white dark:text-slate-900 text-[10px] font-black rounded-xl opacity-0 scale-50 translate-y-4 group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none whitespace-nowrap shadow-2xl z-[60] border border-white/10 dark:border-black/5 flex flex-col items-center">
-                  {isSignedIn ? 'Account' : 'Sign In'}
-                  <div className="absolute top-[90%] left-1/2 -translate-x-1/2 border-[6px] border-transparent border-t-slate-900/90 dark:border-t-white/90" />
-                </div>
-              </motion.button>
+                  </div>
+                  {/* Hover Label */}
+                  <div className="absolute -top-14 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-slate-900/90 dark:bg-white/90 backdrop-blur-md text-white dark:text-slate-900 text-[10px] font-black rounded-xl opacity-0 scale-50 translate-y-4 group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none whitespace-nowrap shadow-2xl z-[60] border border-white/10 dark:border-black/5 flex flex-col items-center">
+                    Sign In
+                    <div className="absolute top-[90%] left-1/2 -translate-x-1/2 border-[6px] border-transparent border-t-slate-900/90 dark:border-t-white/90" />
+                  </div>
+                </motion.button>
+              )}
 
               {/* Divider */}
               <div className="w-px h-5 md:h-8 bg-slate-200 dark:bg-slate-700 mx-0.5 md:mx-1 flex-shrink-0"></div>
@@ -596,240 +595,7 @@ export default function Home() {
       </main>
 
       {/* Auth Modal */}
-      <AnimatePresence>
-        {isAuthModalOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsAuthModalOpen(false)}
-              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-[420px] md:max-w-xl max-h-[85vh] bg-white rounded-[32px] overflow-hidden shadow-2xl flex flex-col"
-            >
-              {/* Modal Header Image */}
-              <div className="relative h-[180px] md:h-[200px] w-full shrink-0">
-                <Image
-                  src="https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                  alt="Login Header"
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                <div className="absolute bottom-6 left-8 text-white">
-                  <h2 className="text-2xl md:text-3xl font-bold mb-1">{authMode === 'signin' ? 'Welcome Back' : 'Create Account'}</h2>
-                  <p className="text-white/80 text-xs md:text-sm font-medium">
-                    {authMode === 'signin' ? 'Log in to access your premium comfort.' : 'Join Furnza today for exclusive access.'}
-                  </p>
-                </div>
-                <button
-                  onClick={() => setIsAuthModalOpen(false)}
-                  className="absolute top-4 right-4 size-8 rounded-full bg-white/20 backdrop-blur-lg flex items-center justify-center text-white hover:bg-white/40 transition-colors"
-                >
-                  <span className="material-symbols-outlined text-xl">close</span>
-                </button>
-              </div>
-
-              {/* Scrollable Content Container */}
-              <div className="overflow-y-auto flex-1 custom-scrollbar">
-                {/* Modal Content */}
-                <div className="p-6 md:p-8 pb-10">
-                  {/* Auth Mode Toggle */}
-                  <div className="mb-8 p-1 bg-slate-50 border-2 border-black rounded-2xl flex relative overflow-hidden w-full md:max-w-sm mx-auto shadow-sm">
-                    <motion.div
-                      animate={{ x: authMode === 'signin' ? 0 : '100%' }}
-                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                      className="absolute inset-y-0.5 left-0.5 w-[calc(50%-2px)] bg-black rounded-xl z-0"
-                    />
-                    <button
-                      onClick={() => setAuthMode('signin')}
-                      className={`relative z-10 flex-1 py-2 text-xs font-black transition-colors ${authMode === 'signin' ? 'text-white' : 'text-slate-500'}`}
-                    >
-                      SIGN IN
-                    </button>
-                    <button
-                      onClick={() => setAuthMode('signup')}
-                      className={`relative z-10 flex-1 py-2 text-xs font-black transition-colors ${authMode === 'signup' ? 'text-white' : 'text-slate-500'}`}
-                    >
-                      SIGN UP
-                    </button>
-                  </div>
-
-                  <div className="space-y-5">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-5">
-                      {/* Name (Signup only) */}
-                      <AnimatePresence mode="popLayout">
-                        {authMode === 'signup' && (
-                          <motion.div
-                            key="name"
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                          >
-                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Full Name</label>
-                            <input
-                              type="text"
-                              placeholder="Enter your name"
-                              className="w-full px-5 py-3.5 rounded-2xl border-2 border-black/10 bg-slate-50/30 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-black transition-all text-sm font-medium"
-                            />
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-
-                      {/* Email (Always visible) */}
-                      <div className={authMode === 'signup' ? '' : 'md:col-span-2'}>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Email</label>
-                        <input
-                          type="email"
-                          placeholder="Enter your email address"
-                          className="w-full px-5 py-3.5 rounded-2xl border-2 border-black/10 bg-slate-50/30 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-black transition-all text-sm font-medium"
-                        />
-                      </div>
-
-                      {/* Phone & Gender (Signup only) */}
-                      <AnimatePresence mode="popLayout">
-                        {authMode === 'signup' && (
-                          <>
-                            <motion.div key="phone" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}>
-                              <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Phone</label>
-                              <input
-                                type="tel"
-                                placeholder="012-345-678"
-                                className="w-full px-5 py-3.5 rounded-2xl border-2 border-black/10 bg-slate-50/30 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-black transition-all text-sm font-medium"
-                              />
-                            </motion.div>
-                            <motion.div key="gender" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}>
-                              <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Gender</label>
-                              <select className="w-full px-5 py-3.5 rounded-2xl border-2 border-black/10 bg-slate-50/30 text-slate-900 focus:outline-none focus:border-black transition-all text-sm font-medium appearance-none cursor-pointer">
-                                <option value="" disabled selected>Select</option>
-                                <option value="male">Male</option>
-                                <option value="female">Female</option>
-                                <option value="other">Other</option>
-                              </select>
-                            </motion.div>
-                          </>
-                        )}
-                      </AnimatePresence>
-
-                      {/* Password (Always visible) */}
-                      <div className="md:col-span-2">
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Password</label>
-                        <div className="relative">
-                          <input
-                            type={showPassword ? "text" : "password"}
-                            placeholder="Enter your password"
-                            className="w-full px-5 py-3.5 rounded-2xl border-2 border-black/10 bg-slate-50/30 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-black transition-all text-sm font-medium"
-                          />
-                          <button
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
-                          >
-                            <span className="material-symbols-outlined text-xl">
-                              {showPassword ? 'visibility_off' : 'visibility'}
-                            </span>
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Confirm Password (Signup only) */}
-                      <AnimatePresence mode="popLayout">
-                        {authMode === 'signup' && (
-                          <motion.div
-                            key="confirm"
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: 20 }}
-                            className="md:col-span-2"
-                          >
-                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Confirm Password</label>
-                            <div className="relative">
-                              <input
-                                type={showConfirmPassword ? "text" : "password"}
-                                placeholder="Confirm your password"
-                                className="w-full px-5 py-3.5 rounded-2xl border-2 border-black/10 bg-slate-50/30 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-black transition-all text-sm font-medium"
-                              />
-                              <button
-                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
-                              >
-                                <span className="material-symbols-outlined text-xl">
-                                  {showConfirmPassword ? 'visibility_off' : 'visibility'}
-                                </span>
-                              </button>
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  </div>
-
-                  {authMode === 'signin' && (
-                    <div className="flex justify-end mt-4">
-                      <button className="text-primary text-xs font-bold hover:underline tracking-tight">Forgot Password?</button>
-                    </div>
-                  )}
-
-                  <div className="mt-8 space-y-6">
-                    {authMode === 'signup' && (
-                      <div className="flex items-start gap-3 px-1">
-                        <input
-                          type="checkbox"
-                          className="mt-0.5 size-4 rounded border-slate-200 text-primary focus:ring-primary transition-all cursor-pointer"
-                          id="tos"
-                        />
-                        <label htmlFor="tos" className="text-[11px] font-semibold text-slate-500 leading-tight cursor-pointer">
-                          I agree to the <button className="text-primary hover:underline">Terms of Service</button> and <button className="text-primary hover:underline">Privacy Policy</button>
-                        </label>
-                      </div>
-                    )}
-
-                    <motion.button
-                      whileHover={{ scale: 1.01, boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1)" }}
-                      whileTap={{ scale: 0.99 }}
-                      onClick={() => {
-                        setIsSignedIn(true);
-                        setIsAuthModalOpen(false);
-                      }}
-                      className="w-full bg-black text-white font-bold py-4 rounded-2xl shadow-xl shadow-black/10 transition-all text-sm tracking-wide uppercase border-2 border-black"
-                    >
-                      {authMode === 'signin' ? 'Sign In' : 'Sign Up'}
-                    </motion.button>
-                  </div>
-
-                  <div className="relative my-8">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-slate-100"></div>
-                    </div>
-                    <div className="relative flex justify-center text-[10px] uppercase tracking-widest font-bold bg-white px-4 text-slate-400">
-                      Or Continue With
-                    </div>
-                  </div>
-
-                  <button className="w-full flex items-center justify-center gap-3 py-4 border-2 border-black rounded-2xl hover:bg-slate-50 transition-all shadow-sm hover:shadow-md">
-                    <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" alt="Google" className="w-5 h-5" />
-                    <span className="text-sm font-bold text-slate-900">Continue with Google</span>
-                  </button>
-
-                  <p className="mt-8 text-center text-xs font-semibold text-slate-400">
-                    {authMode === 'signin' ? "New to Furnza?" : "Already have an account?"}
-                    <button
-                      onClick={() => setAuthMode(authMode === 'signin' ? 'signup' : 'signin')}
-                      className="text-primary hover:underline ml-1"
-                    >
-                      {authMode === 'signin' ? "Create an Account" : "Sign In"}
-                    </button>
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
       <QRCodeModal isOpen={isQRCodeOpen} onClose={() => setIsQRCodeOpen(false)} url={currentUrl} />
     </div>
