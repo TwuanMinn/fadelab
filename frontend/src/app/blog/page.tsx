@@ -10,31 +10,38 @@ export default function BlogPage() {
     const router = useRouter();
     const [activeCategory, setActiveCategory] = useState("All Stories");
 
-    const categories = ["All Stories", "Trends", "Living Room", "DIY", "Care"];
+    const categories = ["All Stories", "Styling", "Design Theory", "Maintenance"];
 
     const latestArticles = [
         {
-            category: "STYLING",
+            category: "Styling",
             title: "5 Ways to Style a Blue Velvet Sofa",
+            slug: "styling-blue-velvet",
             excerpt: "From minimalist chic to bold eclectic, see how versatility meets luxury.",
             readTime: "3 min read",
             image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDQ0OKIkIYsdLF7fbcCBbmdnTdpGlbuyR0F0CNic1k-S4C0FkN5fQ0ukU0Zm11Zs4y2rJwby0SYDN6YuNrcSmH8jgLuUTyNCoeyYjX_-qJVtPk6KYVyNsylbK0PXblnUKFfzutRzI6AuHDXeeWtwVfYrM3B-UyO-yObrtFrganzUjZRepfEw-5yH0HxpqseRvDgvdusyEmUVRY9Y4YvE9mL6VaooV75brLoJVcBdJ731hsSLWup6bq98zN3ON_S4euSlUb86hrsEKI"
         },
         {
-            category: "DESIGN THEORY",
+            category: "Design Theory",
             title: "Minimalism vs. Maximalism: Finding Balance",
+            slug: "minimalism-vs-maximalism",
             excerpt: "Can these two opposing styles coexist in your modern home?",
             readTime: "7 min read",
             image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAYNtGl0I4Db-MZ8w98XyKbbN5oPi_yvtZtrjRTYIbqTCn7nux8Njl02HrWUfdHo-gIgU7YA_a3K8b-tfuoqyfu8m6CDxqKqtsAFGiXGri588PYwF55pRJUERjYqnUqqF7-JP5tyvlSim4N0ekExRRUn3U64bgPkvRmDnxn1LU7Ya-ePykYAXxHzn_uQNKyi5PkJXq6SGNJpb5aiDJLaPfE4fwflsDxa5xRG0izCqrqDjH2pGM1ZUXv4aJS_X_I0sUdRWmlpDTtGkQ"
         },
         {
-            category: "MAINTENANCE",
+            category: "Maintenance",
             title: "Wood Care 101: Preserve Your Oak Table",
+            slug: "wood-care-101",
             excerpt: "Simple oils and routines to keep your solid wood furniture lasting forever.",
             readTime: "4 min read",
             image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBelctOQQoK5mni0NJdBcze7fPaibOZUVSu_V9R1ZxVEzY1UhvxRf4eupv8HLOGvbeSTj0Wwttzq6JaaTGQ75ELYE4f7lt0yZ9CC9SIx0pleIukOnkrbDG8PvfvMbXMKMXLkhGndrhm4s4uxbw5TS7BHrnJwbFugyy0dTNEICWNIV5qwGt-tey9Qz5uIfFKnmpQtSXartRMcKGJk4UXivRtOETuYMBWCLi1YeHj3Rfuje33nZJ1pxwZS-WmZIeIfuVJhMkppDIkugc"
         }
     ];
+
+    const filteredArticles = activeCategory === "All Stories"
+        ? latestArticles
+        : latestArticles.filter(article => article.category === activeCategory);
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-[#0a0f16] text-slate-900 dark:text-white font-jakarta pb-32">
@@ -119,12 +126,13 @@ export default function BlogPage() {
                 <div className="space-y-8">
                     <div className="flex items-center justify-between">
                         <h3 className="text-xl font-black font-outfit italic tracking-tight">Latest Articles</h3>
-                        <Link href="#" className="text-sm font-bold text-primary hover:underline">View All</Link>
+                        <button onClick={() => setActiveCategory("All Stories")} className="text-sm font-bold text-primary hover:underline">View All</button>
                     </div>
 
                     <div className="grid gap-6">
-                        {latestArticles.map((article, idx) => (
+                        {filteredArticles.map((article, idx) => (
                             <motion.div
+                                onClick={() => router.push(`/blog/${article.slug}`)}
                                 initial={{ opacity: 0, x: -20 }}
                                 whileInView={{ opacity: 1, x: 0 }}
                                 transition={{ delay: idx * 0.1 }}

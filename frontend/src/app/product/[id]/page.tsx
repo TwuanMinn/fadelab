@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { getProductById } from "../../data/products";
 import WriteReviewModal from "../../components/WriteReviewModal";
 
 export default function ProductDetail() {
@@ -16,30 +17,37 @@ export default function ProductDetail() {
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
 
-    // Mock product data (in a real app, this would come from an API based on 'id')
+    const rawProduct = getProductById(id as string);
+
+    if (!rawProduct) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+                <h1 className="text-2xl font-bold mb-4">Product Not Found</h1>
+                <button onClick={() => router.push('/')} className="text-primary hover:underline">Back to Catalog</button>
+            </div>
+        );
+    }
+
     const product = {
-        id: id,
-        name: "Modern Lounge Chair",
-        price: 350.00,
-        oldPrice: 450.00,
-        rating: 4.8,
+        ...rawProduct,
+        oldPrice: (rawProduct as any).oldPrice || rawProduct.price * 1.25,
         reviewsCount: 124,
-        description: "Experience the perfect blend of mid-century modern design and contemporary comfort. This lounge chair features premium velvet upholstery, a solid wood frame, and ergonomic cushioning designed for hours of relaxation.",
+        description: "Experience the perfect blend of mid-century modern design and contemporary comfort. This piece features premium materials, a solid frame, and ergonomic cushioning designed for hours of relaxation.",
         colors: [
             { name: "Ocean Blue", hex: "#136dec" },
             { name: "Slate Grey", hex: "#36454F" },
             { name: "Cloud White", hex: "#E5E4E2" }
         ],
         images: [
-            "https://lh3.googleusercontent.com/aida-public/AB6AXuB_7VsadEQEVOjybdAwI_TvPq5JRJpWKZ2Pk51-WaKAv9mwEFOFdqhYpDKUEKB_AL_X_C4IpJE8s7eOTKbWkZMhPz0yrYHIHBHs3cs0PxlBXvyT2-yRWhtNefAuMSFUj2gpm9XFINqcHyJD2qZ2RZIVD1oj-hlYi44l8zePnOZBfHzgH0pm-IL55IzDvv07zd-228vphMgtA5R2chJDXQbuhx-_HsW2-QGrRIa6-fhATFwHY5MTgM0g8zum_1-NzxX8Qxob9Kl_uTM",
+            rawProduct.img,
             "https://lh3.googleusercontent.com/aida-public/AB6AXuBelctOQQoK5mni0NJdBcze7fPaibOZUVSu_V9R1ZxVEzY1UhvxRf4eupv8HLOGvbeSTj0Wwttzq6JaaTGQ75ELYE4f7lt0yZ9CC9SIx0pleIukOnkrbDG8PvfvMbXMKMXLkhGndrhm4s4uxbw5TS7BHrnJwbFugyy0dTNEICWNIV5qwGt-tey9Qz5uIfFKnmpQtSXartRMcKGJk4UXivRtOETuYMBWCLi1YeHj3Rfuje33nZJ1pxwZS-WmZIeIfuVJhMkppDIkugc",
             "https://lh3.googleusercontent.com/aida-public/AB6AXuBzsE1MhIeQ5QRyUnr-u5pzKorg5r81UbkoNNO8svp0gGHqZH6X7HHv1AkifcQcpNtmNYMY68EnrO_i2nQTQQ5dfKxYKCnK15ou-zbUClqAwzgNjqCVmUdPzIgVc1nltBiJQOp7w7RTO2mUg5f7dJGjSTwD-NMNy0T2IFnRzCqzGVrtByps01EES775H7m5jFhKm75amet0vMrvgQaMRu0ezNTzs81iYiI88Txicttfr10Lx-3so8H51nu2_jefvga3NuGNHq0m5Eo"
         ],
         specs: [
             { label: "Height", value: '32"', icon: "straighten" },
-            { label: "Material", value: "Velvet", icon: "chair" },
+            { label: "Material", value: "Premium", icon: "chair" },
             { label: "Load", value: "300 lbs", icon: "scale" },
-            { label: "Color", value: "Ocean", icon: "palette" },
+            { label: "Color", value: "Custom", icon: "palette" },
             { label: "Weight", value: "24 lbs", icon: "inventory_2" },
             { label: "Warranty", value: "2 Years", icon: "verified" }
         ],
@@ -48,7 +56,7 @@ export default function ProductDetail() {
             avatar: "https://lh3.googleusercontent.com/aida-public/AB6AXuAPYkZ8EV_1dMz4XffISVHQhmv2d_LGGVEa_JoZZjpk-JVgdtDCRXiEDoQgwb3sRAv_X8ogwqEbMU9LYWT91OIpYD2oLx6Y_I4CPU3sc__bVvgkyEG1hVG9surm2V3zN29-Lukl-YyIg8B5vhNun8zDpsdZlDYzMjX-e8iwRxLRh60GvIwth71mTpR8h3_A_l2bw9knY7XsLpFfDIlbtk5kh42PeCQdPLOtwTUzQah0lpiBz4ptzAaunXyY7DV4yfawcMKUjACfILo",
             rating: 5,
             time: "2d ago",
-            content: "Absolutely love this chair! The blue is vibrant and it adds such a nice pop of color to my living room. Very sturdy."
+            content: "Absolutely love this! It adds a nice pop of color to my living room. Very sturdy."
         }
     };
 
