@@ -948,14 +948,103 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                     </motion.div>
                 )}
 
-                {legalActiveTab !== "Terms" && (
-                    <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
-                        <div className="size-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center">
-                            <span className="material-symbols-outlined text-4xl text-slate-400">gavel</span>
+                {legalActiveTab === "Privacy" && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8 pt-4">
+                        <div className="space-y-10">
+                            <section>
+                                <h3 className="text-lg font-black text-slate-900 dark:text-white mb-4 font-outfit">Data Collection</h3>
+                                <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-4">We collect information you provide directly to us, such as when you create an account, make a purchase, or contact support.</p>
+                                <ul className="list-disc pl-5 space-y-2 text-sm text-slate-500 dark:text-slate-400 marker:text-primary">
+                                    <li><span className="font-bold text-slate-700 dark:text-slate-300">Personal Data:</span> Name, email, shipping address, and phone number.</li>
+                                    <li><span className="font-bold text-slate-700 dark:text-slate-300">Payment Data:</span> Encrypted payment information processed securely.</li>
+                                    <li><span className="font-bold text-slate-700 dark:text-slate-300">Usage Data:</span> Device type, browser version, and interaction metrics.</li>
+                                </ul>
+                            </section>
+                            <section>
+                                <h3 className="text-lg font-black text-slate-900 dark:text-white mb-4 font-outfit">How We Use Your Data</h3>
+                                <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">We use your data to provide, maintain, and improve our services, process transactions, and send you related information including confirmations and invoices.</p>
+                            </section>
                         </div>
-                        <h4 className="text-lg font-black dark:text-white">{legalActiveTab} Section</h4>
-                        <p className="text-sm text-slate-500 max-w-xs">Detailed {legalActiveTab.toLowerCase()} content is currently being updated for the 2024 season.</p>
-                    </div>
+                    </motion.div>
+                )}
+
+                {legalActiveTab === "Cookies" && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8 pt-4">
+                        <div className="space-y-6">
+                            <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">We use cookies to enhance your browsing experience, serve personalized ads or content, and analyze our traffic.</p>
+
+                            <div className="grid gap-4">
+                                {[
+                                    { title: "Essential Cookies", desc: "Necessary for the website to function. Cannot be disabled." },
+                                    { title: "Analytics Cookies", desc: "Help us understand how visitors interact with the website." },
+                                    { title: "Marketing Cookies", desc: "Used to track visitors across websites for ad targeting." }
+                                ].map((cookie, i) => (
+                                    <div key={i} className="border border-slate-100 dark:border-slate-800 rounded-2xl p-4 bg-slate-50/50 dark:bg-slate-900/50">
+                                        <h4 className="font-bold text-slate-900 dark:text-white text-sm mb-1">{cookie.title}</h4>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400">{cookie.desc}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+
+                {legalActiveTab === "Returns" && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8 pt-4">
+                        <div className="space-y-10">
+                            <section>
+                                <div className="bg-blue-50 dark:bg-blue-900/20 p-5 rounded-2xl border border-blue-100 dark:border-blue-900/50 mb-6">
+                                    <h3 className="text-lg font-black text-blue-900 dark:text-blue-100 mb-2 font-outfit">30-Day Happiness Guarantee</h3>
+                                    <p className="text-sm text-blue-700 dark:text-blue-300">If you're not completely satisfied with your purchase, return it within 30 days for a full refund.</p>
+                                </div>
+                            </section>
+
+                            <section>
+                                <h3 className="text-lg font-black text-slate-900 dark:text-white mb-4 font-outfit">Return Process</h3>
+                                <div className="relative pl-8 space-y-8 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-slate-200 dark:before:bg-slate-800">
+                                    {[
+                                        { title: "Initiate Return", desc: "Log in to your account and select 'Start Return' on your order." },
+                                        { title: "Pack Items", desc: "Place items in original packaging with all tags attached." },
+                                        { title: "Ship It", desc: "Use the prepaid shipping label sent to your email." },
+                                        { title: "Refund", desc: "Funds returned to original payment method within 5-7 days." }
+                                    ].map((step, i) => (
+                                        <div key={i} className="relative">
+                                            <span className="absolute -left-8 size-6 rounded-full bg-primary text-white text-[10px] font-black flex items-center justify-center border-4 border-white dark:border-slate-950 z-10">{i + 1}</span>
+                                            <h4 className="font-bold text-slate-900 dark:text-white text-sm">{step.title}</h4>
+                                            <p className="text-xs text-slate-500 mt-1">{step.desc}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </section>
+                        </div>
+                    </motion.div>
+                )}
+
+                {legalActiveTab === "Licenses" && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8 pt-4">
+                        <div className="space-y-6">
+                            <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">Furnza is built using open source software. We are grateful to the detailed contributors of the following projects:</p>
+
+                            <div className="grid gap-3">
+                                {[
+                                    { name: "React", lic: "MIT License", copyright: "© Meta Platforms, Inc." },
+                                    { name: "Next.js", lic: "MIT License", copyright: "© Vercel, Inc." },
+                                    { name: "Framer Motion", lic: "MIT License", copyright: "© Framer B.V." },
+                                    { name: "Tailwind CSS", lic: "MIT License", copyright: "© Tailwind Labs Inc." }
+                                ].map((lib, i) => (
+                                    <div key={i} className="flex items-center justify-between py-3 border-b border-slate-100 dark:border-slate-800 last:border-0">
+                                        <div>
+                                            <h4 className="font-bold text-slate-900 dark:text-white text-sm">{lib.name}</h4>
+                                            <p className="text-[10px] text-slate-400">{lib.copyright}</p>
+                                        </div>
+                                        <span className="bg-slate-100 dark:bg-slate-800 text-slate-500 text-[10px] font-bold px-2 py-1 rounded">
+                                            {lib.lic}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </motion.div>
                 )}
             </motion.div>
         );
