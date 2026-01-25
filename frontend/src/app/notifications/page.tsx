@@ -67,7 +67,7 @@ export default function NotificationsPage() {
 
     return (
         <div className="bg-slate-50 dark:bg-[#0a0f16] text-[#111418] dark:text-white min-h-screen font-jakarta">
-            <div className="relative flex min-h-screen w-full flex-col overflow-hidden max-w-2xl mx-auto bg-white dark:bg-[#0a0f16] shadow-2xl">
+            <div className="relative flex min-h-screen w-full flex-col overflow-hidden max-w-5xl mx-auto bg-white dark:bg-[#0a0f16] shadow-2xl transition-all">
                 {/* Header */}
                 <div className="sticky top-0 z-50 bg-white/95 dark:bg-[#0a0f16]/95 backdrop-blur-xl border-b border-slate-100 dark:border-slate-800">
                     <div className="flex items-center px-6 py-4 justify-between">
@@ -86,8 +86,8 @@ export default function NotificationsPage() {
                                 key={filter}
                                 onClick={() => setActiveFilter(filter)}
                                 className={`flex h-10 shrink-0 items-center justify-center rounded-full px-6 text-[10px] font-black uppercase tracking-widest transition-all ${activeFilter === filter
-                                        ? "bg-primary text-white shadow-xl shadow-primary/25 scale-105"
-                                        : "bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700"
+                                    ? "bg-primary text-white shadow-xl shadow-primary/25 scale-105"
+                                    : "bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700"
                                     }`}
                             >
                                 {filter}
@@ -97,7 +97,7 @@ export default function NotificationsPage() {
                 </div>
 
                 {/* Notifications List */}
-                <div className="flex-1 overflow-y-auto no-scrollbar pb-32">
+                <div className="flex-1 overflow-y-auto no-scrollbar pb-10">
                     {["Today", "Yesterday"].map((section) => {
                         const sectionNotifications = filteredNotifications.filter(n => n.section === section);
                         if (sectionNotifications.length === 0) return null;
@@ -107,7 +107,7 @@ export default function NotificationsPage() {
                                 <div className="px-6 py-4 bg-slate-50/50 dark:bg-slate-800/20">
                                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{section}</p>
                                 </div>
-                                <div className="flex flex-col">
+                                <div className="grid grid-cols-1 md:grid-cols-1 gap-0">
                                     {sectionNotifications.map((notif) => (
                                         <motion.div
                                             key={notif.id}
@@ -174,36 +174,6 @@ export default function NotificationsPage() {
                             </p>
                         </div>
                     )}
-                </div>
-
-                {/* Bottom Navigation */}
-                <div className="fixed bottom-0 left-0 right-0 max-w-2xl mx-auto z-50 bg-white/95 dark:bg-[#0a0f16]/95 backdrop-blur-xl border-t border-slate-100 dark:border-slate-800 pb-8 px-6">
-                    <div className="flex items-center justify-between h-20">
-                        <Link href="/" className="flex flex-col items-center justify-center flex-1 gap-1 text-slate-400 hover:text-primary transition-colors">
-                            <span className="material-symbols-outlined text-[26px]">home</span>
-                            <span className="text-[9px] font-black uppercase tracking-widest">Home</span>
-                        </Link>
-                        <Link href="/catalog" className="flex flex-col items-center justify-center flex-1 gap-1 text-slate-400 hover:text-primary transition-colors">
-                            <span className="material-symbols-outlined text-[26px]">grid_view</span>
-                            <span className="text-[9px] font-black uppercase tracking-widest">Shop</span>
-                        </Link>
-                        <div className="flex-1 flex justify-center -mt-10">
-                            <Link href="/design-ai" className="size-16 rounded-[1.5rem] bg-gradient-to-br from-primary to-blue-600 shadow-2xl shadow-primary/40 flex flex-col items-center justify-center text-white border-4 border-white dark:border-[#0a0f16] transform hover:scale-110 active:scale-95 transition-all">
-                                <span className="material-symbols-outlined text-[28px] filled">auto_awesome</span>
-                            </Link>
-                        </div>
-                        <button className="flex flex-col items-center justify-center flex-1 gap-1 text-primary">
-                            <div className="relative">
-                                <span className="material-symbols-outlined text-[26px] filled">notifications</span>
-                                <span className="absolute -top-1 -right-1 size-2.5 bg-red-500 rounded-full border-2 border-white dark:border-[#0a0f16]"></span>
-                            </div>
-                            <span className="text-[9px] font-black uppercase tracking-widest">Inbox</span>
-                        </button>
-                        <button className="flex flex-col items-center justify-center flex-1 gap-1 text-slate-400 hover:text-primary transition-colors">
-                            <span className="material-symbols-outlined text-[26px]">person</span>
-                            <span className="text-[9px] font-black uppercase tracking-widest">Profile</span>
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>

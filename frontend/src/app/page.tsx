@@ -9,7 +9,7 @@ import PriceDropModal from "./components/PriceDropModal";
 
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 
 export default function Home() {
   const router = useRouter();
@@ -27,6 +27,69 @@ export default function Home() {
   const [currentUrl, setCurrentUrl] = useState("https://furnza.vercel.app");
   const [searchQuery, setSearchQuery] = useState("");
   const [isPriceDropOpen, setIsPriceDropOpen] = useState(false);
+  const [sortBy, setSortBy] = useState<'newest' | 'price-low' | 'price-high' | 'rating'>('newest');
+  const [isSortOpen, setIsSortOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [showToolbar, setShowToolbar] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const [isSignedIn, setIsSignedIn] = useState(false);
+
+  const products = useMemo(() => [
+    // Chairs (5 items)
+    { id: 1, name: 'Velvet Lounge Chair', price: 120, category: 'Chairs', rating: 4.8, img: 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+    { id: 2, name: 'Nordic Dining Chair', price: 85, category: 'Chairs', rating: 4.5, img: 'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+    { id: 101, name: 'Ergo Office Chair', price: 250, category: 'Chairs', rating: 4.7, img: 'https://images.unsplash.com/photo-1505843490538-5133c6c7d0e1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+    { id: 102, name: 'Rattan Accent Chair', price: 180, category: 'Chairs', rating: 4.6, img: 'https://images.unsplash.com/photo-1519947486511-46149fa0a254?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+    { id: 103, name: 'Modern Armchair', price: 320, category: 'Chairs', rating: 4.9, img: 'https://images.unsplash.com/photo-1580480055273-228ff5388ef8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+
+    // Lighting (5 items)
+    { id: 3, name: 'Arc Floor Lamp', price: 160, category: 'Lighting', rating: 4.9, oldPrice: 200, discount: '-20%', img: 'https://images.unsplash.com/photo-1507473888900-52e1ad142756?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+    { id: 201, name: 'Industrial Pendant', price: 89, category: 'Lighting', rating: 4.4, img: 'https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+    { id: 202, name: 'Minimalist Desk Lamp', price: 45, category: 'Lighting', rating: 4.6, img: 'https://images.unsplash.com/photo-1534349762913-96c22b678f20?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+    { id: 203, name: 'Glass Chandelier', price: 450, category: 'Lighting', rating: 4.8, img: 'https://images.unsplash.com/photo-1543198615-8d5f921b6392?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+    { id: 204, name: 'Wall Sconce Pair', price: 120, category: 'Lighting', rating: 4.5, img: 'https://images.unsplash.com/photo-1533132649069-42b4d9622d9b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+
+    // Tables (5 items)
+    { id: 4, name: 'Oak Side Table', price: 95, category: 'Tables', rating: 4.6, img: 'https://images.unsplash.com/photo-1532323544230-7191fd515c94?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+    { id: 301, name: 'Marble Coffee Table', price: 350, category: 'Tables', rating: 4.8, img: 'https://images.unsplash.com/photo-1622372738946-62e02505feb3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+    { id: 302, name: 'Glass Dining Table', price: 550, category: 'Tables', rating: 4.5, img: 'https://images.unsplash.com/photo-1577140917170-285929ea5518?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+    { id: 303, name: 'Rustic Console', price: 280, category: 'Tables', rating: 4.4, img: 'https://images.unsplash.com/photo-1533090481720-856c6e3c1fdc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+    { id: 304, name: 'Bedside Nightstand', price: 85, category: 'Tables', rating: 4.3, img: 'https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+
+    // Sofa (5 items)
+    { id: 5, name: 'Modern Sofa', price: 890, category: 'Sofa', rating: 4.7, img: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80' },
+    { id: 9, name: 'Geometric Wool Rug', price: 240, category: 'Sofa', rating: 4.3, img: 'https://images.unsplash.com/photo-1575414003591-ece8d14161bb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+    { id: 401, name: 'Cloud Modular Sofa', price: 1450, category: 'Sofa', rating: 4.9, img: 'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+    { id: 402, name: 'Leather Chesterfield', price: 2100, category: 'Sofa', rating: 4.8, img: 'https://images.unsplash.com/photo-1484101403633-562f891dc89a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+    { id: 403, name: 'Minimalist Loveseat', price: 650, category: 'Sofa', rating: 4.5, img: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+
+    // Bedroom (5 items)
+    { id: 6, name: 'Wooden Shelf', price: 210, category: 'Bedroom', rating: 4.4, img: 'https://images.unsplash.com/photo-1594620302200-9a762244a156?ixlib=rb-4.0.3&auto=format&fit=crop&w=1139&q=80' },
+    { id: 7, name: 'Ceramic Vase', price: 45, category: 'Bedroom', rating: 4.8, img: 'https://images.unsplash.com/photo-1612196808214-b7e239e5f6b7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+    { id: 501, name: 'Queen Platform Bed', price: 850, category: 'Bedroom', rating: 4.7, img: 'https://images.unsplash.com/photo-1505693416388-b0346efee958?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+    { id: 502, name: 'Cozy Knit Throw', price: 85, category: 'Bedroom', rating: 4.6, img: 'https://images.unsplash.com/photo-1522771753062-82bc2379b451?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+    { id: 503, name: 'Oak Wardrobe', price: 1200, category: 'Bedroom', rating: 4.8, img: 'https://images.unsplash.com/photo-1595428774223-ef52624120d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+
+    // Kitchen (5 items)
+    { id: 8, name: 'Abstract Art', price: 120, category: 'Kitchen', rating: 5.0, img: 'https://images.unsplash.com/photo-1549490349-8643362247b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=774&q=80' },
+    { id: 601, name: 'Cookware Set', price: 299, category: 'Kitchen', rating: 4.8, img: 'https://images.unsplash.com/photo-1583947215259-38e31be8751f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+    { id: 602, name: 'Dinnerware Set', price: 150, category: 'Kitchen', rating: 4.6, img: 'https://images.unsplash.com/photo-1584269600519-112d071b35e6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+    { id: 603, name: 'Bar Stool (Set)', price: 220, category: 'Kitchen', rating: 4.5, img: 'https://images.unsplash.com/photo-1503602642458-232111445657?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+    { id: 604, name: 'Bamboo Board', price: 35, category: 'Kitchen', rating: 4.7, img: 'https://images.unsplash.com/photo-1534353436294-0dbd4bdac845?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' },
+  ], []);
+
+  const sortedProducts = useMemo(() => {
+    let result = products.filter(p => selectedCategory === 'All' || p.category === selectedCategory);
+
+    if (sortBy === 'price-low') {
+      result.sort((a, b) => a.price - b.price);
+    } else if (sortBy === 'price-high') {
+      result.sort((a, b) => b.price - a.price);
+    } else if (sortBy === 'rating') {
+      result.sort((a, b) => b.rating - a.rating);
+    }
+    return result;
+  }, [products, sortBy, selectedCategory]);
 
   // Drag Scroll Logic
   const sliderRef = useRef<HTMLDivElement>(null);
@@ -46,11 +109,28 @@ export default function Home() {
       setIsPriceDropOpen(true);
     }, 5000);
 
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY > 100) {
+        if (currentScrollY > lastScrollY) {
+          setShowToolbar(false);
+        } else {
+          setShowToolbar(true);
+        }
+      } else {
+        setShowToolbar(true);
+      }
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
     return () => {
       clearInterval(interval);
       clearTimeout(modalTimer);
+      window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [lastScrollY]);
 
   // Prevent hydration mismatch
   // if (!mounted) return null; // Removed to support SSR
@@ -79,7 +159,11 @@ export default function Home() {
   };
 
   const handleProfileClick = () => {
-    setIsAuthModalOpen(true);
+    if (!isSignedIn) {
+      setIsAuthModalOpen(true);
+    } else {
+      router.push('/help');
+    }
   };
 
   const container = {
@@ -117,7 +201,8 @@ export default function Home() {
         initial={false}
         animate={{
           width: isSearchOpen ? 'min(90vw, 500px)' : 'fit-content',
-          opacity: 1
+          opacity: showToolbar ? 1 : 0,
+          y: showToolbar ? 0 : 100,
         }}
         transition={{
           layout: { type: "spring", stiffness: 300, damping: 30 },
@@ -142,19 +227,23 @@ export default function Home() {
                 whileTap={{ scale: 0.95 }}
                 className="relative size-12 mr-2 group cursor-pointer flex-shrink-0"
               >
-                <div className="w-full h-full rounded-full overflow-hidden border-2 border-white dark:border-slate-700 shadow-soft">
-                  <Image
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
-                    alt="Profile"
-                    width={48}
-                    height={48}
-                    className="object-cover w-full h-full"
-                  />
+                <div className="w-full h-full rounded-full overflow-hidden border-2 border-black/10 dark:border-white/10 shadow-soft bg-slate-50 dark:bg-slate-800 flex items-center justify-center">
+                  {isSignedIn ? (
+                    <Image
+                      src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80"
+                      alt="Profile"
+                      width={48}
+                      height={48}
+                      className="object-cover w-full h-full"
+                    />
+                  ) : (
+                    <span className="material-symbols-outlined text-slate-600 dark:text-slate-400 text-[28px] font-bold group-hover:text-primary transition-colors">account_circle</span>
+                  )}
                 </div>
 
                 {/* Hover Label */}
                 <div className="absolute -top-14 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-slate-900/90 dark:bg-white/90 backdrop-blur-md text-white dark:text-slate-900 text-[10px] font-black rounded-xl opacity-0 scale-50 translate-y-4 group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none whitespace-nowrap shadow-2xl z-[60] border border-white/10 dark:border-black/5 flex flex-col items-center">
-                  Profile
+                  {isSignedIn ? 'Account' : 'Sign In'}
                   <div className="absolute top-[90%] left-1/2 -translate-x-1/2 border-[6px] border-transparent border-t-slate-900/90 dark:border-t-white/90" />
                 </div>
               </motion.button>
@@ -168,20 +257,19 @@ export default function Home() {
                 { icon: 'grid_view', label: 'Catalog', action: () => router.push('/catalog') },
                 { icon: 'search', label: 'Search', action: () => router.push('/search') },
                 { icon: 'shopping_bag', label: 'Cart', badge: 2, action: () => router.push('/cart') },
-                { icon: 'compare_arrows', label: 'Compare', action: () => router.push('/compare') },
                 { icon: 'notifications', label: 'Inbox', badge: 2, action: () => router.push('/notifications') },
-                { icon: 'local_shipping', label: 'Track', action: () => router.push('/tracking') },
-                { icon: 'workspace_premium', label: 'Rewards', action: () => router.push('/rewards') },
+                ...(isSignedIn ? [
+                  { icon: 'local_shipping', label: 'Track', action: () => router.push('/tracking') },
+                  { icon: 'workspace_premium', label: 'Rewards', action: () => router.push('/rewards') },
+                ] : []),
                 { icon: 'article', label: 'Blog', action: () => router.push('/blog') },
                 { icon: 'location_on', label: 'Stores', action: () => router.push('/stores') },
-                { icon: 'work', label: 'Careers', action: () => router.push('/careers') },
                 { icon: 'auto_awesome', label: 'Design AI', action: () => router.push('/design-ai') },
                 { icon: 'translate', label: 'Translate' },
                 { icon: copied ? 'check_circle' : 'content_copy', label: copied ? 'Copied' : 'Copy Link', action: handleCopy },
                 { icon: 'share', label: 'Share', action: handleShare },
                 { icon: 'qr_code_scanner', label: 'QR Scan', action: () => setIsQRCodeOpen(true) },
                 { icon: mounted && theme === 'dark' ? 'light_mode' : 'dark_mode', label: 'Theme', action: toggleTheme },
-                { icon: 'help', label: 'Help', action: () => router.push('/help') },
                 { icon: 'settings', label: 'Settings', action: () => setIsSettingsOpen(true) },
               ].map((item, idx) => (
                 <motion.button
@@ -290,6 +378,7 @@ export default function Home() {
                 transition={{ delay: 0.5 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => router.push('/catalog')}
                 className="bg-gradient-to-r from-primary to-secondary text-white font-semibold py-3.5 px-8 rounded-xl shadow-glow transition-all w-full md:w-auto inline-flex items-center justify-center gap-2 border-2 border-white/20"
               >
                 Shop Now
@@ -305,7 +394,10 @@ export default function Home() {
           <div className="mb-14">
             <div className="flex items-center justify-between px-1 mb-6">
               <h3 className="text-charcoal dark:text-white text-3xl font-display font-medium tracking-tight">Browse by Category</h3>
-              <button className="text-bronze dark:text-secondary text-sm font-bold hover:underline">View All</button>
+              <button
+                onClick={() => router.push('/catalog')}
+                className="text-bronze dark:text-secondary text-sm font-bold hover:underline"
+              >View All</button>
             </div>
             <motion.div
               variants={container}
@@ -342,16 +434,25 @@ export default function Home() {
                 { icon: 'bed', label: 'Bedroom' },
                 { icon: 'kitchen', label: 'Kitchen' },
               ].map((cat, idx) => (
-                <motion.div variants={item} key={idx} className="flex-shrink-0 group cursor-pointer">
-                  <div className={`px-6 py-3 rounded-full border transition-all duration-500 ease-out flex items-center gap-2.5 ${cat.label === 'All'
+                <motion.div
+                  variants={item}
+                  key={idx}
+                  className="flex-shrink-0 group cursor-pointer"
+                  onClick={() => setSelectedCategory(cat.label)}
+                >
+                  <div className={`px-6 py-3 rounded-full border transition-all duration-500 ease-out flex items-center gap-2.5 ${selectedCategory === cat.label
                     ? 'bg-charcoal text-white border-charcoal shadow-lg shadow-charcoal/20 dark:bg-white dark:text-charcoal dark:border-white'
                     : 'bg-white text-slate-600 border-slate-200 hover:border-transparent hover:text-white hover:bg-gradient-to-tr hover:from-blue-600 hover:to-blue-400 hover:shadow-glow hover:-translate-y-0.5 dark:bg-white/5 dark:text-slate-300 dark:border-white/10 dark:hover:border-blue-400/50 dark:hover:bg-blue-900/40'}`}>
-                    <span className={`material-symbols-outlined text-[20px] transition-colors duration-300 ${cat.label === 'All' ? 'text-white dark:text-charcoal' : 'text-slate-400 group-hover:text-white dark:text-slate-500 dark:group-hover:text-white'}`}>{cat.icon}</span>
+                    <span className={`material-symbols-outlined text-[20px] transition-colors duration-300 ${selectedCategory === cat.label ? 'text-white dark:text-charcoal' : 'text-slate-400 group-hover:text-white dark:text-slate-500 dark:group-hover:text-white'}`}>{cat.icon}</span>
                     <span className="text-sm font-bold whitespace-nowrap">{cat.label}</span>
                   </div>
                 </motion.div>
               ))}
-              <motion.div variants={item} className="flex-shrink-0 group cursor-pointer">
+              <motion.div
+                variants={item}
+                className="flex-shrink-0 group cursor-pointer"
+                onClick={() => router.push('/catalog')}
+              >
                 <div className="px-6 py-3 rounded-full bg-slate-50 border border-slate-200 text-slate-500 hover:bg-slate-100 dark:bg-white/5 dark:border-white/10 dark:text-slate-400 dark:hover:bg-white/10 transition-all flex items-center gap-2">
                   <span className="text-sm font-bold whitespace-nowrap">More</span>
                   <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
@@ -364,89 +465,134 @@ export default function Home() {
           <div className="mb-12">
             <div className="flex items-center justify-between mb-8">
               <h3 className="text-charcoal dark:text-white text-3xl font-display font-medium tracking-tight">Featured Products</h3>
-              <div className="flex gap-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-400 bg-slate-50 dark:bg-white/5 px-4 py-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 cursor-pointer transition-colors border border-transparent hover:border-slate-200 dark:hover:border-white/10">Sort by: Newest</span>
+              <div className="flex items-center gap-4">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => router.push('/compare')}
+                  className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 bg-white dark:bg-white/5 px-6 py-3 rounded-2xl hover:text-primary transition-all border border-slate-200 dark:border-white/10 flex items-center gap-3 cursor-pointer shadow-sm group"
+                >
+                  <span className="material-symbols-outlined text-[18px] text-slate-300 group-hover:text-primary transition-colors">compare_arrows</span>
+                  <span className="group-hover:text-primary transition-colors">Compare</span>
+                </motion.button>
+
+                <div className="relative">
+                  <motion.button
+                    whileHover={{ scale: 1.05, boxShadow: "0 10px 25px -5px rgba(59, 130, 246, 0.2)" }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setIsSortOpen(!isSortOpen)}
+                    className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 bg-white dark:bg-white/5 px-6 py-3 rounded-2xl hover:text-primary transition-all border border-slate-200 dark:border-white/10 flex items-center gap-3 cursor-pointer shadow-sm group"
+                  >
+                    <span className="text-slate-300 group-hover:text-primary transition-colors">Sort by:</span>
+                    <span className="text-primary">{sortBy === 'newest' ? 'Newest' : sortBy === 'price-low' ? 'Price: Low' : sortBy === 'price-high' ? 'Price: High' : 'Top Rated'}</span>
+                    <span className={`material-symbols-outlined text-[18px] transition-transform ${isSortOpen ? 'rotate-180' : 'group-hover:translate-y-0.5'}`}>expand_more</span>
+                  </motion.button>
+
+                  <AnimatePresence>
+                    {isSortOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        className="absolute top-full right-0 mt-3 w-48 bg-white dark:bg-[#0a0f16] rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-800 p-2 z-30"
+                      >
+                        {[
+                          { label: 'Newest', value: 'newest' },
+                          { label: 'Price: Low', value: 'price-low' },
+                          { label: 'Price: High', value: 'price-high' },
+                          { label: 'Top Rated', value: 'rating' },
+                        ].map((opt) => (
+                          <button
+                            key={opt.value}
+                            onClick={() => {
+                              setSortBy(opt.value as any);
+                              setIsSortOpen(false);
+                            }}
+                            className={`w-full text-left px-5 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${sortBy === opt.value
+                              ? "bg-primary/10 text-primary"
+                              : "text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                              }`}
+                          >
+                            {opt.label}
+                          </button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
             </div>
             <motion.div
-              variants={container}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true }}
+              layout
               className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
             >
-              {[
-                { name: 'Velvet Lounge Chair', price: '120', category: 'Living Room', rating: 4.8, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCuVDrSubKte5588gemwXr5aZI0uxNVE0TurSQghRLtdd5N5sdD-wSfuTnTs2TmgW2srpcWHyRCgVju-NrJ_IG6X8eDOtVEh-rx9x17XdZMCQs2wwa1qynSzs2jJllW0cQbf37L4a-tc_wa0gmQKxUUuZB7904bI05PjWKhu94qBIIAu7-yPi4fmig3Ze4PYPH3BsEb9tJXfnK7sxopeLVG92IxkoXcgel5U5HYDj1bW5dWQBEBuZPqb3GGnm5j-_rflwdlm1y28gM' },
-                { name: 'Nordic Dining Chair', price: '85', category: 'Kitchen', rating: 4.5, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDZiUF46DFLrvWmZdx99oU5qnXMX4UopZS8-diEUvqJuzUfcoBzTFKwGZbGdVjEPxhw01OLIkQ-IJ5ZKyjsX9thFLKBmqWIWZN5laSlePJQL-vca07wYzUPfvRzJK2h1AlPRcuyPJ47ZQZd_nqY64nSpxNdaZA7tzUmtmSvvzgZK922oPPhgBze9PJZG7VMYnvP2uxR0hI9fZd-farWcN1tzCweclVwCJXPRksAVyskaHzxnlCttQJkO32C4Ez2g9kBhoOvXGxDAC4' },
-                { name: 'Arc Floor Lamp', price: '160', category: 'Lighting', rating: 4.9, oldPrice: '200', discount: '-20%', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDQ0OKIkIYsdLF7fbcCBbmdnTdpGlbuyR0F0CNic1k-S4C0FkN5fQ0ukU0Zm11Zs4y2rJwby0SYDN6YuNrcSmH8jgLuUTyNCoeyYjX_-qJVtPk6KYVyNsylbK0PXblnUKFfzutRzI6AuHDXeeWtwVfYrM3B-UyO-yObrtFrganzUjZRepfEw-5yH0HxpqseRvDgvdusyEmUVRY9Y4YvE9mL6VaooV75brLoJVcBdJ731hsSLWup6bq98zN3ON_S4euSlUb86hrsEKI' },
-                { name: 'Oak Side Table', price: '95', category: 'Bedroom', rating: 4.6, img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAYNtGl0I4Db-MZ8w98XyKbbN5oPi_yvtZtrjRTYIbqTCn7nux8Njl02HrWUfdHo-gIgU7YA_a3K8b-tfuoqyfu8m6CDxqKqtsAFGiXGri588PYwF55pRJUERjYqnUqqF7-JP5tyvlSim4N0ekExRRUn3U64bgPkvRmDnxn1LU7Ya-ePykYAXxHzn_uQNKyi5PkJXq6SGNJpb5aiDJLaPfE4fwflsDxa5xRG0izCqrqDjH2pGM1ZUXv4aJS_X_I0sUdRWmlpDTtGkQ' },
-                { name: 'Modern Sofa', price: '890', category: 'Living Room', rating: 4.7, img: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80' },
-                { name: 'Wooden Shelf', price: '210', category: 'Storage', rating: 4.4, img: 'https://images.unsplash.com/photo-1594620302200-9a762244a156?ixlib=rb-4.0.3&auto=format&fit=crop&w=1139&q=80' },
-                { name: 'Ceramic Vase', price: '45', category: 'Decoration', rating: 4.8, img: 'https://images.unsplash.com/photo-1580480055273-228ff5388ef8?ixlib=rb-4.0.3&auto=format&fit=crop&w=774&q=80' },
-                { name: 'Abstract Art', price: '120', category: 'Art', rating: 5.0, img: 'https://images.unsplash.com/photo-1549490349-8643362247b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=774&q=80' },
-                { name: 'Geometric Wool Rug', price: '240', category: 'Rug', rating: 4.3, img: 'https://images.unsplash.com/photo-1575414003591-ece8d14161bb?ixlib=rb-4.0.3&auto=format&fit=crop&w=774&q=80' },
-              ].map((product, idx) => (
-                <motion.div
-                  variants={item}
-                  key={idx}
-                  className="group relative flex flex-col bg-white dark:bg-slate-900 rounded-[2rem] overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.12)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.18)] hover:-translate-y-2 transition-all duration-500 border border-slate-300 dark:border-slate-700 ring-1 ring-slate-900/5 dark:ring-white/10"
-                >
-                  <Link href={`/product/${idx}`} className="absolute inset-0 z-10">
-                    <span className="sr-only">View {product.name}</span>
-                  </Link>
+              <AnimatePresence mode="popLayout">
+                {sortedProducts.map((product: any) => (
+                  <motion.div
+                    layout
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.3 }}
+                    key={product.id}
+                    className="group relative flex flex-col bg-white dark:bg-slate-900 rounded-[2.5rem] overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.12)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.18)] hover:-translate-y-2 transition-all duration-500 border border-slate-300 dark:border-slate-700 ring-1 ring-slate-900/5 dark:ring-white/10"
+                  >
+                    <Link href={`/product/${product.id}`} className="absolute inset-0 z-10">
+                      <span className="sr-only">View {product.name}</span>
+                    </Link>
 
-                  {/* Image Section */}
-                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-50 dark:bg-white/5">
-                    {/* Discount Tag */}
-                    {product.discount && (
-                      <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1.5 rounded-xl z-20 shadow-lg shadow-red-500/20">
-                        <span className="text-[10px] font-black uppercase tracking-wider">{product.discount}</span>
-                      </div>
-                    )}
+                    {/* Image Section */}
+                    <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-50 dark:bg-white/5">
+                      {/* Discount Tag */}
+                      {product.discount && (
+                        <div className="absolute top-4 left-4 bg-red-500 text-white px-3 py-1.5 rounded-xl z-20 shadow-lg shadow-red-500/20">
+                          <span className="text-[10px] font-black uppercase tracking-wider">{product.discount}</span>
+                        </div>
+                      )}
 
-                    {/* Compare Toggle */}
-                    <button className="absolute top-4 right-4 z-20 size-10 rounded-full bg-white/80 dark:bg-black/40 backdrop-blur-md flex items-center justify-center text-slate-900 dark:text-white hover:bg-primary hover:text-white transition-all shadow-lg border border-white/20 active:scale-95">
-                      <span className="material-symbols-outlined text-[20px]">compare_arrows</span>
-                    </button>
-
-                    {/* Image */}
-                    <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110" style={{ backgroundImage: `url("${product.img}")` }}>
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    </div>
-                  </div>
-
-                  {/* Content Section */}
-                  <div className="p-6 flex flex-col gap-5">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="text-charcoal dark:text-white font-display font-bold text-xl leading-snug mb-1.5 group-hover:text-primary transition-colors">{product.name}</h4>
-                        <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">{product.category}</p>
-                      </div>
-                      <div className="flex items-center gap-1.5 bg-amber-50 dark:bg-amber-900/20 px-2.5 py-1 rounded-lg">
-                        <span className="material-symbols-outlined text-[18px] text-amber-500 fill-current">star</span>
-                        <span className="text-sm font-bold text-amber-700 dark:text-amber-400">{product.rating}</span>
+                      {/* Image */}
+                      <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110" style={{ backgroundImage: `url("${product.img}")` }}>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between mt-auto">
-                      <div className="flex flex-col">
-                        {product.oldPrice && <span className="text-xs text-slate-400 line-through decoration-slate-400 mb-0.5">${product.oldPrice}</span>}
-                        <span className="text-3xl font-display font-bold text-charcoal dark:text-white">${product.price}</span>
+                    {/* Content Section */}
+                    <div className="p-6 flex flex-col gap-5">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h4 className="text-charcoal dark:text-white font-display font-bold text-xl leading-snug mb-1.5 group-hover:text-primary transition-colors">{product.name}</h4>
+                          <p className="text-slate-400 text-xs font-bold uppercase tracking-wider">{product.category}</p>
+                        </div>
+                        <div className="flex items-center gap-1.5 bg-amber-50 dark:bg-amber-900/20 px-2.5 py-1 rounded-lg">
+                          <span className="material-symbols-outlined text-[18px] text-amber-500 fill-current">star</span>
+                          <span className="text-sm font-bold text-amber-700 dark:text-amber-400">{product.rating}</span>
+                        </div>
                       </div>
-                      <div className="opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 ease-out z-20">
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          className="bg-primary hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg shadow-blue-500/30 flex items-center gap-2.5 transition-colors hover:shadow-blue-500/50"
-                        >
-                          <span className="material-symbols-outlined text-[20px]">shopping_bag</span>
-                          Add
-                        </motion.button>
+
+                      <div className="flex items-center justify-between mt-auto">
+                        <div className="flex flex-col">
+                          {product.oldPrice && <span className="text-xs text-slate-400 line-through decoration-slate-400 mb-0.5">${product.oldPrice}</span>}
+                          <span className="text-3xl font-display font-bold text-charcoal dark:text-white">${product.price}</span>
+                        </div>
+                        <div className="opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 ease-out z-20">
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              router.push('/cart');
+                            }}
+                            className="bg-primary hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg shadow-blue-500/30 flex items-center gap-2.5 transition-colors hover:shadow-blue-500/50"
+                          >
+                            <span className="material-symbols-outlined text-[20px]">shopping_bag</span>
+                            Add
+                          </motion.button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             </motion.div>
           </div>
 
@@ -459,14 +605,17 @@ export default function Home() {
             className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20"
           >
             {/* Primary Promo Card */}
-            <div className="md:col-span-2 relative overflow-hidden rounded-[2rem] bg-charcoal dark:bg-slate-900 text-white p-10 flex flex-col items-start justify-center min-h-[300px] shadow-2xl group">
-              <div className="absolute top-0 right-0 w-[60%] h-full bg-gradient-to-l from-bronze/20 to-transparent"></div>
+            <div
+              onClick={() => router.push('/catalog?tag=sale')}
+              className="md:col-span-2 relative overflow-hidden rounded-[2rem] bg-[#1a1a1a] dark:bg-slate-900 text-white p-10 flex flex-col items-start justify-center min-h-[300px] shadow-2xl group cursor-pointer"
+            >
+              <div className="absolute top-0 right-0 w-[60%] h-full bg-gradient-to-l from-[#a0522d]/20 to-transparent"></div>
               <div className="absolute right-[-20%] top-[-20%] w-[60%] h-[140%] bg-gradient-to-br from-white/5 to-transparent rotate-12 blur-3xl group-hover:rotate-0 transition-all duration-1000"></div>
 
               <div className="relative z-10 max-w-md">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-xs font-bold uppercase tracking-wider mb-6 text-bronze">
-                  <span className="w-1.5 h-1.5 rounded-full bg-bronze animate-pulse"></span>
-                  Limited Offer
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-[10px] font-black uppercase tracking-widest mb-6 text-[#d2691e]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#d2691e] animate-pulse"></span>
+                  LIMITED OFFER
                 </div>
                 <h3 className="text-4xl md:text-5xl font-display font-medium leading-[1.1] mb-4">Summer Collection<br /><span className="text-white/40">Up to 50% Off</span></h3>
                 <p className="text-white/70 mb-8 font-light text-lg">Curated pieces for modern living. Elevate your space with our premium selection.</p>
@@ -474,9 +623,9 @@ export default function Home() {
                 <motion.button
                   whileHover={{ scale: 1.02, x: 5 }}
                   whileTap={{ scale: 0.98 }}
-                  className="bg-white text-charcoal px-8 py-4 rounded-xl font-bold text-sm tracking-wide uppercase hover:bg-bronze hover:text-white transition-colors shadow-lg flex items-center gap-3"
+                  className="bg-white text-[#1a1a1a] px-8 py-4 rounded-xl font-black text-xs tracking-widest uppercase hover:bg-[#d2691e] hover:text-white transition-colors shadow-lg flex items-center gap-3"
                 >
-                  Shop The Sale
+                  SHOP THE SALE
                   <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
                 </motion.button>
               </div>
@@ -487,21 +636,20 @@ export default function Home() {
             </div>
 
             {/* Secondary Promo Card */}
-            <div className="relative overflow-hidden rounded-[2rem] bg-gray-100 dark:bg-white/5 p-8 flex flex-col justify-between group shadow-lg border border-transparent hover:border-bronze/20 transition-colors">
-              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80')] bg-cover bg-center opacity-0 group-hover:opacity-10 transition-opacity duration-700">
-                <div className="absolute inset-0 bg-charcoal/40 backdrop-blur-[1px]"></div>
-              </div>
-
+            <div
+              onClick={() => router.push('/catalog?sort=newest')}
+              className="relative overflow-hidden rounded-[2rem] bg-white dark:bg-slate-900 p-8 flex flex-col justify-between group shadow-xl border border-slate-100 dark:border-slate-800 transition-all hover:shadow-2xl cursor-pointer"
+            >
               <div className="relative z-10">
-                <div className="w-12 h-12 rounded-full bg-white dark:bg-white/10 flex items-center justify-center mb-6 shadow-sm group-hover:bg-bronze group-hover:text-white transition-colors">
-                  <span className="material-symbols-outlined">rocket_launch</span>
+                <div className="w-12 h-12 rounded-full bg-slate-50 dark:bg-white/10 flex items-center justify-center mb-6 shadow-sm group-hover:bg-[#136dec] group-hover:text-white transition-colors">
+                  <span className="material-symbols-outlined text-[20px]">rocket_launch</span>
                 </div>
-                <h3 className="text-2xl font-display font-medium text-charcoal dark:text-white mb-2 group-hover:text-white transition-colors">New Arrivals</h3>
-                <p className="text-slate-500 dark:text-slate-400 text-sm group-hover:text-white/80 transition-colors">Explore the latest trends in interior design.</p>
+                <h3 className="text-2xl font-display font-medium text-[#111418] dark:text-white mb-2">New Arrivals</h3>
+                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium leading-relaxed">Explore the latest trends in interior design.</p>
               </div>
 
               <div className="relative z-10 mt-8 flex justify-end">
-                <div className="w-10 h-10 rounded-full border border-slate-300 dark:border-white/20 flex items-center justify-center group-hover:border-white/50 group-hover:bg-white text-charcoal transition-all">
+                <div className="w-12 h-12 rounded-full border border-slate-200 dark:border-white/20 flex items-center justify-center group-hover:border-[#136dec] group-hover:bg-[#136dec] text-[#111418] hover:text-white dark:text-white transition-all shadow-sm">
                   <span className="material-symbols-outlined text-[20px] group-hover:translate-x-0.5 transition-transform">chevron_right</span>
                 </div>
               </div>
@@ -706,6 +854,10 @@ export default function Home() {
                     <motion.button
                       whileHover={{ scale: 1.01, boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1)" }}
                       whileTap={{ scale: 0.99 }}
+                      onClick={() => {
+                        setIsSignedIn(true);
+                        setIsAuthModalOpen(false);
+                      }}
                       className="w-full bg-black text-white font-bold py-4 rounded-2xl shadow-xl shadow-black/10 transition-all text-sm tracking-wide uppercase border-2 border-black"
                     >
                       {authMode === 'signin' ? 'Sign In' : 'Sign Up'}

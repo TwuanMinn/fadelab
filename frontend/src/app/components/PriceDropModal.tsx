@@ -94,9 +94,7 @@ export default function PriceDropModal({ isOpen, onClose, product }: PriceDropMo
                                     <span className="text-xs font-black uppercase tracking-widest mr-2">Grab it Now</span>
                                     <span className="material-symbols-outlined text-white transition-transform group-hover:translate-x-1" style={{ fontSize: '20px' }}>arrow_forward</span>
                                 </button>
-                                <button className="w-full text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-widest hover:text-primary transition-colors py-2">
-                                    View Wishlist
-                                </button>
+
                             </div>
                         </div>
                     </motion.div>

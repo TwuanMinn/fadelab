@@ -71,9 +71,6 @@ export default function ProductDetail() {
                         <button className="size-12 rounded-full border border-slate-200 dark:border-slate-800 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                             <span className="material-symbols-outlined">share</span>
                         </button>
-                        <Link href="/compare" className="size-12 rounded-full border border-slate-200 dark:border-slate-800 flex items-center justify-center hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-                            <span className="material-symbols-outlined">compare_arrows</span>
-                        </Link>
                     </div>
                 </div>
 
@@ -92,9 +89,6 @@ export default function ProductDetail() {
                         </Link>
                         <Link href="/rewards" className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-50 dark:bg-slate-800 text-amber-500 shadow-sm transition hover:bg-slate-100 dark:hover:bg-slate-700">
                             <span className="material-symbols-outlined filled">workspace_premium</span>
-                        </Link>
-                        <Link href="/compare" className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white shadow-sm transition hover:bg-slate-100 dark:hover:bg-slate-700">
-                            <span className="material-symbols-outlined">compare_arrows</span>
                         </Link>
                     </div>
                 </nav>

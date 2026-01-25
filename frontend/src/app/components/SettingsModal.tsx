@@ -176,43 +176,6 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             exit={{ opacity: 0, y: -10 }}
             className="space-y-8"
         >
-            <div className="space-y-4">
-                <div className="flex items-center gap-3 px-1">
-                    <span className="material-symbols-outlined text-[#2563EB]">visibility</span>
-                    <h3 className="text-xl font-black dark:text-white font-outfit">Live Preview</h3>
-                </div>
-                <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] overflow-hidden border border-slate-100 dark:border-slate-800 shadow-sm relative group">
-                    <div className="aspect-[4/3] relative">
-                        <Image
-                            src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
-                            alt="Live Preview"
-                            fill
-                            className="object-cover"
-                        />
-                    </div>
-                    <div className="p-6">
-                        <div className="flex justify-between items-start mb-2">
-                            <h4 className={`text-xl text-slate-900 dark:text-white font-outfit ${boldText ? 'font-black' : 'font-bold'}`}>Velvet Sectional Sofa</h4>
-                            <div className="flex items-center gap-1">
-                                <span className="material-symbols-outlined text-amber-400 text-[18px]">star</span>
-                                <span className="font-bold text-sm">4.8</span>
-                            </div>
-                        </div>
-                        <p className="text-xs text-slate-500 font-medium mb-6">Mid-century modern design</p>
-                        <div className="flex items-center justify-between">
-                            <span className="text-2xl font-black text-slate-900 dark:text-white">$1,299</span>
-                            <button className="bg-[#2563EB] text-white font-black px-6 py-3 rounded-2xl flex items-center gap-2 shadow-lg shadow-blue-500/20">
-                                <span className="material-symbols-outlined text-[20px]">shopping_bag</span>
-                                Add to Cart
-                            </button>
-                        </div>
-                    </div>
-                    <p className="text-[10px] text-center text-slate-400 py-3 bg-slate-50/50 dark:bg-slate-800/50 font-bold border-t border-slate-100 dark:border-slate-800 uppercase tracking-tighter">
-                        Adjust settings below to see changes above.
-                    </p>
-                </div>
-            </div>
-
             <div className="space-y-6">
                 <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest px-2">Display & Text</label>
                 <div className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-100 dark:border-slate-800 divide-y divide-slate-50 dark:divide-slate-800 overflow-hidden">
@@ -479,24 +442,54 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                             <div className={`absolute top-1 size-5 bg-white rounded-full shadow-sm transition-all ${pushAllow ? "right-1" : "left-1"}`} />
                         </button>
                     </div>
-                    <div className="flex items-center justify-between p-5">
-                        <div>
-                            <p className="font-bold text-[14px] dark:text-white font-outfit">Order Status</p>
-                            <p className="text-[11px] text-slate-500 font-medium font-outfit">Get updates on shipping and delivery</p>
-                        </div>
-                        <button onClick={() => setPushOrderStatus(!pushOrderStatus)} className={`w-12 h-7 rounded-full transition-all relative ${pushOrderStatus ? "bg-primary" : "bg-slate-200 dark:bg-slate-700"}`}>
-                            <div className={`absolute top-1 size-5 bg-white rounded-full shadow-sm transition-all ${pushOrderStatus ? "right-1" : "left-1"}`} />
-                        </button>
-                    </div>
-                    <div className="flex items-center justify-between p-5">
-                        <div>
-                            <p className="font-bold text-[14px] dark:text-white font-outfit">Price Drops</p>
-                            <p className="text-[11px] text-slate-500 font-medium font-outfit">Alerts when items in your wishlist go on sale</p>
-                        </div>
-                        <button onClick={() => setPushPriceDrops(!pushPriceDrops)} className={`w-12 h-7 rounded-full transition-all relative ${pushPriceDrops ? "bg-primary" : "bg-slate-200 dark:bg-slate-700"}`}>
-                            <div className={`absolute top-1 size-5 bg-white rounded-full shadow-sm transition-all ${pushPriceDrops ? "right-1" : "left-1"}`} />
-                        </button>
-                    </div>
+
+                    {pushAllow && (
+                        <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="bg-slate-50/50 dark:bg-slate-950/30"
+                        >
+                            <div className="divide-y divide-slate-100 dark:divide-slate-800/50 px-5">
+                                <div className="flex items-center justify-between py-4">
+                                    <div>
+                                        <p className="font-bold text-[13px] dark:text-gray-200 font-outfit">New Arrivals</p>
+                                        <p className="text-[11px] text-slate-400 font-medium font-outfit">Be the first to see new collections</p>
+                                    </div>
+                                    <button onClick={() => setPushNewArrivals(!pushNewArrivals)} className={`w-10 h-6 rounded-full transition-all relative ${pushNewArrivals ? "bg-primary" : "bg-slate-200 dark:bg-slate-700"}`}>
+                                        <div className={`absolute top-0.5 size-5 bg-white rounded-full shadow-sm transition-all ${pushNewArrivals ? "right-0.5" : "left-0.5"}`} />
+                                    </button>
+                                </div>
+                                <div className="flex items-center justify-between py-4">
+                                    <div>
+                                        <p className="font-bold text-[13px] dark:text-gray-200 font-outfit">Order Status</p>
+                                        <p className="text-[11px] text-slate-400 font-medium font-outfit">Shipping, delivery, and returns updates</p>
+                                    </div>
+                                    <button onClick={() => setPushOrderStatus(!pushOrderStatus)} className={`w-10 h-6 rounded-full transition-all relative ${pushOrderStatus ? "bg-primary" : "bg-slate-200 dark:bg-slate-700"}`}>
+                                        <div className={`absolute top-0.5 size-5 bg-white rounded-full shadow-sm transition-all ${pushOrderStatus ? "right-0.5" : "left-0.5"}`} />
+                                    </button>
+                                </div>
+                                <div className="flex items-center justify-between py-4">
+                                    <div>
+                                        <p className="font-bold text-[13px] dark:text-gray-200 font-outfit">Price Drops</p>
+                                        <p className="text-[11px] text-slate-400 font-medium font-outfit">Alerts for items in your wishlist</p>
+                                    </div>
+                                    <button onClick={() => setPushPriceDrops(!pushPriceDrops)} className={`w-10 h-6 rounded-full transition-all relative ${pushPriceDrops ? "bg-primary" : "bg-slate-200 dark:bg-slate-700"}`}>
+                                        <div className={`absolute top-0.5 size-5 bg-white rounded-full shadow-sm transition-all ${pushPriceDrops ? "right-0.5" : "left-0.5"}`} />
+                                    </button>
+                                </div>
+                                <div className="flex items-center justify-between py-4">
+                                    <div>
+                                        <p className="font-bold text-[13px] dark:text-gray-200 font-outfit">Promotions</p>
+                                        <p className="text-[11px] text-slate-400 font-medium font-outfit">Exclusive sales and special offers</p>
+                                    </div>
+                                    <button className={`w-10 h-6 rounded-full transition-all relative bg-slate-200 dark:bg-slate-700`}>
+                                        <div className={`absolute top-0.5 size-5 bg-white rounded-full shadow-sm transition-all left-0.5`} />
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
                 </div>
             </div>
 
