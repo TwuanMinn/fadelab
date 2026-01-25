@@ -114,17 +114,17 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         >
             <div className="flex flex-col items-center py-6">
                 <div className="relative">
-                    <div className="size-24 rounded-full overflow-hidden border-4 border-white dark:border-slate-800 shadow-xl">
+                    <div className="size-48 rounded-full overflow-hidden border-4 border-white dark:border-slate-800 shadow-xl">
                         <Image
-                            src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80"
+                            src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
                             alt="Profile"
-                            width={96}
-                            height={96}
+                            width={192}
+                            height={192}
                             className="object-cover"
                         />
                     </div>
-                    <button className="absolute bottom-0 right-0 size-8 bg-primary rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center shadow-lg text-white hover:scale-110 transition-transform">
-                        <span className="material-symbols-outlined text-[18px]">photo_camera</span>
+                    <button className="absolute bottom-2 right-2 size-12 bg-primary rounded-full border-4 border-white dark:border-slate-900 flex items-center justify-center shadow-lg text-white hover:scale-110 transition-transform">
+                        <span className="material-symbols-outlined text-[24px]">photo_camera</span>
                     </button>
                 </div>
                 <h3 className="mt-4 text-xl font-bold text-slate-900 dark:text-white">Alex Johnson</h3>
