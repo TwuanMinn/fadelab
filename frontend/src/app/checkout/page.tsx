@@ -15,6 +15,7 @@ export default function Checkout() {
         address: "1254 Oakwood Avenue, Suite 4B",
         cityStateZip: "San Francisco, CA 94103"
     });
+    const [quantity, setQuantity] = useState(1);
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-8">
@@ -220,15 +221,29 @@ export default function Checkout() {
                                 <div>
                                     <h4 className="font-bold text-slate-900 dark:text-white text-lg leading-tight">Lowe Armchair</h4>
                                     <p className="text-sm text-slate-500 mt-1">Beige Woven Fabric</p>
-                                    <p className="text-sm font-medium text-slate-900 dark:text-white mt-2 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md w-fit">Qty: 1</p>
+                                    <div className="flex items-center gap-3 mt-2 bg-slate-100 dark:bg-slate-800 rounded-lg p-1 w-fit">
+                                        <button
+                                            onClick={() => quantity > 1 && setQuantity(quantity - 1)}
+                                            className="size-6 flex items-center justify-center bg-white dark:bg-slate-700 rounded-md shadow-sm hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors"
+                                        >
+                                            <span className="material-symbols-outlined text-[14px]">remove</span>
+                                        </button>
+                                        <span className="text-sm font-bold w-4 text-center">{quantity}</span>
+                                        <button
+                                            onClick={() => setQuantity(quantity + 1)}
+                                            className="size-6 flex items-center justify-center bg-white dark:bg-slate-700 rounded-md shadow-sm hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors"
+                                        >
+                                            <span className="material-symbols-outlined text-[14px]">add</span>
+                                        </button>
+                                    </div>
                                 </div>
-                                <div className="ml-auto font-bold text-slate-900 dark:text-white text-lg">$899.00</div>
+                                <div className="ml-auto font-bold text-slate-900 dark:text-white text-lg">${(899 * quantity).toLocaleString()}.00</div>
                             </div>
 
                             <div className="space-y-3 py-6 border-t border-dashed border-slate-200 dark:border-slate-800">
                                 <div className="flex justify-between text-slate-500">
                                     <span>Subtotal</span>
-                                    <span className="font-medium text-slate-900 dark:text-white">$899.00</span>
+                                    <span className="font-medium text-slate-900 dark:text-white">${(899 * quantity).toLocaleString()}.00</span>
                                 </div>
                                 <div className="flex justify-between text-slate-500">
                                     <span>Shipping</span>
@@ -236,14 +251,14 @@ export default function Checkout() {
                                 </div>
                                 <div className="flex justify-between text-slate-500">
                                     <span>Estimated Tax</span>
-                                    <span className="font-medium text-slate-900 dark:text-white">$72.00</span>
+                                    <span className="font-medium text-slate-900 dark:text-white">${(72 * quantity).toLocaleString()}.00</span>
                                 </div>
                             </div>
 
                             <div className="pt-6 border-t border-slate-200 dark:border-slate-800">
                                 <div className="flex items-end justify-between mb-2">
                                     <p className="text-slate-500 font-medium">Total Amount</p>
-                                    <h3 className="text-3xl font-black text-slate-900 dark:text-white">$971.00</h3>
+                                    <h3 className="text-3xl font-black text-slate-900 dark:text-white">${(971 * quantity).toLocaleString()}.00</h3>
                                 </div>
                                 <div className="flex items-center gap-2 text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/10 p-3 rounded-xl mb-6">
                                     <span className="material-symbols-outlined text-[20px] fill-current">lock</span>
