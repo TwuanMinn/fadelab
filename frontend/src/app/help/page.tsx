@@ -136,7 +136,7 @@ export default function HelpCenterPage() {
                 {/* Browse Topics */}
                 <div className="px-4 md:px-8 pt-6 md:pt-8 pb-4">
                     <h3 className="text-xs md:text-sm font-black font-outfit uppercase tracking-[0.2em] text-slate-400 mb-4 md:mb-6">Explore Knowledge</h3>
-                    <div className="grid grid-cols-2 gap-3 md:gap-4 pb-10">
+                    <div className="grid grid-cols-2 gap-4 pb-10">
                         {topics.map((topic, i) => (
                             <motion.button
                                 key={i}
