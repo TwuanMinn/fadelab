@@ -214,7 +214,7 @@ export default function Home() {
           width: { type: "spring", stiffness: 300, damping: 30 },
           opacity: { duration: 0.2 }
         }}
-        className="fixed bottom-4 md:bottom-8 left-0 right-0 mx-auto w-fit z-50 flex items-center px-2 py-2 md:px-4 md:py-3 rounded-full bg-white dark:bg-slate-900 border-2 border-black shadow-xl shadow-black/10 transition-colors duration-300 pointer-events-auto max-w-[95vw]"
+        className="fixed bottom-4 md:bottom-8 left-0 right-0 mx-auto w-fit z-50 flex items-center px-1.5 py-1.5 md:px-4 md:py-3 rounded-full bg-white dark:bg-slate-900 border-2 border-black shadow-xl shadow-black/10 transition-colors duration-300 pointer-events-auto max-w-[95vw]"
       >
         <AnimatePresence mode="wait" initial={false}>
           {!isSearchOpen ? (
@@ -230,7 +230,7 @@ export default function Home() {
                 onClick={handleProfileClick}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
-                className="relative size-14 md:size-16 mr-2 md:mr-3 group cursor-pointer flex-shrink-0"
+                className="relative size-10 md:size-16 mr-1.5 md:mr-3 group cursor-pointer flex-shrink-0"
               >
                 <div className="w-full h-full rounded-full overflow-hidden border-2 border-black/10 dark:border-white/10 shadow-soft bg-slate-50 dark:bg-slate-800 flex items-center justify-center">
                   {isSignedIn ? (
@@ -242,7 +242,7 @@ export default function Home() {
                       className="object-cover w-full h-full"
                     />
                   ) : (
-                    <span className="material-symbols-outlined text-slate-600 dark:text-slate-400 text-[32px] md:text-[40px] font-bold group-hover:text-primary transition-colors">account_circle</span>
+                    <span className="material-symbols-outlined text-slate-600 dark:text-slate-400 text-[24px] md:text-[40px] font-bold group-hover:text-primary transition-colors">account_circle</span>
                   )}
                 </div>
 
@@ -254,7 +254,7 @@ export default function Home() {
               </motion.button>
 
               {/* Divider */}
-              <div className="w-px h-6 md:h-8 bg-slate-200 dark:bg-slate-700 mx-0.5 md:mx-1 flex-shrink-0"></div>
+              <div className="w-px h-5 md:h-8 bg-slate-200 dark:bg-slate-700 mx-0.5 md:mx-1 flex-shrink-0"></div>
 
               {/* Dock Items */}
               {[
@@ -281,9 +281,9 @@ export default function Home() {
                   onClick={item.action}
                   whileHover={{ scale: 1.2, y: -5 }}
                   whileTap={{ scale: 0.9 }}
-                  className={`relative size-8 md:size-10 flex items-center justify-center rounded-full transition-all group flex-shrink-0 ${item.active ? 'bg-blue-50 dark:bg-blue-900/20' : 'hover:bg-slate-50 dark:hover:bg-slate-800'}`}
+                  className={`relative size-7 md:size-10 flex items-center justify-center rounded-full transition-all group flex-shrink-0 ${item.active ? 'bg-blue-50 dark:bg-blue-900/20' : 'hover:bg-slate-50 dark:hover:bg-slate-800'}`}
                 >
-                  <span className={`material-symbols-outlined text-[20px] md:text-[26px] font-bold ${item.active ? 'bg-gradient-to-tr from-primary to-secondary bg-clip-text text-transparent' : 'text-slate-600 dark:text-slate-400 group-hover:text-primary transition-colors'}`}>
+                  <span className={`material-symbols-outlined text-[18px] md:text-[26px] font-bold ${item.active ? 'bg-gradient-to-tr from-primary to-secondary bg-clip-text text-transparent' : 'text-slate-600 dark:text-slate-400 group-hover:text-primary transition-colors'}`}>
                     {item.icon}
                   </span>
                   {item.badge && (
