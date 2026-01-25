@@ -33,6 +33,11 @@ export default function Home() {
   const [showToolbar, setShowToolbar] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isSignedIn, setIsSignedIn] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(6);
+
+  useEffect(() => {
+    setVisibleCount(6);
+  }, [selectedCategory, sortBy]);
 
   const products = useMemo(() => [
     // Chairs (5 items)
@@ -524,10 +529,10 @@ export default function Home() {
             </div>
             <motion.div
               layout
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+              className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-8"
             >
               <AnimatePresence mode="popLayout">
-                {sortedProducts.map((product: any) => (
+                {sortedProducts.slice(0, visibleCount).map((product: any) => (
                   <motion.div
                     layout
                     initial={{ opacity: 0, scale: 0.9 }}
@@ -594,6 +599,21 @@ export default function Home() {
                 ))}
               </AnimatePresence>
             </motion.div>
+
+            {visibleCount < sortedProducts.length && (
+              <div className="flex justify-center mt-12 w-full">
+                <button
+                  onClick={() => setVisibleCount((prev) => prev + 6)}
+                  className="group relative px-8 py-3 rounded-2xl bg-white dark:bg-white/10 text-slate-900 dark:text-white font-bold text-sm border border-slate-200 dark:border-white/10 hover:border-primary dark:hover:border-primary overflow-hidden transition-all shadow-sm hover:shadow-lg active:scale-95"
+                >
+                  <div className="absolute inset-0 bg-primary/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                  <div className="relative flex items-center gap-2">
+                    Show More Products
+                    <span className="material-symbols-outlined text-[20px] group-hover:translate-y-0.5 transition-transform">expand_more</span>
+                  </div>
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Promo Banner - Bento Grid Style */}
