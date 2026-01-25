@@ -9,8 +9,10 @@ import PriceDropModal from "./components/PriceDropModal";
 import ProductCard from "./components/ProductCard";
 import AuthModal from "./components/AuthModal";
 import UserMenu from "./components/UserMenu";
+import { SortBottomSheet, CategoryBottomSheet } from "./components/BottomSheet";
 import { PRODUCTS } from "./data/products";
 import { useAuth } from "@/lib/auth-context";
+import { useCartStore } from "@/lib/cart-store";
 
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
@@ -40,6 +42,10 @@ export default function Home() {
   const { user, loading: authLoading } = useAuth();
   const isSignedIn = !!user;
   const [visibleCount, setVisibleCount] = useState(6);
+  const cartCount = useCartStore((state) => state.items.reduce((acc, item) => acc + item.quantity, 0));
+  const wishlistCount = useCartStore((state) => state.wishlist.length);
+  const [isSortSheetOpen, setIsSortSheetOpen] = useState(false);
+  const [isCategorySheetOpen, setIsCategorySheetOpen] = useState(false);
 
   useEffect(() => {
     setVisibleCount(6);
@@ -223,10 +229,11 @@ export default function Home() {
 
               {/* Dock Items */}
               {[
-                { icon: 'home', label: 'Home', active: true },
-                { icon: 'grid_view', label: 'Catalog', action: () => router.push('/catalog') },
+                { icon: 'home', label: 'Home', active: true, action: () => router.push('/') },
+                { icon: 'category', label: 'Catalog', action: () => router.push('/catalog') },
                 { icon: 'search', label: 'Search', action: () => router.push('/search') },
-                { icon: 'shopping_bag', label: 'Cart', badge: 2, action: () => router.push('/cart') },
+                { icon: 'shopping_bag', label: 'Cart', badge: cartCount > 0 ? cartCount : undefined, action: () => router.push('/cart') },
+                { icon: 'favorite', label: 'Wishlist', badge: wishlistCount > 0 ? wishlistCount : undefined, action: () => router.push('/wishlist') },
                 { icon: 'notifications', label: 'Inbox', badge: 2, action: () => router.push('/notifications') },
                 ...(isSignedIn ? [
                   { icon: 'local_shipping', label: 'Track', action: () => router.push('/tracking') },
@@ -252,7 +259,9 @@ export default function Home() {
                     {item.icon}
                   </span>
                   {item.badge && (
-                    <span className="absolute top-0 right-0 size-2.5 bg-red-500 rounded-full border border-white dark:border-slate-900"></span>
+                    <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center text-[9px] font-black text-white">
+                      {typeof item.badge === 'number' && item.badge > 9 ? '9+' : item.badge}
+                    </span>
                   )}
 
                   {/* Hover Label */}
@@ -598,6 +607,21 @@ export default function Home() {
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
       <QRCodeModal isOpen={isQRCodeOpen} onClose={() => setIsQRCodeOpen(false)} url={currentUrl} />
+
+      {/* Mobile Bottom Sheets */}
+      <SortBottomSheet
+        isOpen={isSortSheetOpen}
+        onClose={() => setIsSortSheetOpen(false)}
+        selected={sortBy}
+        onSelect={(value) => setSortBy(value as any)}
+      />
+      <CategoryBottomSheet
+        isOpen={isCategorySheetOpen}
+        onClose={() => setIsCategorySheetOpen(false)}
+        selected={selectedCategory}
+        onSelect={setSelectedCategory}
+        categories={['All', 'Chairs', 'Lighting', 'Tables', 'Sofa', 'Bedroom', 'Kitchen']}
+      />
     </div>
   );
 }

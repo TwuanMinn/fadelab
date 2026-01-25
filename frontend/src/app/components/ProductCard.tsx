@@ -2,20 +2,73 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
+import { useCartStore } from "@/lib/cart-store";
 
 export default function ProductCard({ product }: { product: any }) {
-    const [quantity, setQuantity] = useState(0);
+    const { addToCart, items, updateQuantity, removeFromCart, toggleWishlist, isInWishlist } = useCartStore();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    // Get current quantity from global cart
+    const cartItem = items.find(item => item.id === product.id);
+    const quantity = cartItem?.quantity || 0;
+    const inWishlist = mounted ? isInWishlist(product.id) : false;
 
     const handleAddToCart = (e: React.MouseEvent) => {
         e.stopPropagation();
-        setQuantity(1);
+        e.preventDefault();
+        addToCart({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            img: product.img,
+            category: product.category,
+        });
+        toast.success("Added to cart", {
+            description: product.name,
+            action: {
+                label: "View Cart",
+                onClick: () => window.location.href = "/cart"
+            }
+        });
     };
 
     const adjustQuantity = (e: React.MouseEvent, amount: number) => {
         e.stopPropagation();
-        setQuantity(prev => Math.max(0, prev + amount));
+        e.preventDefault();
+        const newQuantity = quantity + amount;
+        if (newQuantity <= 0) {
+            removeFromCart(product.id);
+            toast.info("Removed from cart", { description: product.name });
+        } else {
+            updateQuantity(product.id, newQuantity);
+        }
+    };
+
+    const handleWishlistToggle = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+        toggleWishlist({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            img: product.img,
+            category: product.category,
+            rating: product.rating,
+        });
+        if (inWishlist) {
+            toast.info("Removed from wishlist", { description: product.name });
+        } else {
+            toast.success("Added to wishlist", {
+                description: product.name,
+                icon: "❤️"
+            });
+        }
     };
 
     return (
@@ -39,6 +92,21 @@ export default function ProductCard({ product }: { product: any }) {
                         <span className="text-[8px] md:text-[10px] font-black uppercase tracking-wider">{product.discount}</span>
                     </div>
                 )}
+
+                {/* Wishlist Button */}
+                <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={handleWishlistToggle}
+                    className={`absolute top-2 right-2 md:top-4 md:right-4 z-20 size-8 md:size-10 rounded-full flex items-center justify-center shadow-lg transition-all ${inWishlist
+                            ? "bg-red-500 text-white"
+                            : "bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm text-slate-400 hover:text-red-500"
+                        }`}
+                >
+                    <span className={`material-symbols-outlined text-[16px] md:text-[20px] ${inWishlist ? "filled" : ""}`}>
+                        favorite
+                    </span>
+                </motion.button>
 
                 {/* Image */}
                 <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110" style={{ backgroundImage: `url("${product.img}")` }}>
