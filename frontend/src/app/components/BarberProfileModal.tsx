@@ -71,37 +71,58 @@ export function BarberProfileModal({ isOpen, onClose, barber }: BarberProfileMod
 
                     {/* Main Content Column */}
                     <div className="flex-1 overflow-y-auto custom-scrollbar lg:border-r border-white/5 bg-surface-dark relative">
-                        {/* Hero Header */}
-                        <div className="relative h-72 sm:h-96">
-                            <div
-                                className="w-full h-full bg-cover bg-top"
-                                style={{ backgroundImage: `url('${barber.img}')` }}
+                        {/* Background Watermarks */}
+                        <div className="absolute top-20 left-10 pointer-events-none opacity-[0.03] select-none z-0">
+                            <span className="text-[18rem] font-black italic tracking-tighter uppercase leading-none">Elite</span>
+                        </div>
+                        <div className="absolute bottom-20 right-10 pointer-events-none opacity-[0.03] select-none z-0">
+                            <span className="text-[18rem] font-black italic tracking-tighter uppercase leading-none">Craft</span>
+                        </div>
+
+                        {/* Top Profile Section (Redesigned Hero) */}
+                        <div className="relative p-12 flex flex-col items-center text-center z-10">
+                            {/* Stylized Name Heading */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.2 }}
+                                className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6 backdrop-blur-md"
                             >
-                                <div className="absolute inset-0 bg-gradient-to-t from-surface-dark via-surface-dark/20 to-transparent"></div>
+                                <div className="size-2 rounded-full bg-primary animate-ping"></div>
+                                <span className="text-[10px] font-black text-primary tracking-[0.4em] uppercase">Specialist Spotlight</span>
+                            </motion.div>
+
+                            <div className="mb-8">
+                                <h2 className="text-7xl md:text-9xl font-black italic uppercase tracking-tighter leading-[0.8]">
+                                    <span className="block text-white">{barber.name.split(' ')[0]}</span>
+                                    <span className="block text-primary">{barber.name.split(' ').slice(1).join(' ')}</span>
+                                </h2>
                             </div>
-                            <div className="absolute bottom-0 left-0 p-8 w-full">
-                                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
-                                    <div>
-                                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/20 border border-primary/30 w-fit mb-3 backdrop-blur-md">
-                                            <span className="material-symbols-outlined text-primary text-sm">verified</span>
-                                            <span className="text-[10px] font-black text-primary tracking-widest uppercase">Top Rated Stylist</span>
-                                        </div>
-                                        <h2 className="text-4xl md:text-5xl font-black text-white leading-none mb-2 uppercase tracking-tight">{barber.name}</h2>
-                                        <p className="text-gray-400 text-lg font-medium tracking-wide">{barber.role}</p>
-                                    </div>
-                                    <div className="flex gap-3">
-                                        <button className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center hover:bg-primary hover:text-white transition-all border border-white/10 text-gray-400">
-                                            <span className="material-symbols-outlined text-xl">photo_camera</span>
-                                        </button>
-                                        <button className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center hover:bg-primary hover:text-white transition-all border border-white/10 text-gray-400">
-                                            <span className="material-symbols-outlined text-xl">mail</span>
-                                        </button>
-                                    </div>
-                                </div>
+
+
+
+
+
+
+
+
+
+
+                        </div>
+
+                        {/* Image Showcase Section */}
+                        <div className="p-12 pt-0 w-full z-10">
+                            <div className="relative aspect-[4/5] sm:aspect-video rounded-[3rem] overflow-hidden border border-white/10 group">
+                                <div
+                                    className="w-full h-full bg-cover bg-top transition-transform duration-1000 group-hover:scale-110"
+                                    style={{ backgroundImage: `url('${barber.img}')` }}
+                                ></div>
+                                <div className="absolute inset-0 bg-gradient-to-t from-surface-dark via-transparent to-transparent opacity-60"></div>
                             </div>
                         </div>
 
-                        <div className="p-8 pt-4 space-y-12">
+                        {/* Biography Grid */}
+                        <div className="p-12 pt-4 space-y-12 z-10 relative">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                                 <div className="md:col-span-2 space-y-6">
                                     <h3 className="text-xl font-black text-white uppercase tracking-tight flex items-center gap-3">
@@ -161,12 +182,7 @@ export function BarberProfileModal({ isOpen, onClose, barber }: BarberProfileMod
                     <div className="lg:w-[420px] bg-[#0c1018] border-l border-white/5 flex flex-col h-full overflow-y-auto custom-scrollbar">
                         {/* Calendar Section */}
                         <div className="p-8 border-b border-white/5">
-                            <h3 className="text-lg font-black text-white uppercase tracking-tight mb-6 flex items-center justify-between">
-                                Book Session
-                                <span className="text-[10px] font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-lg flex items-center gap-1.5 uppercase tracking-wider">
-                                    <span className="size-1.5 rounded-full bg-green-500 animate-pulse"></span> Available
-                                </span>
-                            </h3>
+
 
                             {/* Date Selector */}
                             <div className="flex items-center justify-between mb-6 bg-surface-dark p-2 rounded-xl border border-white/5">
@@ -239,7 +255,7 @@ export function BarberProfileModal({ isOpen, onClose, barber }: BarberProfileMod
                                 href={`/checkout?barberId=${barber.id}&service=classic-cut&time=${encodeURIComponent(selectedTime)}&date=${encodeURIComponent(selectedDate?.toISOString() || "")}`}
                                 className="w-full bg-white hover:bg-gray-200 text-background-dark font-black uppercase tracking-widest text-xs py-4 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2"
                             >
-                                Confirm Booking
+                                Proceed to Payment
                                 <span className="material-symbols-outlined text-lg">arrow_forward</span>
                             </Link>
                         </div>

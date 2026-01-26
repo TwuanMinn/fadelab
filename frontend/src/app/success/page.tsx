@@ -43,10 +43,42 @@ function SuccessContent() {
 
     const handleDownload = () => {
         setIsDownloading(true);
+
+        // Generate a text invoice
+        const invoiceContent = `FADELAB - OFFICIAL RECEIPT
+--------------------------------
+Ref: #LAB-772
+Date: ${new Date().toLocaleDateString()}
+--------------------------------
+
+Item:                 Price
+Signature Haircut     $50.00
+Hot Towel Shave       $15.00
+Optimization Bonus   -$6.50
+
+--------------------------------
+TOTAL PAID:           $38.50
+--------------------------------
+
+Specialist: ${barber?.name || "Assigned"}
+Session: ${date?.toLocaleDateString()} @ ${time}
+
+Thank you for your business.
+FadeLab - Tactical Grooming`;
+
+        const blob = new Blob([invoiceContent], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Invoice_LAB-772.txt`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
         setTimeout(() => {
             setIsDownloading(false);
-            alert("Invoice downloaded successfully!");
-        }, 2000);
+        }, 1000);
     };
 
     const handleJoinClub = () => {
@@ -59,10 +91,51 @@ function SuccessContent() {
 
     const handleAddToCalendar = () => {
         setIsAddingCalendar(true);
+
+        // Parse date and time to creates start/end times
+        if (date && time) {
+            const [timeStr, modifier] = time.split(' ');
+            let [hours, minutes] = timeStr.split(':').map(Number);
+            if (modifier === 'PM' && hours < 12) hours += 12;
+            if (modifier === 'AM' && hours === 12) hours = 0;
+
+            const startDate = new Date(date);
+            startDate.setHours(hours, minutes);
+
+            const endDate = new Date(startDate);
+            endDate.setMinutes(startDate.getMinutes() + 45); // 45 min duration
+
+            // Format for ICS (YYYYMMDDTHHmmSS)
+            const formatICSDate = (d: Date) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+
+            const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//FadeLab//NONSGML v1.0//EN
+BEGIN:VEVENT
+UID:${Date.now()}@fadelab.com
+DTSTAMP:${formatICSDate(new Date())}
+DTSTART:${formatICSDate(startDate)}
+DTEND:${formatICSDate(endDate)}
+SUMMARY:FadeLab Session with ${barber?.name || 'Specialist'}
+DESCRIPTION:Premium grooming session at FadeLab.
+LOCATION:123 Barber Lane, NY 10001
+END:VEVENT
+END:VCALENDAR`;
+
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'fadelab-session.ics';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+
         setTimeout(() => {
             setIsAddingCalendar(false);
-            alert("Event added to your calendar!");
-        }, 1500);
+        }, 1000);
     };
 
     const [mounted, setMounted] = useState(false);
@@ -197,7 +270,7 @@ function SuccessContent() {
                                     disabled={isAddingCalendar}
                                     className="text-sm font-bold text-blue-500 hover:text-blue-400 flex items-center gap-1 transition-colors disabled:opacity-50"
                                 >
-                                    {isAddingCalendar ? "Adding..." : <>Add Event <span className="material-symbols-outlined text-sm">add_circle</span></>}
+                                    {isAddingCalendar ? "Downloading..." : <>Add Event <span className="material-symbols-outlined text-sm">add_circle</span></>}
                                 </button>
                             </motion.div>
 
@@ -207,9 +280,14 @@ function SuccessContent() {
                                 </div>
                                 <h3 className="font-bold text-lg mb-1 text-white">Get Directions</h3>
                                 <p className="text-sm text-white/50 mb-6">123 Barber Lane, NY 10001</p>
-                                <Link href="#" className="text-sm font-bold text-blue-500 hover:text-blue-400 flex items-center gap-1 transition-colors">
+                                <a
+                                    href="https://www.google.com/maps/search/?api=1&query=123+Barber+Lane,+NY+10001"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-sm font-bold text-blue-500 hover:text-blue-400 flex items-center gap-1 transition-colors"
+                                >
                                     Open Maps <span className="material-symbols-outlined text-sm">arrow_forward</span>
-                                </Link>
+                                </a>
                             </motion.div>
 
                             <motion.div variants={itemVariants} className="bg-[#1e293b]/50 backdrop-blur-md rounded-2xl p-6 border border-white/5 hover:border-blue-500/50 transition-all duration-300 group flex flex-col items-center text-center">

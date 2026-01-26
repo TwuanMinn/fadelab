@@ -87,6 +87,136 @@ const BARBERS = [
         bio: "Alex R. brings a signature 'Chill Vibe' to FadeLab. With 4 years of experience, Alex specializes in low-maintenance, high-style classic cuts that grow out beautifully.",
         traitIcon: "record_voice_over"
     },
+    {
+        id: 7,
+        name: "Marcus V.",
+        role: "Precision Fade",
+        status: "Available Now",
+        color: "emerald",
+        rating: 4.9,
+        exp: "7 Years",
+        trait: "Perfectionist",
+        img: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=800",
+        bio: "Marcus treats every fade like a mathematical equation. His precision is unmatched, ensuring a gradient so smooth it looks like it was airbrushed.",
+        traitIcon: "architecture"
+    },
+    {
+        id: 8,
+        name: "Elena R.",
+        role: "Stylist",
+        status: "Next: 1:15 PM",
+        color: "yellow",
+        rating: 5.0,
+        exp: "9 Years",
+        trait: "Trendsetter",
+        img: "https://images.unsplash.com/photo-1595152772835-219674b2a8a6?auto=format&fit=crop&q=80&w=800",
+        bio: "Elena isn't just a barber; she's a style consultant. If you want to completely reinvent your look, she's the visionary you need in your corner.",
+        traitIcon: "auto_awesome"
+    },
+    {
+        id: 9,
+        name: "Tyson B.",
+        role: "Line-up King",
+        status: "Fully Booked",
+        color: "red",
+        rating: 4.8,
+        exp: "6 Years",
+        trait: "Sharp Eye",
+        img: "https://images.unsplash.com/photo-1534030347209-567808842200?auto=format&fit=crop&q=80&w=800",
+        bio: "Tyson is famous for his crisp line-ups. He frames the face with geometric precision that enhances your natural bone structure.",
+        traitIcon: "content_cut"
+    },
+    {
+        id: 10,
+        name: "Leo C.",
+        role: "Classic Gent",
+        status: "Available Now",
+        color: "emerald",
+        rating: 4.7,
+        exp: "15 Years",
+        trait: "Traditionalist",
+        img: "https://images.unsplash.com/photo-1618077360395-f3068be8e001?auto=format&fit=crop&q=80&w=800",
+        bio: "Leo keeps the old traditions alive. Hot towels, straight razors, and classic cuts that never go out of style.",
+        traitIcon: "history_edu"
+    },
+    {
+        id: 11,
+        name: "Sofia M.",
+        role: "Texture Queen",
+        status: "Next: 3:45 PM",
+        color: "yellow",
+        rating: 4.9,
+        exp: "5 Years",
+        trait: "Creative",
+        img: "https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto=format&fit=crop&q=80&w=800",
+        bio: "Sofia specializes in working with natural texture. Whether it's curls, waves, or coils, she knows exactly how to shape them for maximum impact.",
+        traitIcon: "brush"
+    },
+    {
+        id: 12,
+        name: "Diego F.",
+        role: "Razor Expert",
+        status: "Available Now",
+        color: "emerald",
+        rating: 4.8,
+        exp: "8 Years",
+        trait: "Steady Hand",
+        img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=800",
+        bio: "Diego's straight razor skills are legendary. For the closest shave of your life without a hint of irritation, he is the specialist to book.",
+        traitIcon: "dry_cleaning"
+    },
+    {
+        id: 13,
+        name: "Andre P.",
+        role: "Afro Specialist",
+        status: "Fully Booked",
+        color: "red",
+        rating: 5.0,
+        exp: "11 Years",
+        trait: "Master Sculptor",
+        img: "https://images.unsplash.com/photo-1531384441138-2736e62e0919?auto=format&fit=crop&q=80&w=800",
+        bio: "Andre views afro hair as a medium for sculpture. His shaping techniques create balanced, powerful silhouettes that command attention.",
+        traitIcon: "stat_1"
+    },
+    {
+        id: 14,
+        name: "Kenji T.",
+        role: "Scissor Master",
+        status: "Available Now",
+        color: "emerald",
+        rating: 4.9,
+        exp: "14 Years",
+        trait: "Detailed",
+        img: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&q=80&w=800",
+        bio: "Kenji's scissor-over-comb technique is mesmerizing. He builds weight and graduation with a level of control that results in perfectly growing-out cuts.",
+        traitIcon: "content_cut"
+    },
+    {
+        id: 15,
+        name: "Raymond G.",
+        role: "Old School",
+        status: "Next: Tomorrow",
+        color: "yellow",
+        rating: 4.6,
+        exp: "20 Years",
+        trait: "Veteran",
+        img: "https://images.unsplash.com/photo-1566492031773-4f4e44671857?auto=format&fit=crop&q=80&w=800",
+        bio: "With two decades of experience, Raymond has seen every trend come and go. He sticks to what works: clean cuts, good conversation, and great service.",
+        traitIcon: "school"
+    },
+    {
+        id: 16,
+        name: "Jamal W.",
+        role: "Modern Mullet",
+        status: "Available Now",
+        color: "emerald",
+        rating: 4.8,
+        exp: "3 Years",
+        trait: "Edgy",
+        img: "https://images.unsplash.com/photo-1522529599102-193c0d76b5b6?auto=format&fit=crop&q=80&w=800",
+        bio: "Jamal is the new blood pushing boundaries. He specializes in modern mullets, shags, and edgy alternative cuts for the bold.",
+        traitIcon: "flash_on"
+    }
 ];
 
 export default function BarbersPage() {
@@ -221,7 +351,7 @@ export default function BarbersPage() {
                         {/* Barber Grid */}
                         <main className="w-full lg:w-3/4">
                             <div className="flex items-center justify-between mb-10 text-white">
-                                <p className="text-gray-500 text-xs font-black uppercase tracking-widest">Showing <span className="text-white">6</span> specialists</p>
+                                <p className="text-gray-500 text-xs font-black uppercase tracking-widest">Showing <span className="text-white">16</span> specialists</p>
                                 <div className="flex items-center gap-4">
                                     <select className="bg-surface-dark border border-white/10 text-white text-xs font-black uppercase tracking-widest rounded-xl focus:ring-primary focus:border-primary px-4 py-2.5 outline-none cursor-pointer">
                                         <option>Sort: Recommended</option>

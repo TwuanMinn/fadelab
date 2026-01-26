@@ -616,179 +616,103 @@ export default function ProfileSettingsPage() {
                         </>
                     ) : activeTab === 'settings' ? (
                         <>
-                            {/* Page Header */}
-                            <header className="mb-10 flex flex-col gap-2 animate-fade-in-up">
-                                <h1 className="text-3xl lg:text-4xl font-black tracking-tight text-white">
-                                    Settings &amp; Preferences
-                                </h1>
-                                <p className="text-gray-400 text-base lg:text-lg max-w-2xl">
-                                    Customize your grooming experience, manage payment methods, and control how we connect with you.
-                                </p>
+                            {/* Page Heading */}
+                            <header className="mb-10">
+                                <h2 className="text-4xl font-black text-white tracking-tight mb-2">Profile Settings</h2>
+                                <p className="text-gray-400 text-lg">Update your personal information and grooming preferences for a tailored experience.</p>
                             </header>
 
-                            {/* Grid Layout */}
-                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                                {/* 1. Personal Information (New) */}
-                                <section className="col-span-1 lg:col-span-8 flex flex-col bg-[#1e293b]/50 backdrop-blur-md rounded-xl p-6 lg:p-8 shadow-sm border border-white/5">
-                                    <div className="flex items-center gap-3 mb-6 border-b border-white/5 pb-4">
-                                        <span className="material-symbols-outlined text-blue-500 text-3xl">badge</span>
-                                        <h2 className="text-xl font-bold">Personal Information</h2>
-                                    </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Full Name</label>
-                                            <input type="text" defaultValue="Alex Sterling" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors" />
+                            {/* Profile Section */}
+                            <section className="mb-12">
+                                <div className="flex items-center gap-8 p-6 bg-[#1e293b]/50 backdrop-blur-md rounded-xl border border-white/5 shadow-sm">
+                                    <div className="relative group">
+                                        <div className="size-32 rounded-full overflow-hidden border-4 border-[#1152D4]/20 bg-cover bg-center" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuC7XaI-rf8r1oA8OUZMwFiQExxIX9mAZWtt6nJzEq8wHayG-gnvRaGf2oOfdhskRmuGikXRJWIs6ZGuXvtH5k0hGf4PyF3r1EbnOu2L4pBC52BZw7dC2Wp4Y_oQxtjAQHN-9zY1PhPTXgHdMx5kn-7LXtKnfF2I-26EciaZcYrM4lI632fm0zqDB1iwqUKYqspA855GlIELKgI7Wy_3y4rrcDAayZrLagNmNw3sq_TCzr73phP29YCc07tt28V1yk8aBljixTXG-U4t')" }}>
                                         </div>
-                                        <div className="space-y-2">
-                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Phone Number</label>
-                                            <input type="tel" defaultValue="(555) 123-4567" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors" />
-                                        </div>
-                                        <div className="space-y-2 md:col-span-2">
-                                            <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">Email Address</label>
-                                            <input type="email" defaultValue="alex.sterling@example.com" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white font-medium focus:outline-none focus:border-blue-500/50 transition-colors" />
-                                        </div>
+                                        <button className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-full">
+                                            <span className="material-symbols-outlined text-white">photo_camera</span>
+                                        </button>
                                     </div>
-                                </section>
+                                    <div className="flex-1">
+                                        <h3 className="text-2xl font-bold text-white mb-1">Alex Harrison</h3>
+                                        <p className="text-gray-400 mb-4">Elite Member since Oct 2023</p>
+                                        <button className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white text-sm font-bold rounded-lg transition-colors border border-white/5">
+                                            Change Avatar
+                                        </button>
+                                    </div>
+                                </div>
+                            </section>
 
-                                {/* 2. Notification Settings (Moved) */}
-                                <section className="col-span-1 lg:col-span-4 flex flex-col bg-[#1e293b]/50 backdrop-blur-md rounded-xl p-6 shadow-sm border border-white/5">
-                                    <div className="flex items-center gap-3 mb-6">
-                                        <span className="material-symbols-outlined text-blue-500 text-2xl">notifications_active</span>
-                                        <h2 className="text-lg font-bold">Notifications</h2>
-                                    </div>
-                                    <div className="flex flex-col gap-6">
-                                        {[
-                                            { id: 'sms', label: 'SMS Reminders', sub: '24h before appointment' },
-                                            { id: 'email', label: 'Email Marketing', sub: 'Promos & tips' },
-                                            { id: 'push', label: 'App Push', sub: 'Status updates' }
-                                        ].map((item) => (
-                                            <div key={item.id} className="flex items-center justify-between">
-                                                <div className="flex flex-col">
-                                                    <span className="text-sm font-bold text-white">{item.label}</span>
-                                                    <span className="text-xs text-gray-400">{item.sub}</span>
-                                                </div>
-                                                <button
-                                                    onClick={() => setNotificationPreferences(prev => ({ ...prev, [item.id]: !prev[item.id as keyof typeof notificationPreferences] }))}
-                                                    className={`relative w-11 h-6 rounded-full transition-colors ${notificationPreferences[item.id as keyof typeof notificationPreferences] ? 'bg-blue-600' : 'bg-white/10'}`}
-                                                >
-                                                    <span className={`absolute top-[2px] left-[2px] bg-white rounded-full h-5 w-5 transition-transform ${notificationPreferences[item.id as keyof typeof notificationPreferences] ? 'translate-x-full' : 'translate-x-0'}`} />
-                                                </button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </section>
-
-                                {/* 3. Booking Preferences (Existing) */}
-                                <section className="col-span-1 lg:col-span-8 flex flex-col bg-[#1e293b]/50 backdrop-blur-md rounded-xl p-6 lg:p-8 shadow-sm border border-white/5">
-                                    <div className="flex items-center gap-3 mb-6 border-b border-white/5 pb-4">
-                                        <span className="material-symbols-outlined text-blue-500 text-3xl">content_cut</span>
-                                        <h2 className="text-xl font-bold">Booking Preferences</h2>
-                                    </div>
-
-                                    {/* Default Barber Selection */}
-                                    <div className="mb-8">
-                                        <label className="block text-sm font-medium text-gray-400 mb-4 uppercase tracking-wider">Default Barber</label>
-                                        <div className="flex flex-wrap gap-6">
-                                            {[
-                                                { id: "James", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAPVuo7e7d42cZ8SVF5yBaWZ4WxcRqUIY2rfQAdWtliyxf-75tgSZcDKUxfHXgIjsjsM3Ph2KqaU_1Xp4TWcHYnbmgr83BPp7SsVZfX6LkuEw-yDpRQBUHyYpTUY5wE_FoD4nUFK0vpOpR1U1qxI8Tk6kORzl6y-PqLNZo6NDwwor1Vj0QgSTxbJMI563r0-dPS6lVxRytPTBb_hfsyy58q-8lp0czIk83UuTwsiaxM2rTTFm6ramjF2nbc8wRfkmTtt6SlZF7IjAp7" },
-                                                { id: "Sarah", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuCbsUr6yVAj5lZiRQbGsD6SYm45N5uATtoqNEw2Z18wV7vnm9GeE1U-6atIJ_DfS-EbaBiXcq93Qa4nkOBM0KOehDVKiFdL84d7OlkAMTZqAYOFvpZukD3H7x8xUevwcA7HiLF2b0CUdN5fiAI1YPHV0GSSwJ0OiyOAVGAmt3PvDcoDJqdLOorFRt4-GKoYqRgtgAtFz7-UmAVQ3vmaU9dlid92hteW53XLqxuA4e7LWQMqV7TwAWnO4pX5F_XyGd92YLW45zM5FRqL" },
-                                                { id: "David", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDKYkGWRAj5alGr7xZRoSNLakW_Zv6wo3_B2kmiwrqJ11Eey4-XyYKo2roRCl86flTCuj6XUNkNw-NlsBgUSxVWbd7XFyQAd2UGu_yQpX46-Vem1HzqhcHDBw8wE3tqPjJq0kvp9_LWs7dtFvlJS-ZK8N0FrYt9y0QuQteJmo1ohmJZ-pFRpoCTvtyDe06e3Ejk9UmbjrxehPNdvWmpEMpQAw0Vesvmvkucq6bc8IbA91gVvoNd3NoqPi850VGtdnrTnFTPPMIufe_e" }
-                                            ].map((barber) => (
-                                                <div
-                                                    key={barber.id}
-                                                    onClick={() => setSelectedBarber(barber.id)}
-                                                    className="group relative flex flex-col items-center gap-2 cursor-pointer"
-                                                >
-                                                    <AnimatePresence>
-                                                        {selectedBarber === barber.id && (
-                                                            <motion.div
-                                                                initial={{ opacity: 0, scale: 0.8 }}
-                                                                animate={{ opacity: 1, scale: 1 }}
-                                                                exit={{ opacity: 0, scale: 0.8 }}
-                                                                className="absolute -inset-1 rounded-full bg-gradient-to-tr from-blue-600 to-purple-500 opacity-100 blur-sm"
-                                                            />
-                                                        )}
-                                                    </AnimatePresence>
-                                                    <div
-                                                        className={`relative size-20 rounded-full border-4 bg-cover bg-center transition-all duration-300 ${selectedBarber === barber.id
-                                                            ? "border-transparent grayscale-0"
-                                                            : "border-transparent grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100"
-                                                            }`}
-                                                        style={{ backgroundImage: `url('${barber.img}')` }}
-                                                    ></div>
-                                                    <span className={`text-sm font-bold transition-colors ${selectedBarber === barber.id ? "text-blue-500" : "text-gray-400 group-hover:text-white"}`}>
-                                                        {barber.id} {barber.id === "James" && "(You)"}
-                                                    </span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    {/* Preferred Times */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-400 mb-4 uppercase tracking-wider">
-                                            Preferred Times
+                            {/* Forms Grid */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                {/* Personal Info */}
+                                <section className="space-y-6">
+                                    <h4 className="text-xl font-bold text-white flex items-center gap-2">
+                                        <span className="material-symbols-outlined text-[#1152D4]">badge</span>
+                                        Personal Information
+                                    </h4>
+                                    <div className="space-y-4">
+                                        <label className="block">
+                                            <span className="text-sm font-medium text-gray-400 mb-2 block">Full Name</span>
+                                            <input className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:ring-1 focus:ring-[#1152D4] focus:border-[#1152D4] focus:outline-none transition-all placeholder:text-gray-600" type="text" defaultValue="Alex Harrison" />
                                         </label>
-                                        <div className="flex flex-wrap gap-3">
-                                            {timeOptions.map((time) => (
-                                                <button
-                                                    key={time}
-                                                    onClick={() => toggleTime(time)}
-                                                    className={`px-5 py-2.5 rounded-full font-medium text-sm transition-all active:scale-95 ${selectedTimes.includes(time)
-                                                        ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20"
-                                                        : "bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10"
-                                                        }`}
-                                                >
-                                                    {time}
-                                                </button>
-                                            ))}
-                                        </div>
+                                        <label className="block">
+                                            <span className="text-sm font-medium text-gray-400 mb-2 block">Email Address</span>
+                                            <input className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:ring-1 focus:ring-[#1152D4] focus:border-[#1152D4] focus:outline-none transition-all placeholder:text-gray-600" type="email" defaultValue="alex.harrison@premium.com" />
+                                        </label>
+                                        <label className="block">
+                                            <span className="text-sm font-medium text-gray-400 mb-2 block">Phone Number</span>
+                                            <input className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:ring-1 focus:ring-[#1152D4] focus:border-[#1152D4] focus:outline-none transition-all placeholder:text-gray-600" type="tel" defaultValue="+1 (555) 123-4567" />
+                                        </label>
                                     </div>
                                 </section>
-
-                                {/* 4. Payment Methods (Existing) */}
-                                <section className="col-span-1 lg:col-span-4 flex flex-col bg-[#1e293b]/50 backdrop-blur-md rounded-xl p-6 lg:p-8 shadow-sm h-full border border-white/5">
-                                    <div className="flex items-center justify-between mb-6 border-b border-white/5 pb-4">
-                                        <div className="flex items-center gap-3">
-                                            <span className="material-symbols-outlined text-blue-500 text-3xl">account_balance_wallet</span>
-                                            <h2 className="text-xl font-bold">Wallet</h2>
-                                        </div>
-                                        <button className="text-blue-500 hover:text-blue-500/80 transition-colors">
-                                            <span className="material-symbols-outlined">add_circle</span>
-                                        </button>
-                                    </div>
-                                    <div className="flex flex-col gap-4 flex-1">
-                                        <div className="relative group p-4 rounded-xl bg-gradient-to-br from-slate-800 to-black border border-white/10 text-white shadow-lg overflow-hidden cursor-pointer hover:scale-[1.02] transition-transform">
-                                            <div className="absolute right-0 top-0 p-3 opacity-20"><span className="material-symbols-outlined text-6xl">credit_card</span></div>
-                                            <div className="flex justify-between items-start mb-6">
-                                                <div className="bg-white/20 p-1.5 rounded w-12 h-8 flex items-center justify-center"><span className="text-xs font-bold italic">VISA</span></div>
-                                                <span className="bg-blue-600/20 text-blue-500 text-[10px] font-bold px-2 py-1 rounded-full border border-blue-500/30">DEFAULT</span>
-                                            </div>
-                                            <div className="flex justify-between items-end">
-                                                <div className="flex flex-col"><p className="text-xs text-slate-400 mb-1">Card Number</p><p className="font-mono text-lg tracking-wider">•••• 4242</p></div>
-                                                <div className="flex flex-col text-right"><p className="text-xs text-slate-400 mb-1">Expires</p><p className="font-mono text-sm">12/25</p></div>
+                                {/* Grooming Preferences */}
+                                <section className="space-y-6">
+                                    <h4 className="text-xl font-bold text-white flex items-center gap-2">
+                                        <span className="material-symbols-outlined text-[#1152D4]">brush</span>
+                                        Grooming Preferences
+                                    </h4>
+                                    <div className="space-y-4">
+                                        <div className="block">
+                                            <span className="text-sm font-medium text-gray-400 mb-2 block">Default Barber</span>
+                                            <div className="relative group cursor-pointer bg-white/5 border border-white/10 rounded-lg p-3 flex items-center justify-between hover:bg-white/10 transition-colors">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="size-8 rounded-full bg-cover bg-center" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDcqUworjmVUvJpnQcX17jmEp06qXr5W2ytrrheoeRNX38IB2fuomPXwXDwH_GYmXPoUlnfQlaYdz3WBGDgCcpzYweQ6QcOe4Y5sFO9qPWCdoG-vbZPg4_8V-WwaBPaVu8evg99i7dozkMOZ7pqE7oK8UlCoBQPPyD0-8pLjRXpESVQqKR6GhYC33IashTV2iHBT9yY696Vqab8XQVjk9E1f680PsKvTFpuH4x3zZ8OaQmdcJjHGDySlW_Z9acKUJyLTxQxoqjC6Aa_')" }}></div>
+                                                    <span className="text-white font-medium">Julian Vance</span>
+                                                </div>
+                                                <span className="material-symbols-outlined text-gray-400">expand_more</span>
                                             </div>
                                         </div>
-                                        <button className="mt-auto w-full py-3 rounded-xl border-2 border-dashed border-white/20 text-gray-400 hover:border-blue-500 hover:text-blue-500 transition-all font-medium flex items-center justify-center gap-2 group">
-                                            <span className="material-symbols-outlined group-hover:scale-110 transition-transform">add</span>
-                                            Add Payment Method
-                                        </button>
+                                        <div className="block">
+                                            <span className="text-sm font-medium text-gray-400 mb-2 block">Favorite Hair Length</span>
+                                            <div className="flex flex-wrap gap-2">
+                                                <button className="px-3 py-2 text-xs font-bold rounded-lg border border-[#1152D4] bg-[#1152D4]/10 text-[#1152D4] shadow-lg shadow-[#1152D4]/10">Skin Fade</button>
+                                                <button className="px-3 py-2 text-xs font-bold rounded-lg border border-white/10 hover:border-[#1152D4]/50 text-gray-400 hover:text-white transition-colors">Taper</button>
+                                                <button className="px-3 py-2 text-xs font-bold rounded-lg border border-white/10 hover:border-[#1152D4]/50 text-gray-400 hover:text-white transition-colors">Scissor Cut</button>
+                                                <button className="px-3 py-2 text-xs font-bold rounded-lg border border-white/10 hover:border-[#1152D4]/50 text-gray-400 hover:text-white transition-colors">Buzz Cut</button>
+                                            </div>
+                                        </div>
+                                        <div className="block">
+                                            <span className="text-sm font-medium text-gray-400 mb-2 block">Preferred Products</span>
+                                            <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-lg p-3">
+                                                <span className="material-symbols-outlined text-[#1152D4]">soap</span>
+                                                <span className="text-white text-sm">Matte Pomade &amp; Sandalwood Oil</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </section>
                             </div>
 
-                            {/* Footer Action Area */}
-                            <div className="mt-8 flex justify-end">
-                                <button className="bg-white/5 hover:bg-white/10 text-gray-400 px-6 py-3 rounded-full font-bold text-sm mr-4 transition-colors">
+                            {/* Action Bar */}
+                            <div className="mt-12 pt-8 border-t border-white/10 flex justify-end gap-4">
+                                <button className="px-6 py-3 text-sm font-bold text-gray-400 hover:text-white transition-colors">
                                     Discard Changes
                                 </button>
                                 <button
                                     onClick={handleSave}
-                                    disabled={isSaving}
-                                    className="bg-blue-600 hover:bg-blue-600/90 text-white px-8 py-3 rounded-full font-bold text-sm shadow-lg shadow-blue-500/40 transition-all hover:-translate-y-1 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                    className="px-10 py-3 bg-[#1152D4] hover:bg-[#1152D4]/90 text-white font-black rounded-lg transition-all shadow-xl shadow-[#1152D4]/20 flex items-center gap-2"
                                 >
                                     {isSaving ? <span className="material-symbols-outlined animate-spin text-sm">refresh</span> : null}
-                                    {isSaving ? "Saving..." : "Save Preferences"}
+                                    {isSaving ? "SAVING..." : "SAVE CHANGES"}
                                 </button>
                             </div>
                         </>
