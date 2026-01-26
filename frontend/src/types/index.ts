@@ -59,6 +59,7 @@ export interface Service {
   price: number;
   duration: number;
   description?: string;
+  popular?: boolean;
 }
 
 export interface Addon {
