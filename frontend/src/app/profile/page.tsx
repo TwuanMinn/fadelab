@@ -8,7 +8,7 @@ import { useSearchParams } from "next/navigation";
 export default function ProfileSettingsPage() {
     const searchParams = useSearchParams();
     const [mounted, setMounted] = useState(false);
-    const [activeTab, setActiveTab] = useState("settings");
+    const [activeTab, setActiveTab] = useState("dashboard");
     const [activeLegalTab, setActiveLegalTab] = useState("terms");
 
     // Settings State
@@ -67,7 +67,7 @@ export default function ProfileSettingsPage() {
         { id: "referrals", label: "Refer a Friend", icon: "group_add" },
         { id: "shop", label: "Lab Shop", icon: "shopping_bag" },
         { id: "preferences", label: "Service Vibe", icon: "tune" },
-        { id: "settings", label: "Profile Settings", icon: "settings" },
+
         { id: "security", label: "Clearance & Auth", icon: "lock" },
         { id: "notifications", label: "Signal History", icon: "notifications" },
         { id: "legal", label: "Legal & Policies", icon: "policy" },
@@ -614,108 +614,7 @@ export default function ProfileSettingsPage() {
                                 </div>
                             </div>
                         </>
-                    ) : activeTab === 'settings' ? (
-                        <>
-                            {/* Page Heading */}
-                            <header className="mb-10">
-                                <h2 className="text-4xl font-black text-white tracking-tight mb-2">Profile Settings</h2>
-                                <p className="text-gray-400 text-lg">Update your personal information and grooming preferences for a tailored experience.</p>
-                            </header>
 
-                            {/* Profile Section */}
-                            <section className="mb-12">
-                                <div className="flex items-center gap-8 p-6 bg-[#1e293b]/50 backdrop-blur-md rounded-xl border border-white/5 shadow-sm">
-                                    <div className="relative group">
-                                        <div className="size-32 rounded-full overflow-hidden border-4 border-[#1152D4]/20 bg-cover bg-center" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuC7XaI-rf8r1oA8OUZMwFiQExxIX9mAZWtt6nJzEq8wHayG-gnvRaGf2oOfdhskRmuGikXRJWIs6ZGuXvtH5k0hGf4PyF3r1EbnOu2L4pBC52BZw7dC2Wp4Y_oQxtjAQHN-9zY1PhPTXgHdMx5kn-7LXtKnfF2I-26EciaZcYrM4lI632fm0zqDB1iwqUKYqspA855GlIELKgI7Wy_3y4rrcDAayZrLagNmNw3sq_TCzr73phP29YCc07tt28V1yk8aBljixTXG-U4t')" }}>
-                                        </div>
-                                        <button className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-full">
-                                            <span className="material-symbols-outlined text-white">photo_camera</span>
-                                        </button>
-                                    </div>
-                                    <div className="flex-1">
-                                        <h3 className="text-2xl font-bold text-white mb-1">Alex Harrison</h3>
-                                        <p className="text-gray-400 mb-4">Elite Member since Oct 2023</p>
-                                        <button className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white text-sm font-bold rounded-lg transition-colors border border-white/5">
-                                            Change Avatar
-                                        </button>
-                                    </div>
-                                </div>
-                            </section>
-
-                            {/* Forms Grid */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                {/* Personal Info */}
-                                <section className="space-y-6">
-                                    <h4 className="text-xl font-bold text-white flex items-center gap-2">
-                                        <span className="material-symbols-outlined text-[#1152D4]">badge</span>
-                                        Personal Information
-                                    </h4>
-                                    <div className="space-y-4">
-                                        <label className="block">
-                                            <span className="text-sm font-medium text-gray-400 mb-2 block">Full Name</span>
-                                            <input className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:ring-1 focus:ring-[#1152D4] focus:border-[#1152D4] focus:outline-none transition-all placeholder:text-gray-600" type="text" defaultValue="Alex Harrison" />
-                                        </label>
-                                        <label className="block">
-                                            <span className="text-sm font-medium text-gray-400 mb-2 block">Email Address</span>
-                                            <input className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:ring-1 focus:ring-[#1152D4] focus:border-[#1152D4] focus:outline-none transition-all placeholder:text-gray-600" type="email" defaultValue="alex.harrison@premium.com" />
-                                        </label>
-                                        <label className="block">
-                                            <span className="text-sm font-medium text-gray-400 mb-2 block">Phone Number</span>
-                                            <input className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:ring-1 focus:ring-[#1152D4] focus:border-[#1152D4] focus:outline-none transition-all placeholder:text-gray-600" type="tel" defaultValue="+1 (555) 123-4567" />
-                                        </label>
-                                    </div>
-                                </section>
-                                {/* Grooming Preferences */}
-                                <section className="space-y-6">
-                                    <h4 className="text-xl font-bold text-white flex items-center gap-2">
-                                        <span className="material-symbols-outlined text-[#1152D4]">brush</span>
-                                        Grooming Preferences
-                                    </h4>
-                                    <div className="space-y-4">
-                                        <div className="block">
-                                            <span className="text-sm font-medium text-gray-400 mb-2 block">Default Barber</span>
-                                            <div className="relative group cursor-pointer bg-white/5 border border-white/10 rounded-lg p-3 flex items-center justify-between hover:bg-white/10 transition-colors">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="size-8 rounded-full bg-cover bg-center" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDcqUworjmVUvJpnQcX17jmEp06qXr5W2ytrrheoeRNX38IB2fuomPXwXDwH_GYmXPoUlnfQlaYdz3WBGDgCcpzYweQ6QcOe4Y5sFO9qPWCdoG-vbZPg4_8V-WwaBPaVu8evg99i7dozkMOZ7pqE7oK8UlCoBQPPyD0-8pLjRXpESVQqKR6GhYC33IashTV2iHBT9yY696Vqab8XQVjk9E1f680PsKvTFpuH4x3zZ8OaQmdcJjHGDySlW_Z9acKUJyLTxQxoqjC6Aa_')" }}></div>
-                                                    <span className="text-white font-medium">Julian Vance</span>
-                                                </div>
-                                                <span className="material-symbols-outlined text-gray-400">expand_more</span>
-                                            </div>
-                                        </div>
-                                        <div className="block">
-                                            <span className="text-sm font-medium text-gray-400 mb-2 block">Favorite Hair Length</span>
-                                            <div className="flex flex-wrap gap-2">
-                                                <button className="px-3 py-2 text-xs font-bold rounded-lg border border-[#1152D4] bg-[#1152D4]/10 text-[#1152D4] shadow-lg shadow-[#1152D4]/10">Skin Fade</button>
-                                                <button className="px-3 py-2 text-xs font-bold rounded-lg border border-white/10 hover:border-[#1152D4]/50 text-gray-400 hover:text-white transition-colors">Taper</button>
-                                                <button className="px-3 py-2 text-xs font-bold rounded-lg border border-white/10 hover:border-[#1152D4]/50 text-gray-400 hover:text-white transition-colors">Scissor Cut</button>
-                                                <button className="px-3 py-2 text-xs font-bold rounded-lg border border-white/10 hover:border-[#1152D4]/50 text-gray-400 hover:text-white transition-colors">Buzz Cut</button>
-                                            </div>
-                                        </div>
-                                        <div className="block">
-                                            <span className="text-sm font-medium text-gray-400 mb-2 block">Preferred Products</span>
-                                            <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-lg p-3">
-                                                <span className="material-symbols-outlined text-[#1152D4]">soap</span>
-                                                <span className="text-white text-sm">Matte Pomade &amp; Sandalwood Oil</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </section>
-                            </div>
-
-                            {/* Action Bar */}
-                            <div className="mt-12 pt-8 border-t border-white/10 flex justify-end gap-4">
-                                <button className="px-6 py-3 text-sm font-bold text-gray-400 hover:text-white transition-colors">
-                                    Discard Changes
-                                </button>
-                                <button
-                                    onClick={handleSave}
-                                    className="px-10 py-3 bg-[#1152D4] hover:bg-[#1152D4]/90 text-white font-black rounded-lg transition-all shadow-xl shadow-[#1152D4]/20 flex items-center gap-2"
-                                >
-                                    {isSaving ? <span className="material-symbols-outlined animate-spin text-sm">refresh</span> : null}
-                                    {isSaving ? "SAVING..." : "SAVE CHANGES"}
-                                </button>
-                            </div>
-                        </>
                     ) : activeTab === 'dashboard' ? (
                         <>
                             <header className="mb-10 flex flex-col gap-2 animate-fade-in-up">
@@ -923,6 +822,108 @@ export default function ProfileSettingsPage() {
                                     <p className="text-xs text-green-400 font-bold">+ $10.00 Credit Added</p>
                                 </div>
                             </section>
+
+                            {/* Profile Settings Section - Merged */}
+                            <div className="mt-12 pt-12 border-t border-white/10">
+                                <header className="mb-10">
+                                    <h2 className="text-3xl font-black text-white tracking-tight mb-2">Profile Settings</h2>
+                                    <p className="text-gray-400 text-base">Update your personal information and grooming preferences.</p>
+                                </header>
+
+                                {/* Profile Section */}
+                                <section className="mb-12">
+                                    <div className="flex items-center gap-8 p-6 bg-[#1e293b]/50 backdrop-blur-md rounded-xl border border-white/5 shadow-sm">
+                                        <div className="relative group">
+                                            <div className="size-32 rounded-full overflow-hidden border-4 border-[#1152D4]/20 bg-cover bg-center" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuC7XaI-rf8r1oA8OUZMwFiQExxIX9mAZWtt6nJzEq8wHayG-gnvRaGf2oOfdhskRmuGikXRJWIs6ZGuXvtH5k0hGf4PyF3r1EbnOu2L4pBC52BZw7dC2Wp4Y_oQxtjAQHN-9zY1PhPTXgHdMx5kn-7LXtKnfF2I-26EciaZcYrM4lI632fm0zqDB1iwqUKYqspA855GlIELKgI7Wy_3y4rrcDAayZrLagNmNw3sq_TCzr73phP29YCc07tt28V1yk8aBljixTXG-U4t')" }}>
+                                            </div>
+                                            <button className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-full">
+                                                <span className="material-symbols-outlined text-white">photo_camera</span>
+                                            </button>
+                                        </div>
+                                        <div className="flex-1">
+                                            <h3 className="text-2xl font-bold text-white mb-1">Alex Harrison</h3>
+                                            <p className="text-gray-400 mb-4">Elite Member since Oct 2023</p>
+                                            <button className="px-4 py-2 bg-white/5 hover:bg-white/10 text-white text-sm font-bold rounded-lg transition-colors border border-white/5">
+                                                Change Avatar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                {/* Forms Grid */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                    {/* Personal Info */}
+                                    <section className="space-y-6">
+                                        <h4 className="text-xl font-bold text-white flex items-center gap-2">
+                                            <span className="material-symbols-outlined text-[#1152D4]">badge</span>
+                                            Personal Information
+                                        </h4>
+                                        <div className="space-y-4">
+                                            <label className="block">
+                                                <span className="text-sm font-medium text-gray-400 mb-2 block">Full Name</span>
+                                                <input className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:ring-1 focus:ring-[#1152D4] focus:border-[#1152D4] focus:outline-none transition-all placeholder:text-gray-600" type="text" defaultValue="Alex Harrison" />
+                                            </label>
+                                            <label className="block">
+                                                <span className="text-sm font-medium text-gray-400 mb-2 block">Email Address</span>
+                                                <input className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:ring-1 focus:ring-[#1152D4] focus:border-[#1152D4] focus:outline-none transition-all placeholder:text-gray-600" type="email" defaultValue="alex.harrison@premium.com" />
+                                            </label>
+                                            <label className="block">
+                                                <span className="text-sm font-medium text-gray-400 mb-2 block">Phone Number</span>
+                                                <input className="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:ring-1 focus:ring-[#1152D4] focus:border-[#1152D4] focus:outline-none transition-all placeholder:text-gray-600" type="tel" defaultValue="+1 (555) 123-4567" />
+                                            </label>
+                                        </div>
+                                    </section>
+                                    {/* Grooming Preferences */}
+                                    <section className="space-y-6">
+                                        <h4 className="text-xl font-bold text-white flex items-center gap-2">
+                                            <span className="material-symbols-outlined text-[#1152D4]">brush</span>
+                                            Grooming Preferences
+                                        </h4>
+                                        <div className="space-y-4">
+                                            <div className="block">
+                                                <span className="text-sm font-medium text-gray-400 mb-2 block">Default Barber</span>
+                                                <div className="relative group cursor-pointer bg-white/5 border border-white/10 rounded-lg p-3 flex items-center justify-between hover:bg-white/10 transition-colors">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="size-8 rounded-full bg-cover bg-center" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDcqUworjmVUvJpnQcX17jmEp06qXr5W2ytrrheoeRNX38IB2fuomPXwXDwH_GYmXPoUlnfQlaYdz3WBGDgCcpzYweQ6QcOe4Y5sFO9qPWCdoG-vbZPg4_8V-WwaBPaVu8evg99i7dozkMOZ7pqE7oK8UlCoBQPPyD0-8pLjRXpESVQqKR6GhYC33IashTV2iHBT9yY696Vqab8XQVjk9E1f680PsKvTFpuH4x3zZ8OaQmdcJjHGDySlW_Z9acKUJyLTxQxoqjC6Aa_')" }}></div>
+                                                        <span className="text-white font-medium">Julian Vance</span>
+                                                    </div>
+                                                    <span className="material-symbols-outlined text-gray-400">expand_more</span>
+                                                </div>
+                                            </div>
+                                            <div className="block">
+                                                <span className="text-sm font-medium text-gray-400 mb-2 block">Favorite Hair Length</span>
+                                                <div className="flex flex-wrap gap-2">
+                                                    <button className="px-3 py-2 text-xs font-bold rounded-lg border border-[#1152D4] bg-[#1152D4]/10 text-[#1152D4] shadow-lg shadow-[#1152D4]/10">Skin Fade</button>
+                                                    <button className="px-3 py-2 text-xs font-bold rounded-lg border border-white/10 hover:border-[#1152D4]/50 text-gray-400 hover:text-white transition-colors">Taper</button>
+                                                    <button className="px-3 py-2 text-xs font-bold rounded-lg border border-white/10 hover:border-[#1152D4]/50 text-gray-400 hover:text-white transition-colors">Scissor Cut</button>
+                                                    <button className="px-3 py-2 text-xs font-bold rounded-lg border border-white/10 hover:border-[#1152D4]/50 text-gray-400 hover:text-white transition-colors">Buzz Cut</button>
+                                                </div>
+                                            </div>
+                                            <div className="block">
+                                                <span className="text-sm font-medium text-gray-400 mb-2 block">Preferred Products</span>
+                                                <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-lg p-3">
+                                                    <span className="material-symbols-outlined text-[#1152D4]">soap</span>
+                                                    <span className="text-white text-sm">Matte Pomade &amp; Sandalwood Oil</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+                                </div>
+
+                                {/* Action Bar */}
+                                <div className="mt-12 pt-8 border-t border-white/10 flex justify-end gap-4">
+                                    <button className="px-6 py-3 text-sm font-bold text-gray-400 hover:text-white transition-colors">
+                                        Discard Changes
+                                    </button>
+                                    <button
+                                        onClick={handleSave}
+                                        className="px-10 py-3 bg-[#1152D4] hover:bg-[#1152D4]/90 text-white font-black rounded-lg transition-all shadow-xl shadow-[#1152D4]/20 flex items-center gap-2"
+                                    >
+                                        {isSaving ? <span className="material-symbols-outlined animate-spin text-sm">refresh</span> : null}
+                                        {isSaving ? "SAVING..." : "SAVE CHANGES"}
+                                    </button>
+                                </div>
+                            </div>
                         </>
                     ) : activeTab === 'bookings' ? (
                         <>
