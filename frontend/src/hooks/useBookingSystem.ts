@@ -1,5 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Barber, Service, Booking, TimeSlot } from '@/types';
+import { Barber, Service, Booking } from '@/types';
+
+export interface TimeSlot {
+  time: string;
+  available: boolean;
+}
 
 interface BookingState {
   selectedBarber: Barber | null;
@@ -34,7 +39,7 @@ export function useBookingSystem() {
 
   const selectDate = async (date: Date) => {
     updateState({ selectedDate: date, selectedTime: null });
-    
+
     if (state.selectedBarber && state.selectedService) {
       await fetchAvailableSlots(date, state.selectedBarber.id, state.selectedService.id);
     }
@@ -58,7 +63,7 @@ export function useBookingSystem() {
     const slots: TimeSlot[] = [];
     const startHour = 9;
     const endHour = 18;
-    
+
     for (let hour = startHour; hour < endHour; hour++) {
       const time = `${hour.toString().padStart(2, '0')}:00`;
       const isAvailable = Math.random() > 0.3; // 70% availability
@@ -67,7 +72,7 @@ export function useBookingSystem() {
         available: isAvailable,
       });
     }
-    
+
     return slots;
   };
 
@@ -94,9 +99,12 @@ export function useBookingSystem() {
         customerName: customerInfo.name,
         customerEmail: customerInfo.email,
         customerPhone: customerInfo.phone,
+        date: state.selectedDate,
+        time: state.selectedTime,
         datetime: new Date(`${state.selectedDate.toISOString().split('T')[0]}T${state.selectedTime}`),
         status: 'pending',
         notes: customerInfo.notes,
+        total: state.selectedService.price,
         totalPrice: state.selectedService.price,
       };
 

@@ -1,0 +1,38 @@
+src/app/components/ErrorBoundary.test.tsx(13,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+src/app/components/ErrorBoundary.test.tsx(14,3): error TS2304: Cannot find name 'beforeEach'.
+src/app/components/ErrorBoundary.test.tsx(16,5): error TS2708: Cannot use namespace 'jest' as a value.
+src/app/components/ErrorBoundary.test.tsx(19,3): error TS2304: Cannot find name 'afterEach'.
+src/app/components/ErrorBoundary.test.tsx(21,28): error TS2694: Namespace 'global.jest' has no exported member 'Mock'.
+src/app/components/ErrorBoundary.test.tsx(24,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+src/app/components/ErrorBoundary.test.tsx(31,5): error TS2304: Cannot find name 'expect'.
+src/app/components/ErrorBoundary.test.tsx(34,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+src/app/components/ErrorBoundary.test.tsx(41,5): error TS2304: Cannot find name 'expect'.
+src/app/components/ErrorBoundary.test.tsx(42,5): error TS2304: Cannot find name 'expect'.
+src/app/components/ErrorBoundary.test.tsx(45,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+src/app/components/ErrorBoundary.test.tsx(52,5): error TS2304: Cannot find name 'expect'.
+src/app/components/ErrorBoundary.test.tsx(53,5): error TS2304: Cannot find name 'expect'.
+src/app/components/ErrorBoundary.test.tsx(56,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+src/app/components/ErrorBoundary.test.tsx(63,5): error TS2304: Cannot find name 'expect'.
+src/app/components/ErrorBoundary.test.tsx(74,5): error TS2304: Cannot find name 'expect'.
+src/components/booking/__tests__/BookingFlow.test.tsx(3,50): error TS2307: Cannot find module '@tanstack/react-query' or its corresponding type declarations.
+src/components/booking/__tests__/BookingFlow.test.tsx(26,5): error TS2353: Object literal may only specify known properties, and 'category' does not exist in type 'Service'.
+src/components/booking/__tests__/BookingFlow.test.tsx(47,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+src/components/booking/__tests__/BookingFlow.test.tsx(48,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+src/components/booking/__tests__/BookingFlow.test.tsx(51,5): error TS2304: Cannot find name 'expect'.
+src/components/booking/__tests__/BookingFlow.test.tsx(52,5): error TS2304: Cannot find name 'expect'.
+src/components/booking/__tests__/BookingFlow.test.tsx(55,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+src/components/booking/__tests__/BookingFlow.test.tsx(58,5): error TS2304: Cannot find name 'expect'.
+src/components/booking/__tests__/BookingFlow.test.tsx(59,5): error TS2304: Cannot find name 'expect'.
+src/components/booking/__tests__/BookingFlow.test.tsx(62,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+src/components/booking/__tests__/BookingFlow.test.tsx(68,5): error TS2304: Cannot find name 'expect'.
+src/components/booking/__tests__/BookingFlow.test.tsx(73,7): error TS2304: Cannot find name 'expect'.
+src/components/booking/__tests__/BookingFlow.test.tsx(77,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+src/components/booking/__tests__/BookingFlow.test.tsx(85,7): error TS2304: Cannot find name 'expect'.
+src/components/booking/__tests__/BookingFlow.test.tsx(89,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+src/components/booking/__tests__/BookingFlow.test.tsx(97,7): error TS2304: Cannot find name 'expect'.
+src/components/booking/__tests__/BookingFlow.test.tsx(104,7): error TS2304: Cannot find name 'expect'.
+src/components/booking/__tests__/BookingFlow.test.tsx(111,7): error TS2304: Cannot find name 'expect'.
+src/components/booking/__tests__/BookingFlow.test.tsx(115,5): error TS2304: Cannot find name 'expect'.
+src/hooks/useBookingSystem.ts(2,36): error TS2305: Module '"@/types"' has no exported member 'TimeSlot'.
+src/hooks/useBookingSystem.ts(94,9): error TS2353: Object literal may only specify known properties, and 'customerName' does not exist in type 'Omit<Booking, "id">'.
+src/lib/errorHandling.ts(73,14): error TS2339: Property 'gtag' does not exist on type 'Window & typeof globalThis'.

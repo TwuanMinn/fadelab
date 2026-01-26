@@ -70,12 +70,20 @@ export interface Addon {
 }
 
 export interface Booking {
+  id?: string;
   barberId: number;
   serviceId: string;
-  selectedAddons: string[];
+  selectedAddons?: string[];
   date: Date;
+  datetime?: Date;
   time: string;
   total: number;
+  totalPrice?: number;
+  customerName?: string;
+  customerEmail?: string;
+  customerPhone?: string;
+  notes?: string;
+  status: 'pending' | 'confirmed' | 'cancelled';
 }
 
 // Payment Types
