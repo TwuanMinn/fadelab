@@ -5,7 +5,7 @@ const nextConfig = {
     optimizeCss: true,
     optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
-  
+
   // Image optimization
   images: {
     domains: ['lh3.googleusercontent.com', 'images.unsplash.com'],
@@ -13,7 +13,7 @@ const nextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
-  
+
   // Bundle optimization
   webpack: (config, { dev, isServer }) => {
     if (!dev && !isServer) {
@@ -30,17 +30,13 @@ const nextConfig = {
     }
     return config;
   },
-  
+
   // Compression
   compress: true,
-  
+
   // PWA support
-  pwa: {
-    dest: 'public',
-    register: true,
-    skipWaiting: true,
-  },
-  
+
+
   // Security headers
   async headers() {
     return [
@@ -63,7 +59,7 @@ const nextConfig = {
       },
     ];
   },
-  
+
   // Redirects
   async redirects() {
     return [
