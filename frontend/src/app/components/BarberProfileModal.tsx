@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 interface BarberProfileModalProps {
     isOpen: boolean;
@@ -11,7 +12,38 @@ interface BarberProfileModalProps {
 }
 
 export function BarberProfileModal({ isOpen, onClose, barber }: BarberProfileModalProps) {
+    const [viewDate, setViewDate] = useState(new Date());
+    const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+    const [selectedTime, setSelectedTime] = useState("11:30 AM");
+
     if (!isOpen || !barber) return null;
+
+    const changeMonth = (offset: number) => {
+        const newDate = new Date(viewDate.getFullYear(), viewDate.getMonth() + offset, 1);
+        setViewDate(newDate);
+    };
+
+    const getDaysArray = () => {
+        const year = viewDate.getFullYear();
+        const month = viewDate.getMonth();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const firstDay = new Date(year, month, 1).getDay();
+        const padding = Array(firstDay).fill(null);
+        const days = Array.from({ length: daysInMonth }, (_, i) => new Date(year, month, i + 1));
+        return [...padding, ...days];
+    };
+
+    const isSameDay = (d1: Date, d2: Date) => {
+        return d1.getDate() === d2.getDate() &&
+            d1.getMonth() === d2.getMonth() &&
+            d1.getFullYear() === d2.getFullYear();
+    };
+
+    const isPast = (date: Date) => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return date < today;
+    };
 
     return (
         <AnimatePresence>
@@ -138,37 +170,63 @@ export function BarberProfileModal({ isOpen, onClose, barber }: BarberProfileMod
 
                             {/* Date Selector */}
                             <div className="flex items-center justify-between mb-6 bg-surface-dark p-2 rounded-xl border border-white/5">
-                                <button className="size-8 flex items-center justify-center text-gray-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors"><span className="material-symbols-outlined">chevron_left</span></button>
-                                <span className="font-black text-white text-sm uppercase tracking-widest">October 2024</span>
-                                <button className="size-8 flex items-center justify-center text-gray-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors"><span className="material-symbols-outlined">chevron_right</span></button>
+                                <button
+                                    onClick={() => changeMonth(-1)}
+                                    className="size-8 flex items-center justify-center text-gray-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors"
+                                >
+                                    <span className="material-symbols-outlined">chevron_left</span>
+                                </button>
+                                <span className="font-black text-white text-sm uppercase tracking-widest">
+                                    {viewDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
+                                </span>
+                                <button
+                                    onClick={() => changeMonth(1)}
+                                    className="size-8 flex items-center justify-center text-gray-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors"
+                                >
+                                    <span className="material-symbols-outlined">chevron_right</span>
+                                </button>
                             </div>
 
                             {/* Calendar Grid (Simplified Visual) */}
                             <div className="grid grid-cols-7 gap-1 text-center mb-8 text-[10px] font-bold text-gray-500 uppercase tracking-wider">
                                 <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
-                                {/* Days... simplified for UI demo */}
-                                {Array.from({ length: 31 }, (_, i) => i + 1).map(d => (
-                                    <button
-                                        key={d}
-                                        className={`size-10 rounded-lg flex items-center justify-center transition-all ${d === 24 ? 'bg-primary text-white shadow-lg shadow-primary/25 scale-110' :
-                                                d > 24 ? 'text-gray-300 hover:bg-white/10' : 'text-gray-700 cursor-not-allowed'
-                                            }`}
-                                    >
-                                        {d}
-                                    </button>
-                                ))}
+                                {getDaysArray().map((date, i) => {
+                                    if (!date) return <div key={`empty-${i}`} className="size-10" />;
+
+                                    const isSelected = selectedDate && isSameDay(date, selectedDate);
+                                    const disabled = isPast(date);
+
+                                    return (
+                                        <button
+                                            key={i}
+                                            disabled={disabled}
+                                            onClick={() => setSelectedDate(date)}
+                                            className={`size-10 rounded-lg flex items-center justify-center transition-all ${isSelected
+                                                ? 'bg-primary text-white shadow-lg shadow-primary/25 scale-110'
+                                                : disabled
+                                                    ? 'text-gray-700 cursor-not-allowed'
+                                                    : 'text-gray-300 hover:bg-white/10'
+                                                }`}
+                                        >
+                                            {date.getDate()}
+                                        </button>
+                                    );
+                                })}
                             </div>
 
                             {/* Time Slots */}
                             <div className="mb-8">
-                                <p className="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] mb-4">Available Slots (Oct 24)</p>
+                                <p className="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] mb-4">
+                                    Available Slots ({selectedDate ? selectedDate.toLocaleString('default', { month: 'short', day: 'numeric' }) : 'Select Date'})
+                                </p>
                                 <div className="grid grid-cols-2 gap-3">
-                                    {['10:00 AM', '11:30 AM', '2:00 PM', '3:45 PM'].map((time, i) => (
+                                    {['10:00 AM', '11:30 AM', '2:00 PM', '3:45 PM'].map((time) => (
                                         <button
                                             key={time}
-                                            className={`py-3 rounded-xl border text-xs font-bold transition-all ${i === 1
-                                                    ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20'
-                                                    : 'bg-surface-dark border-white/5 text-gray-400 hover:border-primary/50 hover:text-white'
+                                            onClick={() => setSelectedTime(time)}
+                                            className={`py-3 rounded-xl border text-xs font-bold transition-all ${selectedTime === time
+                                                ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20'
+                                                : 'bg-surface-dark border-white/5 text-gray-400 hover:border-primary/50 hover:text-white'
                                                 }`}
                                         >
                                             {time}
@@ -177,10 +235,13 @@ export function BarberProfileModal({ isOpen, onClose, barber }: BarberProfileMod
                                 </div>
                             </div>
 
-                            <button className="w-full bg-white hover:bg-gray-200 text-background-dark font-black uppercase tracking-widest text-xs py-4 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2">
+                            <Link
+                                href={`/checkout?barberId=${barber.id}&service=classic-cut&time=${encodeURIComponent(selectedTime)}&date=${encodeURIComponent(selectedDate?.toISOString() || "")}`}
+                                className="w-full bg-white hover:bg-gray-200 text-background-dark font-black uppercase tracking-widest text-xs py-4 rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2"
+                            >
                                 Confirm Booking
                                 <span className="material-symbols-outlined text-lg">arrow_forward</span>
-                            </button>
+                            </Link>
                         </div>
 
                         {/* Personality / Extras */}

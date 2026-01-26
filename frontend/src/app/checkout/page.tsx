@@ -22,7 +22,7 @@ const ADDONS = [
 
 export default function CheckoutPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen bg-background-dark flex items-center justify-center text-primary uppercase font-black tracking-widest animate-pulse">Initializing Lab...</div>}>
+        <Suspense fallback={<div className="min-h-screen bg-background-dark flex items-center justify-center text-blue-500 uppercase font-black tracking-widest animate-pulse">Initializing Lab...</div>}>
             <CheckoutContent />
         </Suspense>
     );
@@ -51,7 +51,9 @@ function CheckoutContent() {
     const [viewDate, setViewDate] = useState(new Date(2024, 9, 1));
     const [selectedFullDate, setSelectedFullDate] = useState(new Date(2024, 9, 24));
 
-    // Other states
+    // Payment states
+    const [paymentMethod, setPaymentMethod] = useState("card");
+    const [cardDetails, setCardDetails] = useState({ number: "", exp: "", cvc: "" });
     const [copied, setCopied] = useState(false);
 
     useEffect(() => {
@@ -109,17 +111,17 @@ function CheckoutContent() {
     const total = subtotal - discount;
 
     return (
-        <div className="bg-background-dark text-white font-display min-h-screen antialiased flex flex-col selection:bg-primary selection:text-white">
+        <div className="bg-gradient-to-br from-black via-[#0B1121] to-[#0f172a] text-white font-display min-h-screen antialiased flex flex-col selection:bg-blue-600 selection:text-white">
             <Toolbar />
 
             {/* Header */}
             <header className="flex items-center justify-between border-b border-white/5 bg-surface-darker/60 backdrop-blur-xl px-6 lg:px-12 py-6 sticky top-0 z-[60]">
-                <button onClick={() => router.back()} type="button" className="flex items-center gap-4 group">
-                    <div className="size-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 group-hover:bg-primary group-hover:border-primary transition-all duration-300">
+                <Link href="/" className="flex items-center gap-4 group">
+                    <div className="size-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 group-hover:bg-blue-600 group-hover:border-primary transition-all duration-300">
                         <span className="material-symbols-outlined text-xl group-hover:-translate-x-0.5 transition-transform">chevron_left</span>
                     </div>
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] group-hover:text-primary transition-colors">Session Config</span>
-                </button>
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] group-hover:text-blue-500 transition-colors">Session Config</span>
+                </Link>
                 <Link href="/" className="text-gray-500 hover:text-white text-[9px] font-black uppercase tracking-[0.3em] transition-colors border border-white/10 px-4 py-2 rounded-lg bg-white/5">
                     Terminal Exit
                 </Link>
@@ -127,7 +129,7 @@ function CheckoutContent() {
 
             <main className="flex-1 flex justify-center w-full px-6 py-12 md:py-20 relative overflow-hidden">
                 {/* Background Decor */}
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none"></div>
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/5 rounded-full blur-[120px] pointer-events-none"></div>
                 <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[100px] pointer-events-none"></div>
 
                 <div className="w-full max-w-7xl flex flex-col lg:flex-row gap-16 relative z-10">
@@ -141,16 +143,30 @@ function CheckoutContent() {
                         >
                             <div className="flex flex-col gap-4">
                                 <div className="flex items-center justify-between">
-                                    <span className="text-primary text-[10px] font-black uppercase tracking-[0.4em] bg-primary/10 px-3 py-1 rounded-full">Protocol Step 02</span>
+                                    <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em] bg-blue-600/10 px-3 py-1 rounded-full">Protocol Step 02</span>
                                     <span className="text-gray-500 text-[10px] font-black uppercase tracking-[0.2em]">Matrix: Booking</span>
                                 </div>
-                                <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                                <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden relative">
                                     <motion.div
                                         initial={{ width: 0 }}
                                         animate={{ width: "66%" }}
-                                        transition={{ duration: 1, ease: "circOut" }}
-                                        className="h-full bg-gradient-to-r from-primary to-blue-400 shadow-glow"
-                                    />
+                                        transition={{ duration: 1.5, ease: "circOut", delay: 0.3 }}
+                                        className="h-full bg-gradient-to-r from-blue-600 to-blue-400 shadow-[0_0_20px_rgba(37,99,235,0.4)]"
+                                    >
+                                        {/* Shimmering light effect */}
+                                        <motion.div
+                                            animate={{
+                                                x: ["-100%", "200%"],
+                                            }}
+                                            transition={{
+                                                duration: 2.5,
+                                                repeat: Infinity,
+                                                ease: "linear",
+                                                repeatDelay: 0.5
+                                            }}
+                                            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent w-1/2"
+                                        />
+                                    </motion.div>
                                 </div>
                             </div>
                             <h1 className="text-5xl md:text-8xl font-black text-white uppercase tracking-tighter leading-[0.85] italic">
@@ -159,19 +175,19 @@ function CheckoutContent() {
                         </motion.div>
 
                         {/* Module: Service */}
-                        <div className="bg-surface-dark/40 backdrop-blur-md p-10 rounded-[3rem] border border-white/5 shadow-2xl group hover:border-primary/20 transition-all duration-500">
+                        <div className="bg-[#1e293b]/50 backdrop-blur-md p-10 rounded-[3rem] border border-white/5 shadow-2xl group hover:border-blue-500/20 transition-all duration-500">
                             <label className="flex flex-col gap-6">
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 flex items-center gap-3">
-                                    <span className="size-1.5 rounded-full bg-primary animate-pulse"></span>
+                                    <span className="size-1.5 rounded-full bg-blue-600 animate-pulse"></span>
                                     Primary Operation Selection
                                 </span>
                                 <div className="relative group">
-                                    <select className="appearance-none w-full bg-background-dark/80 border border-white/5 rounded-2xl h-20 px-8 text-lg font-black uppercase tracking-widest text-white focus:outline-none focus:border-primary/50 transition-all cursor-pointer hover:bg-background-dark active:scale-[0.99]">
+                                    <select className="appearance-none w-full bg-gradient-to-br from-black via-[#0B1121] to-[#0f172a]/80 border border-white/5 rounded-2xl h-20 px-8 text-lg font-black uppercase tracking-widest text-white focus:outline-none focus:border-blue-500/50 transition-all cursor-pointer hover:bg-gradient-to-br from-black via-[#0B1121] to-[#0f172a] active:scale-[0.99]">
                                         <option>Signature Haircut [45 MIN]</option>
                                         <option>Beard Sculpting [30 MIN]</option>
                                         <option>Elite Grooming Package [90 MIN]</option>
                                     </select>
-                                    <span className="absolute right-8 top-1/2 -translate-y-1/2 pointer-events-none text-primary">
+                                    <span className="absolute right-8 top-1/2 -translate-y-1/2 pointer-events-none text-blue-500">
                                         <span className="material-symbols-outlined font-black text-3xl">expand_more</span>
                                     </span>
                                 </div>
@@ -181,19 +197,19 @@ function CheckoutContent() {
                         {/* Module: Specialist */}
                         <div className="flex flex-col gap-8">
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 flex items-center gap-3 px-2">
-                                <span className="size-1.5 rounded-full bg-primary animate-pulse"></span>
+                                <span className="size-1.5 rounded-full bg-blue-600 animate-pulse"></span>
                                 Deployment Specialist
                             </span>
                             <div className="flex gap-8 overflow-x-auto scrollbar-hide py-4 px-2 -mx-2">
                                 <div className="flex flex-col items-center gap-4 cursor-pointer group min-w-[110px]">
-                                    <div className="size-24 rounded-full bg-white/5 border-2 border-dashed border-white/10 flex items-center justify-center group-hover:border-primary group-hover:bg-primary/5 transition-all group-hover:scale-105 duration-500">
-                                        <span className="material-symbols-outlined text-gray-600 group-hover:text-primary text-4xl font-black transition-colors">groups</span>
+                                    <div className="size-24 rounded-full bg-white/5 border-2 border-dashed border-white/10 flex items-center justify-center group-hover:border-primary group-hover:bg-blue-600/5 transition-all group-hover:scale-105 duration-500">
+                                        <span className="material-symbols-outlined text-gray-600 group-hover:text-blue-500 text-4xl font-black transition-colors">groups</span>
                                     </div>
                                     <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 group-hover:text-white">Next Available</span>
                                 </div>
                                 {BARBERS.map((b) => (
                                     <div key={b.id} onClick={() => setSelectedBarber(b.id)} className="flex flex-col items-center gap-4 cursor-pointer group min-w-[110px]">
-                                        <div className={`size-24 rounded-full p-1.5 transition-all duration-500 transform group-hover:scale-110 relative ${selectedBarber === b.id ? 'bg-primary shadow-glow' : 'bg-white/5 group-hover:bg-white/10'}`}>
+                                        <div className={`size-24 rounded-full p-1.5 transition-all duration-500 transform group-hover:scale-110 relative ${selectedBarber === b.id ? 'bg-blue-600 shadow-glow' : 'bg-white/5 group-hover:bg-white/10'}`}>
                                             <div className="w-full h-full rounded-full bg-cover bg-center border-2 border-background-dark" style={{ backgroundImage: `url('${b.img}')` }} />
                                             <AnimatePresence>
                                                 {selectedBarber === b.id && (
@@ -201,87 +217,174 @@ function CheckoutContent() {
                                                         initial={{ scale: 0, opacity: 0 }}
                                                         animate={{ scale: 1, opacity: 1 }}
                                                         exit={{ scale: 0, opacity: 0 }}
-                                                        className="absolute bottom-0 right-0 bg-primary text-white size-8 rounded-full flex items-center justify-center border-2 border-background-dark shadow-xl"
+                                                        className="absolute bottom-0 right-0 bg-blue-600 text-white size-8 rounded-full flex items-center justify-center border-2 border-background-dark shadow-xl"
                                                     >
                                                         <span className="material-symbols-outlined text-[18px] font-black">check</span>
                                                     </motion.div>
                                                 )}
                                             </AnimatePresence>
                                         </div>
-                                        <span className={`text-[10px] font-black uppercase tracking-widest transition-colors duration-300 ${selectedBarber === b.id ? 'text-primary' : 'text-gray-500 group-hover:text-gray-300'}`}>{b.name}</span>
+                                        <span className={`text-[10px] font-black uppercase tracking-widest transition-colors duration-300 ${selectedBarber === b.id ? 'text-blue-500' : 'text-gray-500 group-hover:text-gray-300'}`}>{b.name}</span>
                                     </div>
                                 ))}
                             </div>
                         </div>
 
-                        {/* Module: Temporal Grid */}
-                        <div className="bg-surface-dark border border-white/5 rounded-[3rem] p-10 shadow-2xl shadow-black/40 overflow-hidden relative">
-                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-16 relative z-10">
-                                <div className="flex flex-col gap-10">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex flex-col">
-                                            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500 mb-1">Calendar Matrix</span>
-                                            <span className="text-xl font-black uppercase tracking-tighter text-white">
-                                                {viewDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
-                                            </span>
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <button
-                                                onClick={() => changeMonth(-1)}
-                                                className="size-11 flex items-center justify-center rounded-xl bg-white/5 hover:bg-primary transition-all duration-300 border border-white/5"
-                                            >
-                                                <span className="material-symbols-outlined text-[20px]">chevron_left</span>
-                                            </button>
-                                            <button
-                                                onClick={() => changeMonth(1)}
-                                                className="size-11 flex items-center justify-center rounded-xl bg-white/5 hover:bg-primary transition-all duration-300 border border-white/5"
-                                            >
-                                                <span className="material-symbols-outlined text-[20px]">chevron_right</span>
-                                            </button>
-                                        </div>
+                        {/* Module: Certifications */}
+                        <div className="flex flex-col gap-6">
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 flex items-center gap-3 px-2">
+                                <span className="size-1.5 rounded-full bg-yellow-500 animate-pulse"></span>
+                                CERTIFICATIONS
+                            </span>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <button className="flex items-center gap-4 p-6 rounded-3xl bg-surface-dark border border-white/5 text-left hover:border-yellow-500/50 hover:bg-yellow-500/5 transition-all duration-500 group relative overflow-hidden">
+                                    <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/0 via-yellow-500/5 to-yellow-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                                    <div className="size-12 rounded-2xl bg-yellow-500/10 flex items-center justify-center text-yellow-500 border border-yellow-500/20 group-hover:scale-110 transition-transform shadow-glow">
+                                        <span className="material-symbols-outlined text-2xl font-black">workspace_premium</span>
                                     </div>
-                                    <div className="grid grid-cols-7 text-center gap-3">
-                                        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(d => (
-                                            <div key={d} className="text-[10px] font-black text-gray-700 uppercase tracking-widest py-3">{d}</div>
+                                    <div>
+                                        <p className="font-black text-sm text-white uppercase tracking-tight group-hover:text-yellow-500 transition-colors">Master License</p>
+                                        <p className="text-[9px] font-bold text-gray-500 uppercase tracking-[0.2em] mt-1">State Board, 2018</p>
+                                    </div>
+                                </button>
+                                <button className="flex items-center gap-4 p-6 rounded-3xl bg-surface-dark border border-white/5 text-left hover:border-yellow-500/50 hover:bg-yellow-500/5 transition-all duration-500 group relative overflow-hidden">
+                                    <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/0 via-yellow-500/5 to-yellow-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                                    <div className="size-12 rounded-2xl bg-yellow-500/10 flex items-center justify-center text-yellow-500 border border-yellow-500/20 group-hover:scale-110 transition-transform shadow-glow">
+                                        <span className="material-symbols-outlined text-2xl font-black">stars</span>
+                                    </div>
+                                    <div>
+                                        <p className="font-black text-sm text-white uppercase tracking-tight group-hover:text-yellow-500 transition-colors">Fade Specialist</p>
+                                        <p className="text-[9px] font-bold text-gray-500 uppercase tracking-[0.2em] mt-1">Moneyspire Academy</p>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Module: Payment Matrix */}
+                        <div className="bg-[#1e293b]/50 backdrop-blur-md border border-white/5 rounded-[3rem] p-10 shadow-2xl transition-all duration-500 hover:border-blue-500/30">
+                            <div className="flex flex-col gap-10">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex flex-col">
+                                        <span className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-500 mb-1">Settlement Matrix</span>
+                                        <span className="text-xl font-black uppercase tracking-tighter text-white">Select Protocol</span>
+                                    </div>
+                                    <div className="flex gap-4">
+                                        {['card', 'paypal', 'apple'].map(m => (
+                                            <button
+                                                key={m}
+                                                onClick={() => setPaymentMethod(m)}
+                                                className={`px-6 py-3 rounded-xl border transition-all duration-300 flex items-center gap-3 ${paymentMethod === m ? 'bg-blue-600 border-blue-500 shadow-glow text-white' : 'bg-white/5 border-white/10 text-gray-500 hover:bg-white/10'}`}
+                                            >
+                                                <span className="material-symbols-outlined text-lg">{m === 'card' ? 'credit_card' : m === 'paypal' ? 'account_balance_wallet' : 'payments'}</span>
+                                                <span className="text-[10px] font-black uppercase tracking-widest">{m}</span>
+                                            </button>
                                         ))}
-
-                                        {getDaysArray().map((date, i) => {
-                                            if (!date) return <div key={`empty-${i}`} />;
-
-                                            const isSelected = isSameDay(date, selectedFullDate);
-                                            const isToday = isSameDay(date, new Date());
-
-                                            return (
-                                                <button
-                                                    key={i}
-                                                    onClick={() => setSelectedFullDate(date)}
-                                                    className={`aspect-square flex items-center justify-center rounded-2xl text-[11px] font-black transition-all duration-300 relative group/day ${isSelected
-                                                        ? 'bg-blue-600 text-white shadow-glow scale-110 z-10'
-                                                        : 'bg-white/5 hover:bg-white/10 text-gray-400 border border-white/5 hover:border-blue-600/50'
-                                                        } ${isToday ? 'ring-1 ring-blue-600/50' : ''}`}
-                                                >
-                                                    {date.getDate()}
-                                                    {isSelected && <motion.div layoutId="calendar-ring" className="absolute -inset-1 rounded-2xl border-2 border-blue-600/30 pointer-events-none" />}
-                                                </button>
-                                            );
-                                        })}
                                     </div>
                                 </div>
-                                <div className="flex flex-col gap-6 xl:pl-16 xl:border-l border-white/5">
-                                    <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Available Slots ({selectedFullDate.toLocaleString('default', { month: 'short' })} {selectedFullDate.getDate()})</span>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        {['10:00 AM', '11:30 AM', '2:00 PM', '3:45 PM'].map((time) => (
-                                            <button
-                                                key={time}
-                                                onClick={() => setSelectedTime(time)}
-                                                className={`py-6 rounded-2xl text-sm font-bold transition-all duration-200 ${selectedTime === time
-                                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20'
-                                                    : 'bg-[#1c2333] text-gray-400 border border-white/5 hover:border-white/10'
-                                                    }`}
-                                            >
-                                                {time}
-                                            </button>
-                                        ))}
+
+                                <div className="grid grid-cols-1 xl:grid-cols-2 gap-16">
+                                    {/* Card Visual / Details */}
+                                    <div className="flex flex-col gap-8">
+                                        <AnimatePresence mode="wait">
+                                            {paymentMethod === 'card' ? (
+                                                <motion.div
+                                                    key="card-face"
+                                                    initial={{ opacity: 0, scale: 0.95 }}
+                                                    animate={{ opacity: 1, scale: 1 }}
+                                                    exit={{ opacity: 0, scale: 0.95 }}
+                                                    className="w-full aspect-[1.6/1] bg-gradient-to-br from-blue-600 to-blue-900 rounded-[2rem] p-8 relative overflow-hidden shadow-2xl group"
+                                                >
+                                                    <div className="absolute top-0 right-0 p-8 opacity-20">
+                                                        <span className="material-symbols-outlined text-9xl">contactless</span>
+                                                    </div>
+                                                    <div className="size-14 bg-white/20 rounded-xl mb-auto flex items-center justify-center backdrop-blur-md border border-white/10">
+                                                        <div className="size-10 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg shadow-inner" />
+                                                    </div>
+                                                    <div className="mt-12">
+                                                        <p className="text-[10px] font-black text-white/50 uppercase tracking-[0.3em] mb-4">Secure Terminal ID</p>
+                                                        <p className="text-2xl font-black tracking-[0.2em] text-white font-mono flex gap-4">
+                                                            {cardDetails.number.padEnd(16, '•').match(/.{1,4}/g)?.join(' ')}
+                                                        </p>
+                                                    </div>
+                                                    <div className="mt-auto flex justify-between items-end">
+                                                        <div>
+                                                            <p className="text-[8px] font-black text-white/50 uppercase tracking-[0.3em] mb-1">Specialist Signature</p>
+                                                            <p className="text-sm font-black italic text-white uppercase tracking-wider">M. FADELESS</p>
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <p className="text-[8px] font-black text-white/50 uppercase tracking-[0.3em] mb-1">Exp / CVC</p>
+                                                            <p className="text-sm font-black text-white">{cardDetails.exp || 'MM/YY'} / {cardDetails.cvc.padEnd(3, '•')}</p>
+                                                        </div>
+                                                    </div>
+                                                </motion.div>
+                                            ) : (
+                                                <motion.div
+                                                    key="alt-face"
+                                                    initial={{ opacity: 0, scale: 0.95 }}
+                                                    animate={{ opacity: 1, scale: 1 }}
+                                                    exit={{ opacity: 0, scale: 0.95 }}
+                                                    className="w-full aspect-[1.6/1] bg-white/5 rounded-[2rem] border-2 border-dashed border-white/10 flex flex-col items-center justify-center text-center p-12"
+                                                >
+                                                    <div className="size-20 bg-blue-600/10 rounded-full flex items-center justify-center mb-6 shadow-glow border border-blue-600/20">
+                                                        <span className="material-symbols-outlined text-4xl text-blue-500">{paymentMethod === 'paypal' ? 'account_balance_wallet' : 'payments'}</span>
+                                                    </div>
+                                                    <p className="text-xl font-black text-white uppercase tracking-tighter mb-2">Redirect Protocol</p>
+                                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">You will be securely routed to {paymentMethod} for final clearance.</p>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
+
+                                    {/* Input Fields */}
+                                    <div className="flex flex-col gap-6 justify-center">
+                                        {paymentMethod === 'card' && (
+                                            <div className="flex flex-col gap-4">
+                                                <div className="flex flex-col gap-2">
+                                                    <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest pl-2">Card Vector</label>
+                                                    <input
+                                                        type="text"
+                                                        maxLength={16}
+                                                        value={cardDetails.number}
+                                                        onChange={(e) => setCardDetails({ ...cardDetails, number: e.target.value.replace(/\D/g, '') })}
+                                                        placeholder="0000 0000 0000 0000"
+                                                        className="h-16 bg-black/40 border border-white/10 rounded-2xl px-6 font-mono text-white focus:outline-none focus:border-blue-500/50 transition-all placeholder:text-gray-800"
+                                                    />
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div className="flex flex-col gap-2">
+                                                        <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest pl-2">Temporal Limit</label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="MM/YY"
+                                                            value={cardDetails.exp}
+                                                            onChange={(e) => setCardDetails({ ...cardDetails, exp: e.target.value })}
+                                                            className="h-16 bg-black/40 border border-white/10 rounded-2xl px-6 font-mono text-white focus:outline-none focus:border-blue-500/50 transition-all placeholder:text-gray-800"
+                                                        />
+                                                    </div>
+                                                    <div className="flex flex-col gap-2">
+                                                        <label className="text-[9px] font-black text-gray-500 uppercase tracking-widest pl-2">Pass-Code</label>
+                                                        <input
+                                                            type="text"
+                                                            maxLength={3}
+                                                            placeholder="CVV"
+                                                            value={cardDetails.cvc}
+                                                            onChange={(e) => setCardDetails({ ...cardDetails, cvc: e.target.value.replace(/\D/g, '') })}
+                                                            className="h-16 bg-black/40 border border-white/10 rounded-2xl px-6 font-mono text-white focus:outline-none focus:border-blue-500/50 transition-all placeholder:text-gray-800"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <div className="p-6 bg-blue-600/5 border border-blue-500/20 rounded-2xl flex items-center gap-6">
+                                            <div className="size-12 bg-blue-600/10 rounded-xl flex items-center justify-center text-blue-500 shrink-0">
+                                                <span className="material-symbols-outlined font-black">lock</span>
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] font-black text-white uppercase tracking-tight">End-to-End Encryption Active</p>
+                                                <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest mt-1">PCI Level 1 Shield Proxy Enabled</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -290,25 +393,25 @@ function CheckoutContent() {
                         {/* Module: Enhancements */}
                         <div className="flex flex-col gap-8">
                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 flex items-center gap-3 px-2">
-                                <span className="size-1.5 rounded-full bg-primary animate-pulse"></span>
+                                <span className="size-1.5 rounded-full bg-blue-600 animate-pulse"></span>
                                 Tactical Enhancements
                             </span>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {ADDONS.map((a) => (
                                     <label key={a.id} className={`flex items-center p-8 bg-surface-dark border transition-all duration-500 rounded-[2rem] cursor-pointer group relative overflow-hidden ${selectedAddons.includes(a.id) ? 'border-primary shadow-2xl shadow-primary/10' : 'border-white/5 hover:border-white/10'}`}>
-                                        {selectedAddons.includes(a.id) && <motion.div layoutId={`addon-bg-${a.id}`} className="absolute inset-0 bg-primary/5 pointer-events-none" />}
+                                        {selectedAddons.includes(a.id) && <motion.div layoutId={`addon-bg-${a.id}`} className="absolute inset-0 bg-blue-600/5 pointer-events-none" />}
                                         <div className="relative">
                                             <input
                                                 type="checkbox"
                                                 checked={selectedAddons.includes(a.id)}
                                                 onChange={() => toggleAddon(a.id)}
-                                                className="size-6 text-primary rounded-lg bg-background-dark border-white/10 focus:ring-primary focus:ring-offset-0 cursor-pointer"
+                                                className="size-6 text-blue-500 rounded-lg bg-gradient-to-br from-black via-[#0B1121] to-[#0f172a] border-white/10 focus:ring-primary focus:ring-offset-0 cursor-pointer"
                                             />
                                         </div>
                                         <div className="ml-8 flex-1 relative">
                                             <div className="flex justify-between items-center mb-2">
-                                                <span className="font-black text-sm text-white uppercase tracking-tight group-hover:text-primary transition-colors">{a.name}</span>
-                                                <span className="text-xs font-black text-primary bg-primary/10 px-2 py-1 rounded-lg">+${a.price}</span>
+                                                <span className="font-black text-sm text-white uppercase tracking-tight group-hover:text-blue-500 transition-colors">{a.name}</span>
+                                                <span className="text-xs font-black text-blue-500 bg-blue-600/10 px-2 py-1 rounded-lg">+${a.price}</span>
                                             </div>
                                             <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-relaxed">{a.desc}</p>
                                         </div>
@@ -317,52 +420,23 @@ function CheckoutContent() {
                             </div>
                         </div>
 
-                        {/* Module: Protocol Notes */}
-                        <div className="flex flex-col gap-6 bg-surface-dark/30 p-10 rounded-[3rem] border border-white/5">
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 flex items-center justify-between">
-                                Operational Intelligence
-                                <span className="opacity-40 italic font-normal text-[8px] tracking-normal">[OPTIONAL]</span>
-                            </span>
-                            <textarea className="w-full bg-background-dark/80 border border-white/5 rounded-[2rem] p-8 text-sm font-medium text-white focus:outline-none focus:border-primary/50 transition-all resize-none h-40 placeholder:text-gray-700 placeholder:uppercase placeholder:text-[10px] placeholder:tracking-[0.2em] scrollbar-hide" placeholder="Input specific session telemetry..."></textarea>
-                        </div>
 
-                        {/* Module: Payment Selection */}
-                        <div className="flex flex-col gap-8 mb-20">
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 px-2 flex items-center gap-3">
-                                <span className="size-1.5 rounded-full bg-primary animate-pulse"></span>
-                                Payment Protocol
-                            </span>
-                            <div className="grid grid-cols-1 gap-6">
-                                <label onClick={() => setPayment("now")} className={`flex items-center justify-between p-8 bg-surface-dark border rounded-[2.5rem] cursor-pointer transition-all duration-500 relative overflow-hidden ${payment === "now" ? 'border-primary shadow-glow ring-1 ring-primary/50' : 'border-white/5 hover:border-white/10 group'}`}>
-                                    {payment === "now" && <motion.div layoutId="payment-active" className="absolute inset-0 bg-primary/5 pointer-events-none" />}
-                                    <div className="flex items-center gap-8 relative">
-                                        <div className={`size-6 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${payment === "now" ? 'border-primary bg-primary' : 'border-white/10 group-hover:border-primary/50'}`}>
-                                            {payment === "now" && <div className="size-2 bg-white rounded-full" />}
-                                        </div>
-                                        <div>
-                                            <p className="font-black text-base text-white uppercase tracking-tight">Express Checkout</p>
-                                            <p className="text-[10px] text-emerald-500 font-black uppercase tracking-[0.2em] mt-2 italic flex items-center gap-2">
-                                                <span className="material-symbols-outlined text-xs">offline_bolt</span>
-                                                Operational Efficiency Bonus: 10%
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <span className="font-black text-3xl text-white tracking-tighter tabular-nums">${total.toFixed(2)}</span>
-                                </label>
-                                <label onClick={() => setPayment("shop")} className={`flex items-center justify-between p-8 bg-surface-dark border rounded-[2.5rem] cursor-pointer transition-all duration-500 relative overflow-hidden ${payment === "shop" ? 'border-primary ring-1 ring-primary/50' : 'border-white/5 hover:border-white/10 group'}`}>
-                                    {payment === "shop" && <motion.div layoutId="payment-active" className="absolute inset-0 bg-primary/5 pointer-events-none" />}
-                                    <div className="flex items-center gap-8 relative">
-                                        <div className={`size-6 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${payment === "shop" ? 'border-primary bg-primary' : 'border-white/10 group-hover:border-primary/50'}`}>
-                                            {payment === "shop" && <div className="size-2 bg-white rounded-full" />}
-                                        </div>
-                                        <div>
-                                            <p className="font-black text-base text-white uppercase tracking-tight">On-Site Settlement</p>
-                                            <p className="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em] mt-2">Standard Protocol Clearance</p>
-                                        </div>
-                                    </div>
-                                    <span className="font-black text-3xl text-white/20 tracking-tighter tabular-nums">${subtotal.toFixed(2)}</span>
-                                </label>
+
+                        {/* Module: Temporal Alerts */}
+                        <div className="flex items-center justify-between p-10 bg-[#1e293b]/50 backdrop-blur-md border border-white/5 rounded-[3rem] group shadow-xl hover:border-blue-500/20 transition-all duration-500">
+                            <div className="flex items-center gap-8">
+                                <div className="size-16 bg-blue-600/10 rounded-2xl text-blue-500 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-glow border border-blue-600/10">
+                                    <span className="material-symbols-outlined text-3xl">notifications_active</span>
+                                </div>
+                                <div>
+                                    <p className="font-black text-sm text-white uppercase tracking-widest">Temporal Alerts</p>
+                                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em] mt-2">SMS & Comm-Link Enabled</p>
+                                </div>
                             </div>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input checked readOnly type="checkbox" className="sr-only peer" />
+                                <div className="w-16 h-9 bg-white/5 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:bg-white after:content-[''] after:absolute after:top-[6px] after:left-[6px] after:bg-gray-600 after:rounded-full after:h-6 after:w-6 after:transition-all duration-500 peer-checked:bg-blue-600 shadow-inner"></div>
+                            </label>
                         </div>
                     </div>
 
@@ -376,7 +450,7 @@ function CheckoutContent() {
                             >
                                 {/* Card Glow Overlay */}
                                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-blue-400 to-primary"></div>
-                                <div className="absolute -top-24 -right-24 size-48 bg-primary/20 rounded-full blur-[80px] pointer-events-none transition-all duration-1000 group-hover:bg-primary/30"></div>
+                                <div className="absolute -top-24 -right-24 size-48 bg-blue-600/20 rounded-full blur-[80px] pointer-events-none transition-all duration-1000 group-hover:bg-blue-600/30"></div>
 
                                 <h3 className="text-2xl font-black text-white uppercase tracking-tighter mb-12 pb-8 border-b border-white/5 flex items-center justify-between">
                                     Summary
@@ -387,7 +461,7 @@ function CheckoutContent() {
                                     <div className="absolute left-[7px] top-6 bottom-6 w-px bg-white/5" />
 
                                     <div className="flex gap-8 items-start relative z-10">
-                                        <div className="size-4 mt-2 rounded-full bg-primary flex-shrink-0 border-4 border-surface-dark shadow-glow" />
+                                        <div className="size-4 mt-2 rounded-full bg-blue-600 flex-shrink-0 border-4 border-surface-dark shadow-glow" />
                                         <div>
                                             <p className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] mb-2">Service Type</p>
                                             <p className="text-base font-black text-white uppercase tracking-tight">{currentService.name}</p>
@@ -396,7 +470,7 @@ function CheckoutContent() {
                                     </div>
 
                                     <div className="flex gap-8 items-start relative z-10">
-                                        <div className="size-4 mt-2 rounded-full bg-primary flex-shrink-0 border-4 border-surface-dark shadow-glow" />
+                                        <div className="size-4 mt-2 rounded-full bg-blue-600 flex-shrink-0 border-4 border-surface-dark shadow-glow" />
                                         <div>
                                             <p className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] mb-2">Deployed Specialist</p>
                                             <div className="flex items-center gap-4 mt-2 bg-white/5 p-3 rounded-2xl border border-white/5 pr-6">
@@ -407,11 +481,15 @@ function CheckoutContent() {
                                     </div>
 
                                     <div className="flex gap-8 items-start relative z-10">
-                                        <div className="size-4 mt-2 rounded-full bg-primary flex-shrink-0 border-4 border-surface-dark shadow-glow" />
+                                        <div className="size-4 mt-2 rounded-full bg-blue-600 flex-shrink-0 border-4 border-surface-dark shadow-glow" />
                                         <div>
                                             <p className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] mb-2">Established Window</p>
-                                            <p className="text-base font-black text-white uppercase tracking-tight">WED, OCT 11</p>
-                                            <p className="text-[10px] text-primary font-black uppercase mt-2 tracking-[0.2em] bg-primary/10 px-3 py-1 rounded-lg w-fit">10:45 AM GMT-5</p>
+                                            <p className="text-base font-black text-white uppercase tracking-tight">
+                                                {selectedFullDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                                            </p>
+                                            <p className="text-[10px] text-blue-500 font-black uppercase mt-2 tracking-[0.2em] bg-blue-600/10 px-3 py-1 rounded-lg w-fit">
+                                                {selectedTime}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -425,7 +503,7 @@ function CheckoutContent() {
                                         const addon = ADDONS.find(a => a.id === id);
                                         return (
                                             <div key={id} className="flex justify-between items-center text-[10px] font-black uppercase tracking-[0.2em]">
-                                                <span className="text-gray-500 flex items-center gap-2 italic"><span className="size-1 rounded-full bg-primary"></span> {addon?.name}</span>
+                                                <span className="text-gray-500 flex items-center gap-2 italic"><span className="size-1 rounded-full bg-blue-600"></span> {addon?.name}</span>
                                                 <span className="text-white tabular-nums">+${addon?.price}.00</span>
                                             </div>
                                         );
@@ -445,17 +523,20 @@ function CheckoutContent() {
                                             <p className="text-2xl font-black text-white uppercase tracking-tighter tabular-nums italic">45:00</p>
                                         </div>
                                         <div className="text-right flex flex-col gap-1">
-                                            <p className="text-[9px] font-black text-primary uppercase tracking-[0.3em]">Total Payload</p>
+                                            <p className="text-[9px] font-black text-blue-500 uppercase tracking-[0.3em]">Total Payload</p>
                                             <p className="text-6xl font-black text-white uppercase tracking-tighter tabular-nums drop-shadow-glow leading-none">${total.toFixed(2)}</p>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="p-1.5 border border-white/20 rounded-[1.3rem] hover:border-white/40 transition-colors">
-                                    <button onClick={() => router.push(`/success?service=${selectedServiceSlug}&barberId=${selectedBarber}&time=${selectedTime}`)} className="w-full bg-white text-black font-black text-xs uppercase tracking-[0.2em] py-5 rounded-2xl shadow-xl hover:bg-gray-50 transition-all transform active:scale-[0.98] flex justify-center items-center gap-4 relative z-20">
+                                    <Link
+                                        href={`/success?service=${selectedServiceSlug}&barberId=${selectedBarber}&time=${encodeURIComponent(selectedTime)}&date=${encodeURIComponent(selectedFullDate.toISOString())}`}
+                                        className="w-full bg-white text-black font-black text-xs uppercase tracking-[0.2em] py-5 rounded-2xl shadow-xl hover:bg-gray-50 transition-all transform active:scale-[0.98] flex justify-center items-center gap-4 relative z-50 cursor-pointer"
+                                    >
                                         CONFIRM BOOKING
                                         <span className="material-symbols-outlined text-xl">arrow_forward</span>
-                                    </button>
+                                    </Link>
                                 </div>
 
                                 <div className="mt-8 flex items-center justify-center gap-2">
@@ -464,20 +545,16 @@ function CheckoutContent() {
                                 </div>
                             </motion.div>
 
-                            <div className="flex items-center justify-between p-8 bg-surface-dark border border-white/5 rounded-[2.5rem] group shadow-xl">
-                                <div className="flex items-center gap-6">
-                                    <div className="p-4 bg-primary/10 rounded-2xl text-primary flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-glow">
-                                        <span className="material-symbols-outlined text-2xl">notifications_active</span>
+                            <div className="flex items-center justify-between p-10 bg-[#1e293b]/50 backdrop-blur-md border border-white/5 rounded-[3rem] group shadow-xl hover:border-blue-500/20 transition-all duration-500">
+                                <div className="flex items-center gap-8 text-left">
+                                    <div className="size-16 bg-blue-600/10 rounded-2xl text-blue-500 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-glow border border-blue-600/10">
+                                        <span className="material-symbols-outlined text-3xl">verified_user</span>
                                     </div>
                                     <div>
-                                        <p className="font-black text-xs text-white uppercase tracking-widest">Temporal Alerts</p>
-                                        <p className="text-[9px] text-gray-500 font-black uppercase tracking-[0.2em] mt-1">SMS & Comm-Link Enabled</p>
+                                        <p className="font-black text-sm text-white uppercase tracking-widest">Protocol Secured</p>
+                                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em] mt-2">Encrypted Payment Gateway</p>
                                     </div>
                                 </div>
-                                <label className="relative inline-flex items-center cursor-pointer">
-                                    <input checked readOnly type="checkbox" className="sr-only peer" />
-                                    <div className="w-14 h-8 bg-white/5 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:bg-white after:content-[''] after:absolute after:top-[6px] after:left-[6px] after:bg-gray-600 after:rounded-full after:h-5 after:w-5 after:transition-all duration-500 peer-checked:bg-primary shadow-inner"></div>
-                                </label>
                             </div>
                         </div>
                     </div>

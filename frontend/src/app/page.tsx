@@ -53,8 +53,15 @@ export default function Home() {
   if (!mounted) return null;
 
   return (
-    <div className="bg-background-dark text-white font-display overflow-x-hidden antialiased selection:bg-primary selection:text-white pb-24">
+    <div className="bg-gradient-to-br from-black via-[#0B1121] to-black text-white font-display overflow-x-hidden antialiased selection:bg-blue-600 selection:text-white pb-24 relative">
       <Toolbar />
+
+      {/* Background Decorators */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-[-10%] right-[-10%] size-[800px] bg-blue-600/10 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-[-10%] left-[-10%] size-[600px] bg-white/5 rounded-full blur-[100px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[1000px] bg-blue-900/5 rounded-full blur-[150px]" />
+      </div>
 
       {/* Top Logo / Branding */}
       <div className="absolute top-0 left-0 right-0 z-40 p-8 flex justify-center">
@@ -73,8 +80,8 @@ export default function Home() {
       {/* Hero Section */}
       <header className="relative w-full h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent z-10"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-black/30 z-10"></div>
+          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black via-black/50 to-transparent z-10"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-black/30 z-10"></div>
           <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCKoDlxMKWryCxgM_scsDXmtoXjBJ3UoVcLJuglZPhO2LoVDXnd5fEf40MgjcrgCY_dg9SsSHO_YcSg-YKxddI9h2F5Lqud7jZj94QgSE8kVurMk4OekSYGpDRD_OqdLU-IOS2Q68Y_Mu37EO5mVtJxFnOVuDB1RifgRP4gmQPxq0i6qG7SeUlj1M_eB3Eo1okb_ZudgKhTRI5qcOuTETEg_NWsVFHy-bx30LDf8qTcufeLtVpH9MZJXhoerN19ebXfBHbn4m2kKhzq')" }}>
           </div>
         </div>
@@ -113,7 +120,7 @@ export default function Home() {
               Experience the art of grooming at FadeLab. We specialize in precision fades, hot towel shaves, and modern texturizing.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mt-4">
-              <Link href="/barbers" className="bg-primary hover:bg-blue-600 text-white h-14 px-10 rounded-2xl font-bold text-base transition-all shadow-[0_0_20px_rgba(17,82,212,0.4)] flex items-center justify-center gap-2">
+              <Link href="/barbers" className="bg-blue-600 hover:bg-blue-500 text-white h-14 px-10 rounded-2xl font-bold text-base transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)] flex items-center justify-center gap-2">
                 <span className="material-symbols-outlined">calendar_month</span>
                 <span>Book Your Chair</span>
               </Link>
@@ -123,7 +130,7 @@ export default function Home() {
       </header>
 
       {/* Live Availability Section */}
-      <section className="py-24 bg-background-dark" id="barbers">
+      <section className="py-24 relative z-10" id="barbers">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-16">
             <div>
@@ -179,7 +186,7 @@ export default function Home() {
       </section>
 
       {/* Services Section - Transparent Pricing */}
-      <section className="py-24 bg-background-dark relative" id="services">
+      <section className="py-24 relative z-10" id="services">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-20">
             <h2 className="text-4xl md:text-5xl font-black text-white mb-6 uppercase tracking-tight">Transparent Pricing</h2>
@@ -258,7 +265,7 @@ export default function Home() {
       </section>
 
       {/* Barber Spotlight - UI UX PRO MAX REDESIGN */}
-      <section className="py-32 bg-background-dark relative overflow-hidden">
+      <section className="py-32 relative overflow-hidden z-10">
         {/* Anti-Gravity Background Elements */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none">
           <div className="absolute top-1/4 left-1/2 -translate-x-1/2 text-[20vw] font-black text-white/[0.02] uppercase tracking-[0.2em] select-none italic">ELITE</div>

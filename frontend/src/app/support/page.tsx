@@ -1,11 +1,20 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useState } from "react";
 import { Toolbar } from "../components/Toolbar";
 
 export default function SupportPage() {
+    const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+    const FAQS = [
+        { q: "How do I reschedule an appointment less than 24 hours before?", a: "Please call us directly at +1 (555) 123-4567. Online rescheduling is locked 24 hours prior to maintain schedule efficiency." },
+        { q: "What is included in the 'Executive Cut' package?", a: "The Executive Cut includes a consultation, precision haircut, hot towel treatment, scalp massage, and a styling session with premium products." },
+        { q: "Do you offer gift cards for grooming services?", a: "Yes, digital and physical gift cards are available in-store and online. They can be redeemed for any service or product." },
+        { q: "What happens if I'm running late for my booking?", a: "We offer a 10-minute grace period. Beyond that, we may need to reschedule or shorten your service to respect the time of the next client." }
+    ];
+
     return (
         <div className="bg-background-dark text-white font-display min-h-screen pb-32">
             <Toolbar />
@@ -89,21 +98,41 @@ export default function SupportPage() {
                         </div>
 
                         <div className="bg-surface-dark border border-white/5 rounded-[2rem] overflow-hidden divide-y divide-white/5">
-                            {[
-                                "How do I reschedule an appointment less than 24 hours before?",
-                                "What is included in the 'Executive Cut' package?",
-                                "Do you offer gift cards for grooming services?",
-                                "What happens if I'm running late for my booking?"
-                            ].map((article, i) => (
-                                <Link key={i} href="#" className="flex items-center justify-between p-6 hover:bg-white/5 transition-colors group">
-                                    <div className="flex items-center gap-4">
-                                        <div className="size-8 rounded-lg bg-white/5 flex items-center justify-center text-gray-400 group-hover:text-primary transition-colors">
-                                            <span className="material-symbols-outlined text-sm">description</span>
+                            {FAQS.map((faq, i) => (
+                                <div key={i} className="group overflow-hidden">
+                                    <button
+                                        onClick={() => setOpenIndex(openIndex === i ? null : i)}
+                                        className="w-full flex items-center justify-between p-6 hover:bg-white/5 transition-colors text-left"
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <div className={`size-8 rounded-lg flex items-center justify-center transition-colors ${openIndex === i ? 'bg-primary text-white' : 'bg-white/5 text-gray-400 group-hover:text-primary'}`}>
+                                                <span className="material-symbols-outlined text-sm">
+                                                    {openIndex === i ? 'remove' : 'add'}
+                                                </span>
+                                            </div>
+                                            <span className={`font-medium transition-colors ${openIndex === i ? 'text-white' : 'text-gray-300 group-hover:text-white'}`}>
+                                                {faq.q}
+                                            </span>
                                         </div>
-                                        <span className="font-medium text-gray-300 group-hover:text-white transition-colors">{article}</span>
-                                    </div>
-                                    <span className="material-symbols-outlined text-gray-600 group-hover:translate-x-1 transition-transform">chevron_right</span>
-                                </Link>
+                                        <span className={`material-symbols-outlined transition-transform duration-300 ${openIndex === i ? 'rotate-180 text-primary' : 'text-gray-600'}`}>
+                                            expand_more
+                                        </span>
+                                    </button>
+                                    <AnimatePresence>
+                                        {openIndex === i && (
+                                            <motion.div
+                                                initial={{ height: 0, opacity: 0 }}
+                                                animate={{ height: "auto", opacity: 1 }}
+                                                exit={{ height: 0, opacity: 0 }}
+                                                transition={{ duration: 0.3, ease: "easeInOut" }}
+                                            >
+                                                <div className="px-6 pb-6 pt-0 pl-[4.5rem] text-sm text-gray-400 leading-relaxed">
+                                                    {faq.a}
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
                             ))}
                         </div>
                     </div>
