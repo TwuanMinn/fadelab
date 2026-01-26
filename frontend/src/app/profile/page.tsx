@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 
-export default function ProfileSettingsPage() {
+function ProfileSettingsContent() {
     const searchParams = useSearchParams();
     const [mounted, setMounted] = useState(false);
     const [activeTab, setActiveTab] = useState("dashboard");
@@ -1395,5 +1395,17 @@ export default function ProfileSettingsPage() {
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(100,100,100,0.4); }
       `}</style>
         </div>
+    );
+}
+
+export default function ProfileSettingsPage() {
+    return (
+        <Suspense fallback={
+            <div className="bg-gradient-to-br from-black via-[#0B1121] to-[#0f172a] text-white min-h-screen flex items-center justify-center">
+                <div className="animate-pulse text-xl font-bold">Loading...</div>
+            </div>
+        }>
+            <ProfileSettingsContent />
+        </Suspense>
     );
 }
