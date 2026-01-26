@@ -1,82 +1,172 @@
-import Image from 'next/image';
-import { useState } from 'react';
-import { cn } from '@/lib/utils';
+"use client";
 
-interface OptimizedImageProps {
-  src: string;
+import Image, { ImageProps } from "next/image";
+import { forwardRef, useState } from "react";
+import { clsx } from "clsx";
+
+interface OptimizedImageProps extends Omit<ImageProps, "alt"> {
   alt: string;
-  width?: number;
-  height?: number;
-  className?: string;
-  priority?: boolean;
-  sizes?: string;
-  fill?: boolean;
-  quality?: number;
-  placeholder?: 'blur' | 'empty';
-  blurDataURL?: string;
+  fallback?: string;
+  aspectRatio?: "square" | "video" | "portrait" | "auto";
+  overlay?: "none" | "gradient" | "dark";
+  hoverZoom?: boolean;
+  rounded?: "none" | "sm" | "md" | "lg" | "xl" | "2xl" | "full";
+  containerClassName?: string;
 }
 
-export function OptimizedImage({
-  src,
-  alt,
-  width,
-  height,
-  className,
-  priority = false,
-  sizes = '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw',
-  fill = false,
-  quality = 75,
-  placeholder = 'empty',
-  blurDataURL,
-  ...props
-}: OptimizedImageProps) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(false);
+const aspectRatioStyles = {
+  square: "aspect-square",
+  video: "aspect-video",
+  portrait: "aspect-[4/5]",
+  auto: "",
+};
 
-  const handleError = () => {
-    setError(true);
-    setIsLoading(false);
-  };
+const overlayStyles = {
+  none: "",
+  gradient: "after:absolute after:inset-0 after:bg-gradient-to-t after:from-black/80 after:via-black/20 after:to-transparent after:z-10",
+  dark: "after:absolute after:inset-0 after:bg-black/50 after:z-10",
+};
 
-  const handleLoad = () => {
-    setIsLoading(false);
-  };
+const roundedStyles = {
+  none: "",
+  sm: "rounded-md",
+  md: "rounded-lg",
+  lg: "rounded-xl",
+  xl: "rounded-2xl",
+  "2xl": "rounded-3xl",
+  full: "rounded-full",
+};
 
-  if (error) {
+export const OptimizedImage = forwardRef<HTMLDivElement, OptimizedImageProps>(
+  function OptimizedImage(
+    {
+      src,
+      alt,
+      fallback = "/placeholder.jpg",
+      aspectRatio = "auto",
+      overlay = "none",
+      hoverZoom = false,
+      rounded = "lg",
+      containerClassName,
+      className,
+      fill = true,
+      ...props
+    },
+    ref
+  ) {
+    const [error, setError] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+
     return (
-      <div 
-        className={cn(
-          'flex items-center justify-center bg-surface-dark text-gray-400',
-          className
+      <div
+        ref={ref}
+        className={clsx(
+          "relative overflow-hidden",
+          aspectRatioStyles[aspectRatio],
+          overlayStyles[overlay],
+          roundedStyles[rounded],
+          containerClassName
         )}
-        style={fill ? { position: 'absolute', inset: 0 } : { width, height }}
       >
-        <span className="material-symbols-outlined text-4xl">broken_image</span>
+        {/* Loading Skeleton */}
+        {isLoading && (
+          <div className="absolute inset-0 bg-white/5 animate-pulse z-0" />
+        )}
+
+        <Image
+          src={error ? fallback : src}
+          alt={alt}
+          fill={fill}
+          className={clsx(
+            "object-cover transition-all duration-500",
+            hoverZoom && "group-hover:scale-110",
+            isLoading ? "opacity-0" : "opacity-100",
+            className
+          )}
+          onLoad={() => setIsLoading(false)}
+          onError={() => {
+            setError(true);
+            setIsLoading(false);
+          }}
+          {...props}
+        />
       </div>
     );
   }
+);
 
-  return (
-    <div className={cn('relative overflow-hidden', className)}>
-      <Image
-        src={src}
-        alt={alt}
-        width={width}
-        height={height}
-        fill={fill}
-        priority={priority}
-        quality={quality}
-        sizes={sizes}
-        placeholder={placeholder}
-        blurDataURL={blurDataURL}
-        className={cn(
-          'transition-all duration-700',
-          isLoading ? 'scale-110 blur-2xl grayscale' : 'scale-100 blur-0 grayscale-0'
+// Avatar specific image component
+interface AvatarImageProps extends Omit<OptimizedImageProps, "aspectRatio" | "rounded"> {
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
+  ring?: boolean;
+  ringColor?: string;
+}
+
+const avatarSizes = {
+  xs: "w-6 h-6",
+  sm: "w-8 h-8",
+  md: "w-10 h-10",
+  lg: "w-12 h-12",
+  xl: "w-16 h-16",
+};
+
+export const AvatarImage = forwardRef<HTMLDivElement, AvatarImageProps>(
+  function AvatarImage(
+    { size = "md", ring = false, ringColor = "primary", className, containerClassName, ...props },
+    ref
+  ) {
+    return (
+      <OptimizedImage
+        ref={ref}
+        aspectRatio="square"
+        rounded="full"
+        containerClassName={clsx(
+          avatarSizes[size],
+          ring && `ring-2 ring-${ringColor}/20`,
+          containerClassName
         )}
-        onLoad={handleLoad}
-        onError={handleError}
+        className={className}
         {...props}
       />
-    </div>
-  );
+    );
+  }
+);
+
+// Background Image component for hero sections
+interface BackgroundImageProps extends Omit<OptimizedImageProps, "overlay"> {
+  gradients?: ("left" | "right" | "top" | "bottom")[];
 }
+
+export const BackgroundImage = forwardRef<HTMLDivElement, BackgroundImageProps>(
+  function BackgroundImage(
+    { gradients = ["bottom"], containerClassName, children, ...props },
+    ref
+  ) {
+    const gradientStyles = {
+      left: "bg-gradient-to-r from-black/80 via-black/50 to-transparent",
+      right: "bg-gradient-to-l from-black/80 via-black/50 to-transparent",
+      top: "bg-gradient-to-b from-black/80 via-black/50 to-transparent",
+      bottom: "bg-gradient-to-t from-black/80 via-black/50 to-transparent",
+    };
+
+    return (
+      <div ref={ref} className={clsx("absolute inset-0", containerClassName)}>
+        <OptimizedImage
+          overlay="none"
+          rounded="none"
+          priority
+          {...props}
+        />
+        {gradients.map((gradient) => (
+          <div
+            key={gradient}
+            className={clsx("absolute inset-0 z-10", gradientStyles[gradient])}
+          />
+        ))}
+        {children}
+      </div>
+    );
+  }
+);
+
+export default OptimizedImage;
