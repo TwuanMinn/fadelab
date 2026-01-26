@@ -1,194 +1,256 @@
 "use client";
 
-import { motion } from "framer-motion";
-import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
-export default function RewardsPage() {
+export default function MembershipPage() {
     const router = useRouter();
-    const [activeTab, setActiveTab] = useState('Rewards');
+    const [copied, setCopied] = useState(false);
 
-    const rewards = [
-        {
-            id: 1,
-            title: "$10 Off Coupon",
-            points: 500,
-            description: "Apply this discount to any order over $50.",
-            image: "https://lh3.googleusercontent.com/aida-public/AB6AXuClTyBxLeqObwqhijPVy04XdKzNs075BfIvWKH7sRnSkdXYNw3zTqa7GkvrGvwAAogEdDxFT1YG5zFY6oJCN8YziVE3FGy3foRepU6Hmg7o-qe3kk4pGK-J92ShTn_v2wwZ_HMwyRlc9BNdTdjs_g4-CDH13tjPwTv5dXAbZudjuwawPZycQZmUbLFM8eBCMDae1-YPXucvP6NWH8Q4Eupo5a7tVxcOc-8JlDmi4MSKQUQTs-vF77jAvxCPLIV3n4sD6VjwThbMkm0",
-            canRedeem: true
-        },
-        {
-            id: 2,
-            title: "Free Shipping",
-            points: 1000,
-            description: "Get free standard shipping on your next furniture delivery.",
-            image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAWBzluDUBmCJyXfEPvrDM4qV1q23FA7xskZ3TEHbVWZ9UI7oojVfOVk_yCr0W_NSoW4x8GHfjcxhcNxTCAE8KV4wHZa4wxdKi9W9jUdMxnhNY1Xfm25dpTY2xH4aNRpjur_lCKqw-bXJyOOKsexjmCWCT6lWjdMSKOvxBiytutzACGVBTOIFLj4fAgZz8ReDAAO2CKQ3ez1ZIJiCRSQpdtCj94YggchdDFn1RFUsR3Q-nxEelNLutz4waR4fn-XLYPqqndO1UdaXE",
-            canRedeem: true
-        },
-        {
-            id: 3,
-            title: "Modern Side Table",
-            points: 5000,
-            description: "Add a touch of elegance with this exclusive piece.",
-            image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDp_slhJYSw_7O-kLe-zk34Ktuh1VmQ3ZYCNG8uF0TznS1jtvbTJxLyWSYec-SS3DpKi5KbddypSSllsQADB4tPajg7ICQsnH6Rhan9KQyQria3XnvrNxSQXGQgDpsyEcBz2U1q7keiopdSNNmnbAfh0uW5VOLR3PaVfRuSY6fDFcXTLrXM_GQ8jP_gZsy6b9U4z6RRXMfOUkyh1-JlbDmnECWTJWrsahjsdOaAOfXHebe62ZJ4Z0tLLVWsyCAfhjGK23nxiFDtVKQ",
-            canRedeem: false
-        }
-    ];
+    const handleCopy = () => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-[#101822] text-[#111418] dark:text-white font-display flex justify-center pb-24 md:pb-8">
-            <div className="relative flex w-full flex-col max-w-5xl mx-auto bg-slate-50 dark:bg-[#101822] md:bg-white md:dark:bg-[#101822] md:shadow-xl md:rounded-3xl md:mt-8 md:overflow-hidden md:border md:border-slate-200 md:dark:border-slate-800">
+        <div className="bg-background-light dark:bg-background-dark text-[#0d121b] dark:text-white font-display min-h-screen flex flex-col">
+            {/* Top Navigation */}
+            <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7ebf3] dark:border-b-gray-800 px-6 lg:px-10 py-5 bg-white dark:bg-gray-900 sticky top-0 z-50">
+                <button
+                    onClick={() => router.back()}
+                    className="flex items-center gap-3 text-gray-500 hover:text-primary dark:text-gray-400 dark:hover:text-white transition-colors group"
+                >
+                    <div className="size-8 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 group-hover:bg-primary/10 dark:group-hover:bg-primary/20 transition-colors">
+                        <span className="material-symbols-outlined text-xl group-hover:text-primary transition-colors">arrow_back</span>
+                    </div>
+                    <span className="text-lg font-bold">Back</span>
+                </button>
+                <h2 className="text-[#0d121b] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] absolute left-1/2 -translate-x-1/2">
+                    FadeLab Rewards
+                </h2>
+                <div className="w-8"></div> {/* Spacer for centering */}
+            </header>
 
-                {/* Header */}
-                <div className="sticky top-0 z-50 flex items-center bg-white/90 dark:bg-[#101822]/90 backdrop-blur-md p-4 border-b border-slate-100 dark:border-slate-800 md:static md:bg-transparent">
-                    <button
-                        onClick={() => router.back()}
-                        className="size-10 flex shrink-0 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                    >
-                        <span className="material-symbols-outlined text-2xl">arrow_back</span>
-                    </button>
-                    <h2 className="text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-10">Rewards</h2>
-                </div>
-
-                <div className="flex-1 overflow-y-auto">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-4 md:p-8">
-                        {/* Left Column: Member Card & Progress */}
-                        <div className="space-y-6">
-                            {/* Hero Status Card */}
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary to-[#4b9eff] p-8 text-white shadow-xl shadow-primary/20"
-                            >
-                                <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white opacity-10 blur-2xl"></div>
-                                <div className="absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-white opacity-10 blur-xl"></div>
-
-                                <div className="relative z-10 flex flex-col gap-6">
-                                    <div className="flex justify-between items-start">
-                                        <div>
-                                            <p className="text-blue-100 text-sm font-medium mb-1">Welcome back, Alex!</p>
-                                            <div className="flex items-center gap-2">
-                                                <span className="material-symbols-outlined text-yellow-300 fill-1">workspace_premium</span>
-                                                <h1 className="text-2xl md:text-3xl font-black tracking-tight">Gold Member</h1>
-                                            </div>
-                                        </div>
-                                        <div className="bg-white/20 backdrop-blur-sm px-4 py-1.5 rounded-full border border-white/30 text-xs font-black uppercase tracking-widest">
-                                            Tier 2 of 3
-                                        </div>
-                                    </div>
-                                    <div className="mt-4">
-                                        <p className="text-5xl font-black">2,450</p>
-                                        <p className="text-blue-100 text-sm font-bold uppercase tracking-widest mt-1">Points Available</p>
-                                    </div>
+            {/* Main Content */}
+            <main className="flex-1 flex justify-center py-8 px-4 sm:px-6 lg:px-8 pb-24">
+                <div className="w-full max-w-[1024px] flex flex-col gap-8">
+                    {/* Hero / Status Section */}
+                    <section className="flex flex-col gap-6 bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-800 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-1/3 h-full opacity-5 pointer-events-none bg-gradient-to-l from-primary to-transparent"></div>
+                        <div className="flex flex-wrap justify-between items-end gap-4 relative z-10">
+                            <div className="flex flex-col gap-2">
+                                <p className="text-[#4c669a] dark:text-gray-400 text-sm font-medium uppercase tracking-wider">Welcome back</p>
+                                <h1 className="text-[#0d121b] dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em]">Alex Morgan</h1>
+                                <div className="inline-flex items-center gap-2 mt-1 px-3 py-1 rounded-full bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700/50 w-fit">
+                                    <span className="material-symbols-outlined text-yellow-600 dark:text-yellow-500 text-sm">stars</span>
+                                    <span className="text-yellow-700 dark:text-yellow-400 text-sm font-bold">Gold Tier Member</span>
                                 </div>
-                            </motion.div>
+                            </div>
+                            <div className="flex gap-4">
+                                <div className="flex flex-col items-center justify-center bg-background-light dark:bg-gray-800 rounded-lg p-4 min-w-[120px] border border-gray-200 dark:border-gray-700 hover:border-primary/30 transition-colors">
+                                    <span className="text-2xl font-bold text-primary">1,450</span>
+                                    <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">Total Points</span>
+                                </div>
+                                <div className="flex flex-col items-center justify-center bg-background-light dark:bg-gray-800 rounded-lg p-4 min-w-[120px] border border-gray-200 dark:border-gray-700 hover:border-primary/30 transition-colors">
+                                    <span className="text-2xl font-bold text-[#0d121b] dark:text-white">350</span>
+                                    <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">To Platinum</span>
+                                </div>
+                            </div>
+                        </div>
+                        {/* Progress Bar */}
+                        <div className="flex flex-col gap-2 relative z-10">
+                            <div className="flex justify-between items-center text-sm">
+                                <span className="text-[#0d121b] dark:text-gray-200 font-medium">Progress to Platinum Status</span>
+                                <span className="text-[#0d121b] dark:text-gray-200 font-bold">80%</span>
+                            </div>
+                            <div className="h-3 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                                <div className="h-full bg-primary rounded-full transition-all duration-500 ease-out shadow-glow" style={{ width: '80%' }}></div>
+                            </div>
+                            <p className="text-[#4c669a] dark:text-gray-400 text-xs font-normal">Earn 50 more points to unlock a complimentary monthly treatment.</p>
+                        </div>
+                    </section>
 
-                            {/* Progress Section */}
-                            <div className="bg-white dark:bg-slate-800/50 rounded-3xl border border-slate-100 dark:border-slate-800 p-6 shadow-soft">
-                                <div className="flex justify-between items-end mb-4">
+                    {/* Tier Comparison Table */}
+                    <section className="flex flex-col gap-4">
+                        <div className="px-2">
+                            <h2 className="text-[#0d121b] dark:text-white text-2xl font-bold tracking-tight">Tier Benefits</h2>
+                            <p className="text-[#4c669a] dark:text-gray-400 text-sm mt-1">Unlock exclusive perks as you level up.</p>
+                        </div>
+                        <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm">
+                            <table className="w-full text-sm text-left">
+                                <thead>
+                                    <tr className="bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-800">
+                                        <th className="px-6 py-4 font-bold text-gray-500 dark:text-gray-400 uppercase text-xs tracking-wider">Benefit</th>
+                                        <th className="px-6 py-4 font-bold text-[#0d121b] dark:text-white text-center">Bronze</th>
+                                        <th className="px-6 py-4 font-bold text-[#0d121b] dark:text-white text-center">Silver</th>
+                                        <th className="px-6 py-4 font-bold text-primary text-center bg-primary/5 dark:bg-primary/10 relative">
+                                            Gold
+                                            <div className="absolute top-0 left-0 w-full h-1 bg-primary"></div>
+                                        </th>
+                                        <th className="px-6 py-4 font-bold text-[#0d121b] dark:text-white text-center">Platinum</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                                    <tr className="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
+                                        <td className="px-6 py-4 font-medium text-[#0d121b] dark:text-gray-200">Booking Priority</td>
+                                        <td className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">Standard</td>
+                                        <td className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">24hr Advance</td>
+                                        <td className="px-6 py-4 text-center font-bold text-primary bg-primary/5 dark:bg-primary/10">Priority</td>
+                                        <td className="px-6 py-4 text-center text-[#0d121b] dark:text-white font-medium">VIP Line</td>
+                                    </tr>
+                                    <tr className="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
+                                        <td className="px-6 py-4 font-medium text-[#0d121b] dark:text-gray-200">Product Discount</td>
+                                        <td className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">0%</td>
+                                        <td className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">5%</td>
+                                        <td className="px-6 py-4 text-center font-bold text-primary bg-primary/5 dark:bg-primary/10">10%</td>
+                                        <td className="px-6 py-4 text-center text-[#0d121b] dark:text-white font-medium">15%</td>
+                                    </tr>
+                                    <tr className="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
+                                        <td className="px-6 py-4 font-medium text-[#0d121b] dark:text-gray-200">Beverage Service</td>
+                                        <td className="px-6 py-4 text-center text-gray-500 dark:text-gray-400"><span className="material-symbols-outlined text-gray-300">close</span></td>
+                                        <td className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">Coffee/Tea</td>
+                                        <td className="px-6 py-4 text-center font-bold text-primary bg-primary/5 dark:bg-primary/10">Full Bar</td>
+                                        <td className="px-6 py-4 text-center text-[#0d121b] dark:text-white font-medium">Premium Bar</td>
+                                    </tr>
+                                    <tr className="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
+                                        <td className="px-6 py-4 font-medium text-[#0d121b] dark:text-gray-200">Complimentary Treatment</td>
+                                        <td className="px-6 py-4 text-center text-gray-500 dark:text-gray-400"><span className="material-symbols-outlined text-gray-300">close</span></td>
+                                        <td className="px-6 py-4 text-center text-gray-500 dark:text-gray-400"><span className="material-symbols-outlined text-gray-300">close</span></td>
+                                        <td className="px-6 py-4 text-center font-bold text-primary bg-primary/5 dark:bg-primary/10">Birthday Only</td>
+                                        <td className="px-6 py-4 text-center text-[#0d121b] dark:text-white font-medium">Monthly</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    {/* Two Column Layout: Referrals & History */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        {/* Referral Section (2/3 width) */}
+                        <section className="lg:col-span-2 flex flex-col gap-6">
+                            <div className="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-800 h-full">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-primary">
+                                        <span className="material-symbols-outlined">diversity_3</span>
+                                    </div>
                                     <div>
-                                        <p className="text-[#111418] dark:text-white text-lg font-bold">Next Reward: Platinum</p>
-                                        <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">550 points needed to level up</p>
+                                        <h3 className="text-xl font-bold text-[#0d121b] dark:text-white">Refer a Friend</h3>
+                                        <p className="text-sm text-[#4c669a] dark:text-gray-400">Give $20, Get $20. Share your style with friends.</p>
                                     </div>
-                                    <span className="text-primary font-black text-xl">82%</span>
                                 </div>
-                                <div className="rounded-full bg-slate-100 dark:bg-slate-700 h-3 overflow-hidden">
-                                    <motion.div
-                                        initial={{ width: 0 }}
-                                        animate={{ width: '82%' }}
-                                        transition={{ duration: 1, ease: "easeOut" }}
-                                        className="h-full rounded-full bg-gradient-to-r from-primary to-[#60a5fa] shadow-glow"
-                                    ></motion.div>
-                                </div>
-                                <div className="mt-6 flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">
-                                    <span className="material-symbols-outlined text-primary text-xl">info</span>
-                                    <p>Earn 1 point for every $1 spent on furniture.</p>
-                                </div>
-                            </div>
-
-                            {/* Active Coupons Section */}
-                            <div className="pt-2">
-                                <h3 className="text-[#111418] dark:text-white text-xl font-bold leading-tight tracking-tight mb-4 flex items-center gap-2">
-                                    <span className="material-symbols-outlined text-primary">local_activity</span>
-                                    Active Coupons
-                                </h3>
-                                <div className="group relative flex items-center justify-between rounded-2xl border-2 border-dashed border-primary/20 bg-blue-50/30 dark:bg-blue-900/10 p-5 transition-all hover:bg-blue-50 dark:hover:bg-blue-900/20">
-                                    <div className="flex items-center gap-4">
-                                        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/30">
-                                            <span className="material-symbols-outlined text-2xl">confirmation_number</span>
-                                        </div>
-                                        <div>
-                                            <p className="font-black text-lg text-[#111418] dark:text-white leading-tight">20% Off Order</p>
-                                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Expires in 5 days</p>
-                                            <div className="flex items-center gap-2 mt-2">
-                                                <code className="text-xs font-black font-mono text-primary bg-primary/10 px-3 py-1 rounded-lg">SUMMER20</code>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                                    <div className="flex flex-col gap-4">
+                                        <label className="text-xs font-bold uppercase text-gray-500 dark:text-gray-400 tracking-wider">Your Unique Code</label>
+                                        <div className="flex gap-2">
+                                            <div className="flex-1 bg-background-light dark:bg-gray-800 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center px-4 py-3 font-mono text-lg font-bold tracking-widest text-[#0d121b] dark:text-white select-all">
+                                                ALEXM-2024
                                             </div>
-                                        </div>
-                                    </div>
-                                    <button className="rounded-xl bg-white dark:bg-slate-800 px-5 py-2.5 text-xs font-black text-primary shadow-lg shadow-black/5 border border-slate-100 dark:border-slate-700 hover:scale-105 active:scale-95 transition-all">
-                                        COPY
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Right Column: Redeem Rewards */}
-                        <div className="space-y-6">
-                            {/* Tabs (Mobile View Style kept but wider for desktop) */}
-                            <div className="bg-white dark:bg-slate-800/50 rounded-2xl p-1 flex border border-slate-100 dark:border-slate-800 shadow-soft">
-                                {['Rewards', 'History', 'Earn'].map((tab) => (
-                                    <button
-                                        key={tab}
-                                        onClick={() => setActiveTab(tab)}
-                                        className={`flex-1 py-3 text-sm font-black rounded-xl transition-all ${activeTab === tab ? 'bg-primary text-white shadow-lg shadow-primary/25' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'}`}
-                                    >
-                                        {tab.toUpperCase()}
-                                    </button>
-                                ))}
-                            </div>
-
-                            <h3 className="text-[#111418] dark:text-white text-xl font-bold leading-tight tracking-tight mt-8 mb-4">Redeem Points</h3>
-                            <div className="flex flex-col gap-4 pb-12">
-                                {rewards.map((reward) => (
-                                    <motion.div
-                                        key={reward.id}
-                                        whileHover={{ y: -4 }}
-                                        className="flex flex-col items-stretch justify-start rounded-3xl border border-slate-100 dark:border-slate-800 shadow-soft bg-white dark:bg-slate-800/50 overflow-hidden group transition-all hover:border-primary/20"
-                                    >
-                                        <div className="flex flex-row items-center p-4 gap-4">
-                                            <div className="w-24 h-24 shrink-0 relative rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-700">
-                                                <Image
-                                                    src={reward.image}
-                                                    alt={reward.title}
-                                                    fill
-                                                    className="object-cover group-hover:scale-110 transition-transform duration-500"
-                                                />
-                                            </div>
-                                            <div className="flex flex-col flex-1 justify-center gap-1">
-                                                <div className="flex items-center gap-2">
-                                                    <span className={`text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest ${reward.canRedeem ? 'text-primary bg-primary/10' : 'text-slate-400 bg-slate-100 dark:bg-slate-800'}`}>
-                                                        {reward.points} PTS
-                                                    </span>
-                                                </div>
-                                                <p className="text-[#111418] dark:text-white text-lg font-black leading-tight line-clamp-1">{reward.title}</p>
-                                                <p className="text-slate-500 dark:text-slate-400 text-xs font-medium leading-relaxed line-clamp-2">{reward.description}</p>
-                                                <button
-                                                    disabled={!reward.canRedeem}
-                                                    className={`mt-3 w-full cursor-pointer items-center justify-center rounded-xl h-10 font-black text-xs transition-all active:scale-95 ${reward.canRedeem ? 'bg-primary text-white shadow-lg shadow-primary/20 hover:bg-blue-600' : 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed'}`}
-                                                >
-                                                    {reward.canRedeem ? 'REDEEM NOW' : 'NOT ENOUGH POINTS'}
+                                            <CopyToClipboard text="ALEXM-2024" onCopy={handleCopy}>
+                                                <button aria-label="Copy Code" className="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-[#0d121b] dark:text-white rounded-lg px-4 flex items-center justify-center transition-colors relative group">
+                                                    <span className="material-symbols-outlined text-xl">{copied ? 'check' : 'content_copy'}</span>
+                                                    {copied && (
+                                                        <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] px-2 py-1 rounded">Copied!</span>
+                                                    )}
                                                 </button>
+                                            </CopyToClipboard>
+                                        </div>
+                                        <button className="w-full bg-primary hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg shadow-primary/20">
+                                            <span className="material-symbols-outlined text-sm">mail</span>
+                                            Share via Email
+                                        </button>
+                                    </div>
+                                    {/* Simple Chart Visualization */}
+                                    <div className="flex flex-col items-center justify-center gap-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6 border border-gray-100 dark:border-gray-800">
+                                        <div className="relative size-32">
+                                            <svg className="size-full -rotate-90" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+                                                <circle className="stroke-current text-gray-200 dark:text-gray-700" cx="18" cy="18" fill="none" r="16" strokeWidth="3"></circle>
+                                                <circle className="stroke-current text-primary" cx="18" cy="18" fill="none" r="16" strokeDasharray="70 100" strokeWidth="3"></circle>
+                                            </svg>
+                                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
+                                                <span className="text-2xl font-bold text-[#0d121b] dark:text-white block">3</span>
+                                                <span className="text-[10px] uppercase text-gray-500 dark:text-gray-400 font-bold">Sign-ups</span>
                                             </div>
                                         </div>
-                                    </motion.div>
-                                ))}
+                                        <div className="flex gap-4 text-xs">
+                                            <div className="flex items-center gap-1">
+                                                <div className="size-2 rounded-full bg-primary"></div>
+                                                <span className="text-gray-600 dark:text-gray-300">Successful (3)</span>
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                                <div className="size-2 rounded-full bg-gray-300 dark:bg-gray-600"></div>
+                                                <span className="text-gray-600 dark:text-gray-300">Pending (2)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        </section>
+
+                        {/* Points History Timeline (1/3 width) */}
+                        <section className="lg:col-span-1">
+                            <div className="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-800 h-full">
+                                <div className="flex items-center justify-between mb-6">
+                                    <h3 className="text-xl font-bold text-[#0d121b] dark:text-white">Points History</h3>
+                                    <Link className="text-xs font-bold text-primary hover:underline uppercase tracking-wide" href="#">View All</Link>
+                                </div>
+                                <div className="relative pl-4 border-l border-gray-200 dark:border-gray-800 space-y-8">
+                                    {/* Timeline Item 1 */}
+                                    <div className="relative group">
+                                        <div className="absolute -left-[21px] bg-white dark:bg-gray-900 p-1">
+                                            <div className="size-3 rounded-full bg-primary ring-4 ring-blue-50 dark:ring-blue-900/30 group-hover:ring-primary/30 transition-all"></div>
+                                        </div>
+                                        <div className="flex flex-col gap-1">
+                                            <span className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide">Today</span>
+                                            <p className="text-sm font-bold text-[#0d121b] dark:text-white">Booking Completed</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">Haircut + Beard Trim</p>
+                                            <span className="inline-block mt-1 text-xs font-bold text-green-600 dark:text-green-400">+100 pts</span>
+                                        </div>
+                                    </div>
+                                    {/* Timeline Item 2 */}
+                                    <div className="relative group">
+                                        <div className="absolute -left-[21px] bg-white dark:bg-gray-900 p-1">
+                                            <div className="size-3 rounded-full bg-gray-300 dark:bg-gray-600 group-hover:bg-primary transition-colors"></div>
+                                        </div>
+                                        <div className="flex flex-col gap-1">
+                                            <span className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide">Nov 12</span>
+                                            <p className="text-sm font-bold text-[#0d121b] dark:text-white">Referral Bonus</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">Friend: Mike S.</p>
+                                            <span className="inline-block mt-1 text-xs font-bold text-green-600 dark:text-green-400">+500 pts</span>
+                                        </div>
+                                    </div>
+                                    {/* Timeline Item 3 */}
+                                    <div className="relative group">
+                                        <div className="absolute -left-[21px] bg-white dark:bg-gray-900 p-1">
+                                            <div className="size-3 rounded-full bg-gray-300 dark:bg-gray-600 group-hover:bg-primary transition-colors"></div>
+                                        </div>
+                                        <div className="flex flex-col gap-1">
+                                            <span className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide">Oct 20</span>
+                                            <p className="text-sm font-bold text-[#0d121b] dark:text-white">Product Purchase</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">Matte Clay 3oz</p>
+                                            <span className="inline-block mt-1 text-xs font-bold text-green-600 dark:text-green-400">+25 pts</span>
+                                        </div>
+                                    </div>
+                                    {/* Timeline Item 4 */}
+                                    <div className="relative group">
+                                        <div className="absolute -left-[21px] bg-white dark:bg-gray-900 p-1">
+                                            <div className="size-3 rounded-full bg-gray-300 dark:bg-gray-600 group-hover:bg-primary transition-colors"></div>
+                                        </div>
+                                        <div className="flex flex-col gap-1">
+                                            <span className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide">Oct 05</span>
+                                            <p className="text-sm font-bold text-[#0d121b] dark:text-white">Reward Redemption</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">Free Beverage Upgrade</p>
+                                            <span className="inline-block mt-1 text-xs font-bold text-red-500 dark:text-red-400">-150 pts</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
                     </div>
                 </div>
-            </div>
+            </main>
         </div>
     );
 }

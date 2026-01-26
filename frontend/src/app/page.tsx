@@ -1,635 +1,459 @@
 "use client";
 
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
-import SettingsModal from "./components/SettingsModal";
-import QRCodeModal from "./components/QRCodeModal";
-import PriceDropModal from "./components/PriceDropModal";
-import ProductCard from "./components/ProductCard";
-import AuthModal from "./components/AuthModal";
-import UserMenu from "./components/UserMenu";
-import { SortBottomSheet, CategoryBottomSheet } from "./components/BottomSheet";
-import { PRODUCTS } from "./data/products";
-import { useAuth } from "@/lib/auth-context";
-import { useCartStore } from "@/lib/cart-store";
-import { ProductGridSkeleton } from "./components/Skeleton";
-
-import { useTheme } from "next-themes";
-import { useRouter } from "next/navigation";
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef } from "react";
+import { Toolbar } from "./components/Toolbar";
 
 export default function Home() {
-  const router = useRouter();
-  const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const [heroTextIndex, setHeroTextIndex] = useState(0);
-  const [copied, setCopied] = useState(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isQRCodeOpen, setIsQRCodeOpen] = useState(false);
-  const [currentUrl, setCurrentUrl] = useState("https://furnza.vercel.app");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isPriceDropOpen, setIsPriceDropOpen] = useState(false);
-  const [sortBy, setSortBy] = useState<'newest' | 'price-low' | 'price-high' | 'rating'>('newest');
-  const [isSortOpen, setIsSortOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [showToolbar, setShowToolbar] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const { user, loading: authLoading } = useAuth();
-  const isSignedIn = !!user;
-  const [visibleCount, setVisibleCount] = useState(6);
-  const cartCount = useCartStore((state) => state.items.reduce((acc, item) => acc + item.quantity, 0));
-  const wishlistCount = useCartStore((state) => state.wishlist.length);
-  const [isSortSheetOpen, setIsSortSheetOpen] = useState(false);
-  const [isCategorySheetOpen, setIsCategorySheetOpen] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    setVisibleCount(6);
-  }, [selectedCategory, sortBy]);
-
-  const products = useMemo(() => PRODUCTS, []);
-
-  const sortedProducts = useMemo(() => {
-    let result = products.filter(p => selectedCategory === 'All' || p.category === selectedCategory);
-
-    if (sortBy === 'price-low') {
-      result.sort((a, b) => a.price - b.price);
-    } else if (sortBy === 'price-high') {
-      result.sort((a, b) => b.price - a.price);
-    } else if (sortBy === 'rating') {
-      result.sort((a, b) => b.rating - a.rating);
-    }
-    return result;
-  }, [products, sortBy, selectedCategory]);
-
-  // Drag Scroll Logic
-  const sliderRef = useRef<HTMLDivElement>(null);
-  const [isDown, setIsDown] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
+  const [wordIndex, setWordIndex] = useState(0);
+  const words = ["GROOMING", "STYLING", "CRAFT", "PRECISION"];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setWordIndex((prev) => (prev + 1) % words.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     setMounted(true);
-    setCurrentUrl(window.location.href);
-    const interval = setInterval(() => {
-      setHeroTextIndex((prev) => (prev + 1) % 2);
-    }, 4000);
+  }, []);
 
-    // Trigger Price Drop Modal after 5 seconds for demo
-    // Trigger Price Drop Modal after 5 seconds for demo (Once per user)
-    let modalTimer: NodeJS.Timeout;
-    const hasSeenPromo = localStorage.getItem('hasSeenPromo');
-    if (!hasSeenPromo) {
-      modalTimer = setTimeout(() => {
-        setIsPriceDropOpen(true);
-        localStorage.setItem('hasSeenPromo', 'true');
-      }, 5000);
-    }
-
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY > 100) {
-        if (currentScrollY > lastScrollY) {
-          setShowToolbar(false);
-        } else {
-          setShowToolbar(true);
-        }
-      } else {
-        setShowToolbar(true);
-      }
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-
-    return () => {
-      clearInterval(interval);
-      clearTimeout(modalTimer);
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [lastScrollY]);
-
-  // Prevent hydration mismatch
-  // if (!mounted) return null; // Removed to support SSR
-
-  const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    setStartX(e.pageX - (scrollRef.current?.offsetLeft || 0));
+    setScrollLeft(scrollRef.current?.scrollLeft || 0);
   };
 
-  const handleCopy = () => {
-    if (typeof window !== "undefined") {
-      navigator.clipboard.writeText(window.location.href);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.pageX - (scrollRef.current?.offsetLeft || 0);
+    const walk = (x - startX) * 2; // scroll-fast
+    if (scrollRef.current) {
+      scrollRef.current.scrollLeft = scrollLeft - walk;
     }
   };
 
-  const handleShare = () => {
-    if (typeof window !== "undefined" && navigator.share) {
-      navigator.share({
-        title: 'Furnza - Modern Furniture',
-        url: window.location.href
-      }).catch(console.error);
-    } else {
-      handleCopy();
-    }
-  };
-
-  const handleProfileClick = () => {
-    if (!isSignedIn) {
-      setIsAuthModalOpen(true);
-    } else {
-      router.push('/help');
-    }
-  };
-
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 }
-  };
+  if (!mounted) return null;
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-slate-50 dark:bg-black transition-colors duration-300 pb-[90px] md:pb-0 overflow-x-hidden">
-      <PriceDropModal
-        isOpen={isPriceDropOpen}
-        onClose={() => setIsPriceDropOpen(false)}
-        product={{
-          name: "Nordic Sofa",
-          variant: "3-Seater Velvet",
-          oldPrice: "$900.00",
-          newPrice: "$720.00",
-          discount: "20%",
-          image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBamfDzpr2QM_QjL9SpHzw60z1VtUxTimLAduwASUqQINCyatI7E6U1RnBctBQQSfAxETxeZQLsBts4eyYf8cO_Rstl-hGWBMge3lcibSWVGiAtHy354h2vnhw17f7a-cLHHNzGsqG6NCewiBRfBWZLV0-KLobvmRqy6FVSVfJo13vfvEYdjkFxlOPSxWHg-tJeH0VsEMJgXyBAaN66a-aoDE7tHTmPyT5IkxSBDy4lZHIPmCQ3pr3l1SpfhTHzK6QBWY5xr-zJOJk"
-        }}
-      />
+    <div className="bg-background-dark text-white font-display overflow-x-hidden antialiased selection:bg-primary selection:text-white pb-24">
+      <Toolbar />
 
-      <motion.div
-        layout
-        initial={false}
-        animate={{
-          width: isSearchOpen ? 'min(90vw, 500px)' : 'fit-content',
-          opacity: showToolbar ? 1 : 0,
-          y: showToolbar ? 0 : 100,
-        }}
-        transition={{
-          layout: { type: "spring", stiffness: 300, damping: 30 },
-          width: { type: "spring", stiffness: 300, damping: 30 },
-          opacity: { duration: 0.2 }
-        }}
-        className="fixed bottom-4 md:bottom-8 left-0 right-0 mx-auto w-fit z-50 flex items-center px-1.5 py-1.5 md:px-4 md:py-3 rounded-full bg-white dark:bg-slate-900 border-2 border-black shadow-xl shadow-black/10 transition-colors duration-300 pointer-events-auto max-w-[95vw]"
-      >
-        <AnimatePresence mode="wait" initial={false}>
-          {!isSearchOpen ? (
-            <motion.div
-              key="icons"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              className="flex items-center gap-2 lg:gap-3 whitespace-nowrap overflow-x-auto hide-scrollbar px-1"
-            >
-              {/* Profile / Brand Icon */}
-              {isSignedIn ? (
-                <div className="mr-1.5 md:mr-3 flex-shrink-0">
-                  <UserMenu />
-                </div>
-              ) : (
-                <motion.button
-                  onClick={() => setIsAuthModalOpen(true)}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="relative size-10 md:size-16 mr-1.5 md:mr-3 group cursor-pointer flex-shrink-0"
-                >
-                  <div className="w-full h-full rounded-full overflow-hidden border-2 border-black/10 dark:border-white/10 shadow-soft bg-slate-50 dark:bg-slate-800 flex items-center justify-center">
-                    <span className="material-symbols-outlined text-slate-600 dark:text-slate-400 text-[24px] md:text-[40px] font-bold group-hover:text-primary transition-colors">account_circle</span>
-                  </div>
-                  {/* Hover Label */}
-                  <div className="absolute -top-14 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-slate-900/90 dark:bg-white/90 backdrop-blur-md text-white dark:text-slate-900 text-[10px] font-black rounded-xl opacity-0 scale-50 translate-y-4 group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none whitespace-nowrap shadow-2xl z-[60] border border-white/10 dark:border-black/5 flex flex-col items-center">
-                    Sign In
-                    <div className="absolute top-[90%] left-1/2 -translate-x-1/2 border-[6px] border-transparent border-t-slate-900/90 dark:border-t-white/90" />
-                  </div>
-                </motion.button>
-              )}
-
-              {/* Divider */}
-              <div className="w-px h-5 md:h-8 bg-slate-200 dark:bg-slate-700 mx-0.5 md:mx-1 flex-shrink-0"></div>
-
-              {/* Dock Items */}
-              {[
-                { icon: 'home', label: 'Home', active: true, action: () => router.push('/') },
-                { icon: 'category', label: 'Catalog', action: () => router.push('/catalog') },
-                { icon: 'search', label: 'Search', action: () => router.push('/search') },
-                { icon: 'shopping_bag', label: 'Cart', badge: cartCount > 0 ? cartCount : undefined, action: () => router.push('/cart') },
-                { icon: 'favorite', label: 'Wishlist', badge: wishlistCount > 0 ? wishlistCount : undefined, action: () => router.push('/wishlist') },
-                { icon: 'notifications', label: 'Inbox', badge: 2, action: () => router.push('/notifications') },
-                ...(isSignedIn ? [
-                  { icon: 'local_shipping', label: 'Track', action: () => router.push('/tracking') },
-                ] : []),
-                { icon: 'article', label: 'Blog', action: () => router.push('/blog') },
-                { icon: 'location_on', label: 'Stores', action: () => router.push('/stores') },
-                { icon: 'auto_awesome', label: 'Design AI', action: () => router.push('/design-ai') },
-                { icon: 'translate', label: 'Translate' },
-                { icon: copied ? 'check_circle' : 'content_copy', label: copied ? 'Copied' : 'Copy Link', action: handleCopy },
-                { icon: 'share', label: 'Share', action: handleShare },
-                { icon: 'qr_code_scanner', label: 'QR Scan', action: () => setIsQRCodeOpen(true) },
-                { icon: mounted && theme === 'dark' ? 'light_mode' : 'dark_mode', label: 'Theme', action: toggleTheme },
-                { icon: 'settings', label: 'Settings', action: () => setIsSettingsOpen(true) },
-              ].map((item, idx) => (
-                <motion.button
-                  key={idx}
-                  onClick={item.action}
-                  whileHover={{ scale: 1.2, y: -5 }}
-                  whileTap={{ scale: 0.9 }}
-                  className={`relative size-7 md:size-10 flex items-center justify-center rounded-full transition-all group flex-shrink-0 ${item.active ? 'bg-blue-50 dark:bg-blue-900/20' : 'hover:bg-slate-50 dark:hover:bg-slate-800'}`}
-                >
-                  <span className={`material-symbols-outlined text-[18px] md:text-[26px] font-bold ${item.active ? 'bg-gradient-to-tr from-primary to-secondary bg-clip-text text-transparent' : 'text-slate-600 dark:text-slate-400 group-hover:text-primary transition-colors'}`}>
-                    {item.icon}
-                  </span>
-                  {item.badge && (
-                    <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 flex items-center justify-center text-[9px] font-black text-white">
-                      {typeof item.badge === 'number' && item.badge > 9 ? '9+' : item.badge}
-                    </span>
-                  )}
-
-                  {/* Hover Label */}
-                  <div className="absolute -top-14 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-slate-900/90 dark:bg-white/90 backdrop-blur-md text-white dark:text-slate-900 text-[10px] font-black rounded-xl opacity-0 scale-50 translate-y-4 group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-0 transition-all duration-200 pointer-events-none whitespace-nowrap shadow-2xl z-[60] border border-white/10 dark:border-black/5 flex flex-col items-center">
-                    {item.label}
-                    <div className="absolute top-[90%] left-1/2 -translate-x-1/2 border-[6px] border-transparent border-t-slate-900/90 dark:border-t-white/90" />
-                  </div>
-                </motion.button>
-              ))}
-            </motion.div>
-          ) : (
-            <motion.div
-              key="searchbar"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="flex items-center w-full relative"
-            >
-              <span className="material-symbols-outlined text-black dark:text-white absolute left-0 font-bold pointer-events-none">search</span>
-              <input
-                autoFocus
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && setIsSearchOpen(false)}
-                placeholder="Search premium furniture..."
-                className="bg-transparent border-none outline-none text-black dark:text-white w-full font-bold text-sm placeholder:text-slate-400 text-center px-12 h-10"
-              />
-              <button
-                onClick={() => {
-                  setIsSearchOpen(false);
-                  setSearchQuery("");
-                }}
-                className="absolute right-0 size-8 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-black dark:text-white transition-all hover:rotate-90"
-              >
-                <span className="material-symbols-outlined text-xl font-bold">close</span>
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
-
-      <main className="w-full pb-12">
-        {/* Hero Section */}
+      {/* Top Logo / Branding */}
+      <div className="absolute top-0 left-0 right-0 z-40 p-8 flex justify-center">
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          className="relative w-full aspect-[4/5] md:aspect-[21/9] overflow-hidden shadow-soft group mb-10"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-3"
         >
-          <div className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105" style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2600&q=80")' }}>
+          <div className="size-14 flex items-center justify-center rounded-2xl bg-primary text-white shadow-glow">
+            <span className="material-symbols-outlined text-4xl">content_cut</span>
           </div>
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent md:bg-gradient-to-r md:from-black/60 md:via-black/10 md:to-transparent"></div>
-          <div className="absolute bottom-0 left-0 md:top-0 md:h-full p-8 md:p-16 w-full md:w-1/2 flex flex-col justify-end md:justify-center text-white">
-            <div className="transform transition-all duration-700 translate-y-0 opacity-100">
-              <motion.span
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 }}
-                className="inline-block px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-xs font-semibold tracking-wide uppercase mb-4"
-              >
-                New Collection
-              </motion.span>
-              <div className="h-[100px] md:h-[140px] mb-4 flex items-center overflow-hidden">
-                <AnimatePresence mode="wait">
-                  <motion.h1
-                    key={heroTextIndex}
-                    initial={{ y: 40, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: -40, opacity: 0 }}
-                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                    className={`leading-none bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-white/70 ${heroTextIndex === 0
-                      ? 'text-5xl md:text-7xl font-black uppercase tracking-tighter'
-                      : 'text-3xl md:text-5xl font-bold tracking-tight'
-                      }`}
-                  >
-                    {['FURNZA.', 'Minimalist Living.'][heroTextIndex]}
-                  </motion.h1>
-                </AnimatePresence>
-              </div>
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                className="text-slate-200 mb-8 text-sm md:text-lg font-medium opacity-90 max-w-md"
-              >
-                Experience comfort with our new 2024 series. Designed for modern living spaces.
-              </motion.p>
-              <motion.button
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => router.push('/catalog')}
-                className="bg-gradient-to-r from-primary to-secondary text-white font-semibold py-3.5 px-8 rounded-xl shadow-glow transition-all w-full md:w-auto inline-flex items-center justify-center gap-2 border-2 border-white/20"
-              >
-                Shop Now
-                <span className="material-symbols-outlined text-sm">arrow_forward</span>
-              </motion.button>
-            </div>
-          </div>
+          <h1 className="text-4xl font-black uppercase tracking-tighter text-white">FadeLab</h1>
         </motion.div>
+      </div>
 
-        {/* Content Container */}
-        <div className="max-w-7xl mx-auto px-4">
-          {/* Categories */}
-          <div className="mb-14">
-            <div className="flex items-center justify-between px-1 mb-6">
-              <h3 className="text-charcoal dark:text-white text-3xl font-display font-medium tracking-tight">Browse by Category</h3>
-              <button
-                onClick={() => router.push('/catalog')}
-                className="text-bronze dark:text-secondary text-sm font-bold hover:underline"
-              >View All</button>
-            </div>
-            <motion.div
-              variants={container}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true }}
-              className="flex overflow-x-auto hide-scrollbar gap-4 pb-6 select-none cursor-grab active:cursor-grabbing"
-              ref={sliderRef}
-              onMouseDown={(e) => {
-                setIsDown(true);
-                if (sliderRef.current) {
-                  setStartX(e.pageX - sliderRef.current.offsetLeft);
-                  setScrollLeft(sliderRef.current.scrollLeft);
-                }
-              }}
-              onMouseLeave={() => setIsDown(false)}
-              onMouseUp={() => setIsDown(false)}
-              onMouseMove={(e) => {
-                if (!isDown) return;
-                e.preventDefault();
-                if (sliderRef.current) {
-                  const x = e.pageX - sliderRef.current.offsetLeft;
-                  const walk = (x - startX) * 2; // Scroll-fast
-                  sliderRef.current.scrollLeft = scrollLeft - walk;
-                }
-              }}
-            >
-              {[
-                { icon: 'apps', label: 'All' },
-                { icon: 'weekend', label: 'Sofa' },
-                { icon: 'chair_alt', label: 'Chairs' },
-                { icon: 'table_bar', label: 'Tables' },
-                { icon: 'light', label: 'Lighting' },
-                { icon: 'bed', label: 'Bedroom' },
-                { icon: 'kitchen', label: 'Kitchen' },
-              ].map((cat, idx) => (
-                <motion.div
-                  variants={item}
-                  key={idx}
-                  className="flex-shrink-0 group cursor-pointer"
-                  onClick={() => setSelectedCategory(cat.label)}
-                >
-                  <div className={`px-6 py-3 rounded-full border transition-all duration-500 ease-out flex items-center gap-2.5 ${selectedCategory === cat.label
-                    ? 'bg-charcoal text-white border-charcoal shadow-lg shadow-charcoal/20 dark:bg-white dark:text-charcoal dark:border-white'
-                    : 'bg-white text-slate-600 border-slate-200 hover:border-transparent hover:text-white hover:bg-gradient-to-tr hover:from-blue-600 hover:to-blue-400 hover:shadow-glow hover:-translate-y-0.5 dark:bg-white/5 dark:text-slate-300 dark:border-white/10 dark:hover:border-blue-400/50 dark:hover:bg-blue-900/40'}`}>
-                    <span className={`material-symbols-outlined text-[20px] transition-colors duration-300 ${selectedCategory === cat.label ? 'text-white dark:text-charcoal' : 'text-slate-400 group-hover:text-white dark:text-slate-500 dark:group-hover:text-white'}`}>{cat.icon}</span>
-                    <span className="text-sm font-bold whitespace-nowrap">{cat.label}</span>
-                  </div>
-                </motion.div>
-              ))}
-              <motion.div
-                variants={item}
-                className="flex-shrink-0 group cursor-pointer"
-                onClick={() => router.push('/catalog')}
-              >
-                <div className="px-6 py-3 rounded-full bg-slate-50 border border-slate-200 text-slate-500 hover:bg-slate-100 dark:bg-white/5 dark:border-white/10 dark:text-slate-400 dark:hover:bg-white/10 transition-all flex items-center gap-2">
-                  <span className="text-sm font-bold whitespace-nowrap">More</span>
-                  <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-                </div>
-              </motion.div>
-            </motion.div>
+      {/* Hero Section */}
+      <header className="relative w-full h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent z-10"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-black/30 z-10"></div>
+          <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCKoDlxMKWryCxgM_scsDXmtoXjBJ3UoVcLJuglZPhO2LoVDXnd5fEf40MgjcrgCY_dg9SsSHO_YcSg-YKxddI9h2F5Lqud7jZj94QgSE8kVurMk4OekSYGpDRD_OqdLU-IOS2Q68Y_Mu37EO5mVtJxFnOVuDB1RifgRP4gmQPxq0i6qG7SeUlj1M_eB3Eo1okb_ZudgKhTRI5qcOuTETEg_NWsVFHy-bx30LDf8qTcufeLtVpH9MZJXhoerN19ebXfBHbn4m2kKhzq')" }}>
           </div>
-
-          {/* Featured Products */}
-          <div className="mb-12">
-            {/* Featured Products */}
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-4 md:mb-8 gap-4">
-              <h3 className="text-charcoal dark:text-white text-xl md:text-3xl font-display font-medium tracking-tight">Featured Products</h3>
-              <div className="flex items-center gap-2 md:gap-4 w-full md:w-auto overflow-x-auto no-scrollbar pb-2 md:pb-0">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => router.push('/compare')}
-                  className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-slate-400 bg-white dark:bg-white/5 px-4 py-2 md:px-6 md:py-3 rounded-xl md:rounded-2xl hover:text-primary transition-all border border-slate-200 dark:border-white/10 flex items-center gap-2 md:gap-3 cursor-pointer shadow-sm group whitespace-nowrap"
-                >
-                  <span className="material-symbols-outlined text-[16px] md:text-[18px] text-slate-300 group-hover:text-primary transition-colors">compare_arrows</span>
-                  <span className="group-hover:text-primary transition-colors">Compare</span>
-                </motion.button>
-
-                <div className="relative">
-                  <motion.button
-                    whileHover={{ scale: 1.05, boxShadow: "0 10px 25px -5px rgba(59, 130, 246, 0.2)" }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setIsSortOpen(!isSortOpen)}
-                    className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-slate-400 bg-white dark:bg-white/5 px-4 py-2 md:px-6 md:py-3 rounded-xl md:rounded-2xl hover:text-primary transition-all border border-slate-200 dark:border-white/10 flex items-center gap-2 md:gap-3 cursor-pointer shadow-sm group whitespace-nowrap"
-                  >
-                    <span className="text-slate-300 group-hover:text-primary transition-colors">Sort:</span>
-                    <span className="text-primary">{sortBy === 'newest' ? 'Newest' : sortBy === 'price-low' ? 'Low Price' : sortBy === 'price-high' ? 'High Price' : 'Top Rated'}</span>
-                    <span className={`material-symbols-outlined text-[16px] md:text-[18px] transition-transform ${isSortOpen ? 'rotate-180' : 'group-hover:translate-y-0.5'}`}>expand_more</span>
-                  </motion.button>
-
-                  <AnimatePresence>
-                    {isSortOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                        className="absolute top-full right-0 mt-3 w-48 bg-white dark:bg-[#0a0f16] rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-800 p-2 z-30"
-                      >
-                        {[
-                          { label: 'Newest', value: 'newest' },
-                          { label: 'Price: Low', value: 'price-low' },
-                          { label: 'Price: High', value: 'price-high' },
-                          { label: 'Top Rated', value: 'rating' },
-                        ].map((opt) => (
-                          <button
-                            key={opt.value}
-                            onClick={() => {
-                              setSortBy(opt.value as any);
-                              setIsSortOpen(false);
-                            }}
-                            className={`w-full text-left px-5 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${sortBy === opt.value
-                              ? "bg-primary/10 text-primary"
-                              : "text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800/50"
-                              }`}
-                          >
-                            {opt.label}
-                          </button>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </div>
-            </div>
-            <motion.div
-              layout
-              className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-8"
-            >
-              <AnimatePresence mode="popLayout">
-                {!mounted ? (
-                  <div className="col-span-full">
-                    <ProductGridSkeleton count={8} />
-                  </div>
-                ) : (
-                  sortedProducts.slice(0, visibleCount).map((product: any) => (
-                    <ProductCard key={product.id} product={product} />
-                  ))
-                )}
-              </AnimatePresence>
-            </motion.div>
-
-            {/* Show More / Show Less Buttons */}
-            <div className="flex justify-center gap-3 mt-8 md:mt-12 w-full">
-              {visibleCount > 6 && (
-                <button
-                  onClick={() => setVisibleCount(6)}
-                  className="group relative px-6 py-2.5 md:px-8 md:py-3 rounded-xl md:rounded-2xl bg-white dark:bg-white/10 text-slate-900 dark:text-white font-bold text-xs md:text-sm border border-slate-200 dark:border-white/10 hover:border-slate-400 dark:hover:border-white/30 overflow-hidden transition-all shadow-sm hover:shadow-lg active:scale-95"
-                >
-                  <div className="absolute inset-0 bg-slate-100 dark:bg-white/5 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                  <div className="relative flex items-center gap-1.5 md:gap-2">
-                    <span className="material-symbols-outlined text-[16px] md:text-[20px] group-hover:-translate-y-0.5 transition-transform">expand_less</span>
-                    <span className="hidden sm:inline">Show Less</span>
-                  </div>
-                </button>
-              )}
-              {visibleCount < sortedProducts.length && (
-                <button
-                  onClick={() => setVisibleCount((prev) => prev + 6)}
-                  className="group relative px-6 py-2.5 md:px-8 md:py-3 rounded-xl md:rounded-2xl bg-white dark:bg-white/10 text-slate-900 dark:text-white font-bold text-xs md:text-sm border border-slate-200 dark:border-white/10 hover:border-primary dark:hover:border-primary overflow-hidden transition-all shadow-sm hover:shadow-lg active:scale-95"
-                >
-                  <div className="absolute inset-0 bg-primary/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                  <div className="relative flex items-center gap-1.5 md:gap-2">
-                    <span className="hidden sm:inline">Show More</span>
-                    <span className="material-symbols-outlined text-[16px] md:text-[20px] group-hover:translate-y-0.5 transition-transform">expand_more</span>
-                  </div>
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Promo Banner - Bento Grid Style */}
+        </div>
+        <div className="relative z-20 container mx-auto px-4 sm:px-6 lg:px-8 pt-20">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20"
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="max-w-2xl flex flex-col gap-6"
           >
-            {/* Primary Promo Card */}
-            <div
-              onClick={() => router.push('/catalog?tag=sale')}
-              className="md:col-span-2 relative overflow-hidden rounded-[2rem] bg-[#1a1a1a] dark:bg-slate-900 text-white p-10 flex flex-col items-start justify-center min-h-[300px] shadow-2xl group cursor-pointer"
-            >
-              <div className="absolute top-0 right-0 w-[60%] h-full bg-gradient-to-l from-[#a0522d]/20 to-transparent"></div>
-              <div className="absolute right-[-20%] top-[-20%] w-[60%] h-[140%] bg-gradient-to-br from-white/5 to-transparent rotate-12 blur-3xl group-hover:rotate-0 transition-all duration-1000"></div>
-
-              <div className="relative z-10 max-w-md">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-[10px] font-black uppercase tracking-widest mb-6 text-[#d2691e]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#d2691e] animate-pulse"></span>
-                  LIMITED OFFER
-                </div>
-                <h3 className="text-4xl md:text-5xl font-display font-medium leading-[1.1] mb-4">Summer Collection<br /><span className="text-white/40">Up to 50% Off</span></h3>
-                <p className="text-white/70 mb-8 font-light text-lg">Curated pieces for modern living. Elevate your space with our premium selection.</p>
-
-                <motion.button
-                  whileHover={{ scale: 1.02, x: 5 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="bg-white text-[#1a1a1a] px-8 py-4 rounded-xl font-black text-xs tracking-widest uppercase hover:bg-[#d2691e] hover:text-white transition-colors shadow-lg flex items-center gap-3"
-                >
-                  SHOP THE SALE
-                  <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-                </motion.button>
-              </div>
-
-              <div className="absolute right-[-5%] bottom-[-5%] w-[40%] aspect-square opacity-20 grayscale group-hover:grayscale-0 transition-all duration-700">
-                <span className="material-symbols-outlined text-[300px]">chair</span>
-              </div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 w-fit backdrop-blur-sm">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              </span>
+              <span className="text-xs font-medium text-white tracking-wide uppercase">Open for Walk-ins</span>
             </div>
-
-            {/* Secondary Promo Card */}
-            <div
-              onClick={() => router.push('/catalog?sort=newest')}
-              className="relative overflow-hidden rounded-[2rem] bg-white dark:bg-slate-900 p-8 flex flex-col justify-between group shadow-xl border border-slate-100 dark:border-slate-800 transition-all hover:shadow-2xl cursor-pointer"
-            >
-              <div className="relative z-10">
-                <div className="w-12 h-12 rounded-full bg-slate-50 dark:bg-white/10 flex items-center justify-center mb-6 shadow-sm group-hover:bg-[#136dec] group-hover:text-white transition-colors">
-                  <span className="material-symbols-outlined text-[20px]">rocket_launch</span>
-                </div>
-                <h3 className="text-2xl font-display font-medium text-[#111418] dark:text-white mb-2">New Arrivals</h3>
-                <p className="text-slate-500 dark:text-slate-400 text-sm font-medium leading-relaxed">Explore the latest trends in interior design.</p>
+            <h2 className="text-5xl md:text-8xl font-black text-white leading-[1] tracking-tighter">
+              PREMIUM <br />
+              <div className="relative inline-block">
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={words[wordIndex]}
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -20, opacity: 0 }}
+                    transition={{ duration: 0.5, ease: "backOut" }}
+                    className="block text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400"
+                  >
+                    {words[wordIndex]}
+                  </motion.span>
+                </AnimatePresence>
               </div>
-
-              <div className="relative z-10 mt-8 flex justify-end">
-                <div className="w-12 h-12 rounded-full border border-slate-200 dark:border-white/20 flex items-center justify-center group-hover:border-[#136dec] group-hover:bg-[#136dec] text-[#111418] hover:text-white dark:text-white transition-all shadow-sm">
-                  <span className="material-symbols-outlined text-[20px] group-hover:translate-x-0.5 transition-transform">chevron_right</span>
-                </div>
-              </div>
+            </h2>
+            <p className="text-lg md:text-xl text-gray-300 font-normal max-w-lg leading-relaxed opacity-80">
+              Experience the art of grooming at FadeLab. We specialize in precision fades, hot towel shaves, and modern texturizing.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 mt-4">
+              <Link href="/barbers" className="bg-primary hover:bg-blue-600 text-white h-14 px-10 rounded-2xl font-bold text-base transition-all shadow-[0_0_20px_rgba(17,82,212,0.4)] flex items-center justify-center gap-2">
+                <span className="material-symbols-outlined">calendar_month</span>
+                <span>Book Your Chair</span>
+              </Link>
             </div>
           </motion.div>
         </div>
-      </main>
+      </header>
 
-      {/* Auth Modal */}
-      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
-      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
-      <QRCodeModal isOpen={isQRCodeOpen} onClose={() => setIsQRCodeOpen(false)} url={currentUrl} />
+      {/* Live Availability Section */}
+      <section className="py-24 bg-background-dark" id="barbers">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between mb-16">
+            <div>
+              <h2 className="text-4xl font-black text-white tracking-tight uppercase">The Lab Squad</h2>
+              <p className="text-gray-500 mt-2 font-medium">Real-time status of our master barbers.</p>
+            </div>
+          </div>
+          <div
+            ref={scrollRef}
+            onMouseDown={handleMouseDown}
+            onMouseLeave={handleMouseLeave}
+            onMouseUp={handleMouseUp}
+            onMouseMove={handleMouseMove}
+            className="flex gap-6 overflow-x-auto pb-12 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0 cursor-grab active:cursor-grabbing"
+          >
+            {[
+              { name: "Mark D.", role: "Master Stylist", status: "Now", color: "emerald", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuA0qHa9GG916Tc_uBvB2_hjkpFEhLzoDqkqKuGpYklGdSO2P1mt5UWZTcEqzHrLnFgalJ08ZSDX-ZMMnW6DYCUcadwjk2t_IqzbDPHCSLHEJoqMCqW0uS-99QwT0Kjo4HLo1j23Lz1alIyue4TQOJyIj6w8n5_MxUmL5w3JhLHMFipgdUP2s44ZSX4snDxSmdl1Yr-zAetCbZAvZacCspOplBiaQRJXOmKwasPxHlOQyhl3sSbJlWm9vTfTT-O26ZwwXIrTDe6w3oSd" },
+              { name: "James K.", role: "Fade Specialist", status: "2:00 PM", color: "yellow", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAWBOlqQi020RlUJunvPdoD2RV26Rade-KRK8ir5mG0DN-bAEi723sSrGDYbc2d9IRJvCiDKE3lBzLDvAWRmhh8xMGl6Iy_vypBaPu5_7A3TH9z0jjuF5mVIdMzIY-7XOnultOErYc59X7bGIMRpOk9xTQeEOvPj7NVO8Fz66EhelEqsxp4nNCvNgN68VlTcirUBzOT8aR92Nb8VoMzRcGj6ouHMeoOWxpZcbxn4ELpM_uX3AxXa7U-AybkhLLXQaLF1Wb5moNL3Hkd" },
+              { name: "Sarah M.", role: "Beard Expert", status: "Booked", color: "red", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAaqYTQ5iC-pnGpVWKxQpRXxr_AZWQhYEuNUwSUm6ikdl8MzxV2SJmWwg5dw8aWba3tE6DGHvEVgmRKwdDIEcUAauYz1OyutyGvfV8bixJY1zdwdgoyI1UrRBCczmEBAtaTDuBKp3gvot_bOjRyDPheTQc-yjy4r1KEx6tizTS4u2Ksn91p7KXL8dfY03pt8bn7OFFMOTGTe0VzPpRqE4aMqB-8VJmJFC8UsOktum2kJYRApkmcCxjBzcs5NYavw5s2gUz4tLyvYAE0" },
+              { name: "David L.", role: "Senior Barber", status: "Now", color: "emerald", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuA1AofsJTDOCwx04Qy58ckD5-660yfEzK17mAw89h25AtC0JiYDAITpgSdRQ_nG9y_nlvvE3MRQopm0t_iWJ0se42u5xWnrSfgz-ouO4RfdSWJM-VFZe3sAR7sv6OwCUvAmC1Gsn-TciFvhDt8rxzz4rYfdxraWJM9YoAcfTjlAaekvGBlQYmFadeLuG1gf5dJ16ngX5UKfPX3iSgbonEqARAJqwzE3-3BZ3YKSbynFVWHOxCM5IB9OOTbNoD0xsZYDfP8A3m" },
+              { name: "Alex R.", role: "Precision Cut", status: "3:15 PM", color: "yellow", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBeqPMNYIkd9EyzBqCl90RzS5YBk-Pk62gw56wnZoyp7Xr4ISTOGXoLxJBDUntebJSWZrm2ezNC7QbEFv-9K0AUClg_Mpx3CHWyV_yN7VhMdSkB4MKtXZGNDummxkgh_t2zSYh3_LwW6vutggQep7NTrY1S7mUuLYK3gmu1_bQKMjff2ODY2jA8mQYcr44QQ2ZzLC-qTUu3ritXoBbxiwBoq3iVGHWOQ2ymtTieiwKplTs6cO2IwcEaOq_0pWQAcJnRGyH0IqWzqGZe" },
+              { name: "Michael T.", role: "Color Specialist", status: "Now", color: "emerald", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuD1OrKvMzwM9fdJ5lq_44XBQH6cqKNckEfsaRzgzffF4Xd-uSWIPuJ-gz0hoP29aDbHzlKbOT7_2Bm9AygABvEAK104QyiGCDcwCVGNSlpU3IHuLJ78PWI0tkrviHAWF2s-PDhSF9mYPVO3IfBEFTprdk-kb1qF38Prid5zFCEQP7BcrYzLYzE7pfpAP8niX8RDIlUIw6UqgriW3GTbQ-k8qetM45qKVb9XO9-65qNBw1uT_ZpFi5jladUEPZuntgDNETfH8AmNthm4" },
+              { name: "Jessica W.", role: "Texture Artist", status: "Booked", color: "red", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuD0V4U6h5fQoCXlGk1Jp2yS9X0V8L7Z5M4N2b3F6v1H8J9KlqW5R3T7Y0U4X6Z9I2O8P5V1H3N7J4L9M6K2Q8Y5T1R0W3V5X8Z9I2O8P5V1H3N7J4L9M6K2Q8Y5T1R0W3V5X8Z9I2O8P5V1H3N7J4L9M6K2Q8Y5T1R0W3V5X8Z9I2O8P5V1H3N7J4L9M6K2Q8Y5T1R0W3V5X8Z9I2O8P5V1H3N7J4L9M6K2Q8Y5T1R0W3V5X8Z9I2O8P5V1H3N7J4L9M6K2Q8Y5" },
+              { name: "Ryan B.", role: "Classic Cuts", status: "4:30 PM", color: "yellow", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuClTyBxLeqObwqhijPVy04XdKzNs075BfIvWKH7sRnSkdXYNw3zTqa7GkvrGvwAAogEdDxFT1YG5zFY6oJCN8YziVE3FGy3foRepU6Hmg7o-qe3kk4pGK-J92ShTn_v2wwZ_HMwyRlc9BNdTdjs_g4-CDH13tjPwTv5dXAbZudjuwawPZycQZmUbLFM8eBCMDae1-YPXucvP6NWH8Q4Eupo5a7tVxcOc-8JlDmi4MSKQUQTs-vF77jAvxCPLIV3n4sD6VjwThbMkm0" },
+              { name: "Chris P.", role: "Shave Master", status: "Now", color: "emerald", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuACp8ZMeLexblgVCUbVcTC3gXaXFYAQQNwWv-TyA3ah9WTD_IVOMm97NfJApokPVuGxOJQTeyhgZM-zWJcoRj_PMnqFe8sEjnCEau7TqXhfdXTiNj8Hrf2JOgzkG96GX6e0Xzs37luTUFJzgDfXuEdJp7SfcErimEPpTazUecBC0taQAPDjUtrbVRpZ67rKQpJsSI05wm8pzsEvv_XgEd_RPy643kj6BcMh8Qk0qPmxFyJoTV0NbXO2OEfmdzzwmC8VpeUHe1kP6uRW" },
+              { name: "Kevin L.", role: "Fades & Tapers", status: "1:00 PM", color: "emerald", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuCKoDlxMKWryCxgM_scsDXmtoXjBJ3UoVcLJuglZPhO2LoVDXnd5fEf40MgjcrgCY_dg9SsSHO_YcSg-YKxddI9h2F5Lqud7jZj94QgSE8kVurMk4OekSYGpDRD_OqdLU-IOS2Q68Y_Mu37EO5mVtJxFnOVuDB1RifgRP4gmQPxq0i6qG7SeUlj1M_eB3Eo1okb_ZudgKhTRI5qcOuTETEg_NWsVFHy-bx30LDf8qTcufeLtVpH9MZJXhoerN19ebXfBHbn4m2kKhzq" },
+              { name: "Sam K.", role: "Hair Tattoo", status: "Booked", color: "red", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAbqkPfu2X1j4on1uwGbYHkERZnUKAuJXPnXXs5eoajsRmyompEDAaC5_4m2hy-dy95gmv7Nysi8eE4mhlEGKoc-FZVxWg5r94xO2E8QFVRqcbnnkkG73K1YkdbSR3aUqUKscF1zIKn_xolhnXVgz5s_RtsRA31iZaQW6nkwZJGqTK1VqmCL7qYwgB1pwk9MkecSauXgRo_wYIXcEGp1G99n-A910nP5cOgogXSpZrBe4VBGZHN6p7nV2Hq2zJ9CuRKkMZkd8JIPUjv" },
+              { name: "Jordan M.", role: "Style Consultant", status: "5:00 PM", color: "yellow", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDp_slhJYSw_7O-kLe-zk34Ktuh1VmQ3ZYCNG8uF0TznS1jtvbTJxLyWSYec-SS3DpKi5KbddypSSllsQADB4tPajg7ICQsnH6Rhan9KQyQria3XnvrNxSQXGQgDpsyEcBz2U1q7keiopdSNNmnbAfh0uW5VOLR3PaVfRuSY6fDFcXTLrXM_GQ8jP_gZsy6b9U4z6RRXMfOUkyh1-JlbDmnECWTJWrsahjsdOaAOfXHebe62ZJ4Z0tLLVWsyCAfhjGK23nxiFDtVKQ" }
+            ].map((b, i) => (
+              <motion.div
+                key={i}
+                whileHover={{ y: -10 }}
+                className="group relative flex-shrink-0 min-w-[280px] snap-center overflow-hidden rounded-3xl bg-surface-dark border border-white/5 transition-all hover:border-primary/50"
+              >
+                <div className="aspect-[4/5] w-full overflow-hidden">
+                  <div className="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style={{ backgroundImage: `url('${b.img}')` }}></div>
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-xl font-black text-white uppercase tracking-tight">{b.name}</h3>
+                    <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-${b.color}-500/20 border border-${b.color}-500/30 backdrop-blur-md`}>
+                      <div className={`w-1.5 h-1.5 rounded-full bg-${b.color}-500 ${b.color === 'emerald' ? 'animate-pulse' : ''}`}></div>
+                      <span className={`text-[10px] font-black uppercase text-${b.color}-400`}>{b.status}</span>
+                    </div>
+                  </div>
+                  <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">{b.role}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-      {/* Mobile Bottom Sheets */}
-      <SortBottomSheet
-        isOpen={isSortSheetOpen}
-        onClose={() => setIsSortSheetOpen(false)}
-        selected={sortBy}
-        onSelect={(value) => setSortBy(value as any)}
-      />
-      <CategoryBottomSheet
-        isOpen={isCategorySheetOpen}
-        onClose={() => setIsCategorySheetOpen(false)}
-        selected={selectedCategory}
-        onSelect={setSelectedCategory}
-        categories={['All', 'Chairs', 'Lighting', 'Tables', 'Sofa', 'Bedroom', 'Kitchen']}
-      />
+      {/* Services Section - Transparent Pricing */}
+      <section className="py-24 bg-background-dark relative" id="services">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-20">
+            <h2 className="text-4xl md:text-5xl font-black text-white mb-6 uppercase tracking-tight">Transparent Pricing</h2>
+            <p className="text-gray-400 text-lg font-medium">Simple, transparent pricing for premium services. No hidden fees.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+            {/* Quick Trim */}
+            <motion.div
+              whileHover={{ y: -10 }}
+              className="flex flex-col p-10 rounded-[2.5rem] bg-surface-dark border border-white/5 hover:border-white/10 transition-colors"
+            >
+              <div className="mb-6 size-14 rounded-2xl bg-white/5 flex items-center justify-center text-white">
+                <span className="material-symbols-outlined text-2xl">speed</span>
+              </div>
+              <h3 className="text-2xl font-black text-white mb-4 uppercase tracking-tight">Quick Trim</h3>
+              <p className="text-gray-400 text-sm font-medium mb-8 leading-relaxed flex-grow">Perfect for maintenance between full cuts. Includes line-up and neck shave.</p>
+              <div className="flex items-baseline gap-2 mb-10">
+                <span className="text-5xl font-black text-white tracking-tighter">$30</span>
+                <span className="text-gray-500 font-bold uppercase tracking-widest text-xs">/ 20 min</span>
+              </div>
+              <ul className="flex flex-col gap-4 mb-10 text-sm text-gray-300 font-bold">
+                <li className="flex items-center gap-3"><span className="material-symbols-outlined text-primary text-lg">check_circle</span> Edge Line-up</li>
+                <li className="flex items-center gap-3"><span className="material-symbols-outlined text-primary text-lg">check_circle</span> Neck Shave</li>
+                <li className="flex items-center gap-3"><span className="material-symbols-outlined text-primary text-lg">check_circle</span> Product Styling</li>
+              </ul>
+              <Link href="/checkout?service=quick-trim" className="w-full py-4 rounded-xl border border-white/10 text-white font-black uppercase tracking-widest text-xs hover:bg-white hover:text-background-dark transition-all flex items-center justify-center">Select</Link>
+            </motion.div>
+
+            {/* Classic Cut (Highlight) */}
+            <motion.div
+              whileHover={{ y: -10 }}
+              className="flex flex-col p-10 rounded-[2.5rem] bg-surface-dark border-2 border-primary/20 relative overflow-hidden group"
+            >
+              <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-transparent via-primary to-transparent"></div>
+              <div className="mb-6 size-14 rounded-2xl bg-primary/20 flex items-center justify-center text-primary">
+                <span className="material-symbols-outlined text-2xl">content_cut</span>
+              </div>
+              <h3 className="text-2xl font-black text-white mb-4 uppercase tracking-tight">Classic Cut</h3>
+              <p className="text-gray-400 text-sm font-medium mb-8 leading-relaxed flex-grow">Our signature service. Full consultation, wash, precision cut, and style.</p>
+              <div className="flex items-baseline gap-2 mb-10">
+                <span className="text-5xl font-black text-white tracking-tighter">$50</span>
+                <span className="text-gray-500 font-bold uppercase tracking-widest text-xs">/ 45 min</span>
+              </div>
+              <ul className="flex flex-col gap-4 mb-10 text-sm text-gray-300 font-bold">
+                <li className="flex items-center gap-3"><span className="material-symbols-outlined text-primary text-lg">check_circle</span> Hair Wash & Condition</li>
+                <li className="flex items-center gap-3"><span className="material-symbols-outlined text-primary text-lg">check_circle</span> Scissor & Clipper Cut</li>
+                <li className="flex items-center gap-3"><span className="material-symbols-outlined text-primary text-lg">check_circle</span> Hot Towel Finish</li>
+              </ul>
+              <Link href="/checkout?service=classic-cut" className="w-full py-4 rounded-xl bg-primary text-white font-black uppercase tracking-widest text-xs hover:bg-primary/90 transition-all shadow-lg shadow-primary/25 flex items-center justify-center">Most Popular</Link>
+            </motion.div>
+
+            {/* Premium Experience */}
+            <motion.div
+              whileHover={{ y: -10 }}
+              className="flex flex-col p-10 rounded-[2.5rem] bg-surface-dark border border-white/5 hover:border-white/10 transition-colors"
+            >
+              <div className="mb-6 size-14 rounded-2xl bg-white/5 flex items-center justify-center text-white">
+                <span className="material-symbols-outlined text-2xl">diamond</span>
+              </div>
+              <h3 className="text-2xl font-black text-white mb-4 uppercase tracking-tight">Premium</h3>
+              <p className="text-gray-400 text-sm font-medium mb-8 leading-relaxed flex-grow">The ultimate grooming package. Full haircut plus beard sculpt and mini-facial.</p>
+              <div className="flex items-baseline gap-2 mb-10">
+                <span className="text-5xl font-black text-white tracking-tighter">$85</span>
+                <span className="text-gray-500 font-bold uppercase tracking-widest text-xs">/ 75 min</span>
+              </div>
+              <ul className="flex flex-col gap-4 mb-10 text-sm text-gray-300 font-bold">
+                <li className="flex items-center gap-3"><span className="material-symbols-outlined text-primary text-lg">check_circle</span> Everything in Classic</li>
+                <li className="flex items-center gap-3"><span className="material-symbols-outlined text-primary text-lg">check_circle</span> Beard Sculpt & Oil</li>
+                <li className="flex items-center gap-3"><span className="material-symbols-outlined text-primary text-lg">check_circle</span> Face Massage</li>
+              </ul>
+              <Link href="/checkout?service=premium" className="w-full py-4 rounded-xl border border-white/10 text-white font-black uppercase tracking-widest text-xs hover:bg-white hover:text-background-dark transition-all flex items-center justify-center">Select</Link>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Barber Spotlight - UI UX PRO MAX REDESIGN */}
+      <section className="py-32 bg-background-dark relative overflow-hidden">
+        {/* Anti-Gravity Background Elements */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none">
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 text-[20vw] font-black text-white/[0.02] uppercase tracking-[0.2em] select-none italic">ELITE</div>
+          <div className="absolute bottom-1/4 left-1/2 -translate-x-1/2 text-[20vw] font-black text-white/[0.02] uppercase tracking-[0.2em] select-none italic">CRAFT</div>
+        </div>
+
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="flex flex-col items-center text-center max-w-4xl mx-auto">
+            {/* Tag */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-primary/10 border border-primary/20 mb-12 backdrop-blur-md"
+            >
+              <div className="size-2 rounded-full bg-primary animate-ping"></div>
+              <span className="text-[10px] font-black text-primary tracking-[0.4em] uppercase">Specialist Spotlight</span>
+            </motion.div>
+
+            {/* Kinetic Name */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="mb-12"
+            >
+              <h2 className="text-7xl md:text-[10rem] font-black text-white leading-[0.8] tracking-tighter uppercase italic">
+                JASON <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-400 to-primary drop-shadow-glow">MILLER</span>
+              </h2>
+            </motion.div>
+
+            {/* Bio */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="text-gray-400 text-xl font-medium leading-relaxed mb-16 max-w-2xl"
+            >
+              With over a decade of precision craft, Jason combines old-school barbering with modern aesthetic science. Elite clearance in anatomical fades.
+            </motion.p>
+
+            {/* Feature Matrix */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl mb-16">
+              {[
+                { title: "Precision", sub: "Anatomical Fades", icon: "content_cut", gradient: "from-primary to-blue-600" },
+                { title: "Luxury", sub: "Steam & Sharp", icon: "spa", gradient: "from-blue-600 to-cyan-500" }
+              ].map((f, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: i % 2 === 0 ? -20 : 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  whileHover={{ y: -5, scale: 1.02 }}
+                  className="bg-surface-dark/50 backdrop-blur-xl border border-white/5 p-8 rounded-[2.5rem] flex items-center gap-6 text-left group hover:border-primary/30 transition-all duration-500"
+                >
+                  <div className={`size-16 rounded-2xl bg-gradient-to-br ${f.gradient} p-[1px]`}>
+                    <div className="w-full h-full bg-background-dark rounded-[1.2rem] flex items-center justify-center">
+                      <span className={`material-symbols-outlined text-transparent bg-clip-text bg-gradient-to-br ${f.gradient} text-3xl font-black`}>{f.icon}</span>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="text-white font-black text-lg uppercase tracking-tight">{f.title}</h4>
+                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em]">{f.sub}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Primary Action */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="w-full max-w-2xl"
+            >
+              <Link href="/checkout?barberId=4" className="group relative w-full h-20 bg-white hover:bg-primary rounded-3xl overflow-hidden transition-all duration-500 flex items-center justify-center gap-4 active:scale-95 shadow-2xl">
+                <span className="text-background-dark group-hover:text-white font-black text-base uppercase tracking-[0.3em] transition-colors relative z-10">Initiate Session With Jason</span>
+                <span className="material-symbols-outlined text-background-dark group-hover:text-white transition-colors relative z-10 font-black">bolt</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-primary to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              </Link>
+            </motion.div>
+
+            {/* Hero Portrait */}
+            <motion.div
+              initial={{ opacity: 0, y: 100 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1, ease: "circOut" }}
+              className="relative w-full max-w-3xl aspect-[4/5] rounded-[4rem] overflow-hidden mt-24 shadow-2xl group border border-white/5"
+            >
+              <div className="w-full h-full bg-cover bg-center transition-transform duration-[2s] group-hover:scale-110" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCK2yCOLz9X5syA1VWcvnqx5qKLgny1cR_8mlJcwm4jQGfEXCtuCIAoouD_3_m0yKyZa7Zd1HtVv7eCTfoEOQEYHauG_DGbvFDv8A4zoqCd_7_19fNJwWctUgKbOvIBEDRD8BCQE4TXmImjOiIubeOPid_RLMl9ZW9mZH83sRNAB8o9eTSeIDOJd2lDeNLFan--XkKmzXgdF8KFb-254Xa8krbu4GFpoBCHtGoPikR86-Mu53u6e4mHo8W7jD_8q6EVHxxEco70T1_2')" }}></div>
+              <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-background-dark via-transparent to-transparent"></div>
+
+              {/* Ranking Badge Overlay */}
+              <div className="absolute bottom-12 left-1/2 -translate-x-1/2 w-full max-w-xs px-6">
+                <div className="bg-surface-dark/60 backdrop-blur-2xl border border-white/10 p-8 rounded-[2.5rem] text-center shadow-2xl transform hover:scale-105 transition-transform duration-500">
+                  <p className="text-[10px] font-black text-primary tracking-[0.4em] uppercase mb-2">Protocol Status</p>
+                  <p className="text-white font-black text-3xl uppercase tracking-tighter italic">Top Rated 2024</p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Lookbook Gallery - UI UX PRO MAX */}
+      <section className="py-24 bg-surface-darker" id="lookbook">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row items-end justify-between mb-16 gap-6">
+            <div className="max-w-xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 mb-6">
+                <span className="text-[10px] font-black text-primary tracking-[0.3em] uppercase">Visual Archive</span>
+              </div>
+              <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase leading-none italic">
+                THE LOOK <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400">BOOK</span>
+              </h2>
+            </div>
+            <p className="text-gray-500 max-w-sm font-medium mb-2">
+              A curated collection of our finest transformations. Precision in every pixel.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 h-[800px]">
+            {[
+              { img: "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&q=80&w=800", span: "row-span-2 col-span-2" },
+              { img: "https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&q=80&w=400", span: "row-span-1 col-span-1" },
+              { img: "https://images.unsplash.com/photo-1503951914875-befea74701c5?auto=format&fit=crop&q=80&w=400", span: "row-span-1 col-span-1" },
+              { img: "https://images.unsplash.com/photo-1599351431202-6e0000a4dbe1?auto=format&fit=crop&q=80&w=800", span: "row-span-2 col-span-2" },
+              { img: "https://images.unsplash.com/photo-1605497788044-5a32c7078486?auto=format&fit=crop&q=80&w=400", span: "row-span-1 col-span-1" },
+              { img: "https://images.unsplash.com/photo-1635273051937-93c4d7e63471?auto=format&fit=crop&q=80&w=400", span: "row-span-1 col-span-1" },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                whileHover={{ scale: 1.02 }}
+                className={`group relative rounded-[2rem] overflow-hidden border border-white/5 shadow-2xl ${item.span}`}
+              >
+                <div
+                  className="w-full h-full bg-cover bg-center transition-transform duration-1000 group-hover:scale-110"
+                  style={{ backgroundImage: `url('${item.img}')` }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500">
+                  <div className="absolute bottom-6 left-6 right-6">
+                    <p className="text-[10px] font-black text-primary tracking-widest uppercase mb-1">Master Craft</p>
+                    <p className="text-white font-black text-sm uppercase italic">Clearance Level: Elite</p>
+                  </div>
+                </div>
+                <div className="absolute top-6 right-6 p-2 rounded-xl bg-white/10 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all">
+                  <span className="material-symbols-outlined text-white text-xl">zoom_in</span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+
+      {/* Footer */}
+      <footer className="bg-surface-darker py-20 border-t border-white/5">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row justify-between items-start gap-12 mb-16">
+            <div className="max-w-xs">
+              <div className="flex items-center gap-3 mb-6 text-white">
+                <div className="size-8 flex items-center justify-center rounded-lg bg-primary text-white">
+                  <span className="material-symbols-outlined text-xl">content_cut</span>
+                </div>
+                <span className="font-black text-2xl tracking-tighter uppercase">FadeLab</span>
+              </div>
+              <p className="text-gray-500 text-sm font-medium leading-relaxed">Defining modern grooming standards through precision, atmosphere, and elite care.</p>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-12 md:gap-24">
+              <div>
+                <h4 className="text-white font-black text-[10px] uppercase tracking-[0.2em] mb-6">Contact</h4>
+                <p className="text-gray-500 text-sm font-bold mb-2">123 Groom St.</p>
+                <p className="text-gray-500 text-sm font-bold">New York, NY</p>
+              </div>
+              <div>
+                <h4 className="text-white font-black text-[10px] uppercase tracking-[0.2em] mb-6">Social</h4>
+                <div className="flex flex-col gap-2">
+                  <Link className="text-gray-500 text-sm font-bold hover:text-primary transition-colors" href="#">Instagram</Link>
+                  <Link className="text-gray-500 text-sm font-bold hover:text-primary transition-colors" href="#">Twitter</Link>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-gray-600 text-[10px] font-black uppercase tracking-widest">© 2024 FadeLab. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
