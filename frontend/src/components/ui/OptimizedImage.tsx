@@ -169,4 +169,148 @@ export const BackgroundImage = forwardRef<HTMLDivElement, BackgroundImageProps>(
   }
 );
 
+// Image Gallery with Lightbox
+interface GalleryImage {
+  src: string;
+  alt: string;
+  caption?: string;
+}
+
+interface ImageGalleryProps {
+  images: GalleryImage[];
+  columns?: 2 | 3 | 4;
+  gap?: "sm" | "md" | "lg";
+  rounded?: "none" | "sm" | "md" | "lg" | "xl";
+}
+
+const gapStyles = {
+  sm: "gap-2",
+  md: "gap-4",
+  lg: "gap-6",
+};
+
+const columnStyles = {
+  2: "grid-cols-1 sm:grid-cols-2",
+  3: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
+  4: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4",
+};
+
+export function ImageGallery({
+  images,
+  columns = 3,
+  gap = "md",
+  rounded = "lg",
+}: ImageGalleryProps) {
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (selectedIndex === null) return;
+
+    if (e.key === "Escape") {
+      setSelectedIndex(null);
+    } else if (e.key === "ArrowLeft") {
+      setSelectedIndex((prev) => (prev === 0 ? images.length - 1 : (prev ?? 0) - 1));
+    } else if (e.key === "ArrowRight") {
+      setSelectedIndex((prev) => ((prev ?? 0) + 1) % images.length);
+    }
+  };
+
+  return (
+    <>
+      <div className={clsx("grid", columnStyles[columns], gapStyles[gap])}>
+        {images.map((image, index) => (
+          <button
+            key={index}
+            onClick={() => setSelectedIndex(index)}
+            className={clsx(
+              "relative aspect-square overflow-hidden group cursor-pointer",
+              roundedStyles[rounded],
+              "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background-dark"
+            )}
+            aria-label={`View ${image.alt}`}
+          >
+            <OptimizedImage
+              src={image.src}
+              alt={image.alt}
+              hoverZoom
+              rounded={rounded}
+              sizes={`(max-width: 768px) 50vw, ${100 / columns}vw`}
+            />
+            {image.caption && (
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4 z-20">
+                <span className="text-white text-sm">{image.caption}</span>
+              </div>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* Lightbox */}
+      {selectedIndex !== null && (
+        <div
+          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
+          onClick={() => setSelectedIndex(null)}
+          onKeyDown={handleKeyDown}
+          tabIndex={0}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Image lightbox"
+        >
+          <button
+            onClick={() => setSelectedIndex(null)}
+            className="absolute top-4 right-4 text-white hover:text-gray-300 z-10 p-2"
+            aria-label="Close lightbox"
+          >
+            <span className="material-symbols-outlined text-3xl">close</span>
+          </button>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedIndex((prev) => (prev === 0 ? images.length - 1 : (prev ?? 0) - 1));
+            }}
+            className="absolute left-4 text-white hover:text-gray-300 p-2"
+            aria-label="Previous image"
+          >
+            <span className="material-symbols-outlined text-4xl">chevron_left</span>
+          </button>
+
+          <div
+            className="relative max-w-4xl max-h-[80vh] w-full h-full mx-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <OptimizedImage
+              src={images[selectedIndex].src}
+              alt={images[selectedIndex].alt}
+              rounded="lg"
+              priority
+              sizes="100vw"
+            />
+          </div>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedIndex((prev) => ((prev ?? 0) + 1) % images.length);
+            }}
+            className="absolute right-16 text-white hover:text-gray-300 p-2"
+            aria-label="Next image"
+          >
+            <span className="material-symbols-outlined text-4xl">chevron_right</span>
+          </button>
+
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-center">
+            {images[selectedIndex].caption && (
+              <p className="mb-2">{images[selectedIndex].caption}</p>
+            )}
+            <p className="text-gray-400 text-sm">
+              {selectedIndex + 1} / {images.length}
+            </p>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 export default OptimizedImage;
