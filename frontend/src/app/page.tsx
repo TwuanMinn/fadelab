@@ -1,16 +1,40 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useState, useMemo, useEffect } from "react";
 import { Toolbar } from "./components/Toolbar";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
 import { StatsGrid } from "@/components/ui/AnimatedCounter";
-import { TestimonialSlider } from "@/components/ui/TestimonialSlider";
-import { PricingSection } from "@/components/ui/GlassPricingCard";
 import { ScrollReveal, FloatingElement } from "@/components/ui/ParallaxEffects";
 import { GlowCard } from "@/components/ui/MicroInteractions";
 import { toast } from "sonner";
+
+// Dynamic imports for code splitting - these heavy components load on demand
+const TestimonialSlider = dynamic(
+  () => import("@/components/ui/TestimonialSlider").then(mod => ({ default: mod.TestimonialSlider })),
+  {
+    loading: () => <div className="h-96 skeleton skeleton-card" />,
+    ssr: false
+  }
+);
+
+const PricingSection = dynamic(
+  () => import("@/components/ui/GlassPricingCard").then(mod => ({ default: mod.PricingSection })),
+  {
+    loading: () => <div className="h-96 skeleton skeleton-card" />,
+    ssr: false
+  }
+);
+
+const CustomerReviews = dynamic(
+  () => import("@/components/ui/CustomerReviews").then(mod => ({ default: mod.CustomerReviews })),
+  {
+    loading: () => <div className="h-96 skeleton skeleton-card" />,
+    ssr: false
+  }
+);
 
 export default function Home() {
   const [wordIndex, setWordIndex] = useState(0);
@@ -521,6 +545,9 @@ export default function Home() {
 
         {/* Enhanced Testimonials Slider */}
         <TestimonialSlider />
+
+        {/* Customer Reviews with Star Ratings */}
+        <CustomerReviews />
 
         {/* FAQ Section */}
         <section className="py-20 bg-background-dark">
