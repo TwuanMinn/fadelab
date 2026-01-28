@@ -118,20 +118,20 @@ export default function RootLayout({
               description:
                 "Premium grooming services including haircuts, fades, and hot towel shaves.",
               url: "https://fadelab.com",
-              telephone: "(555) 123-4567",
+              telephone: "(212) 555-FADE",
               email: "book@fadelab.com",
               address: {
                 "@type": "PostalAddress",
-                streetAddress: "123 Barber St.",
-                addressLocality: "New York",
+                streetAddress: "456 Madison Avenue",
+                addressLocality: "Manhattan",
                 addressRegion: "NY",
-                postalCode: "10001",
+                postalCode: "10022",
                 addressCountry: "US",
               },
               geo: {
                 "@type": "GeoCoordinates",
-                latitude: 40.7128,
-                longitude: -74.006,
+                latitude: 40.7614,
+                longitude: -73.9776,
               },
               openingHoursSpecification: [
                 {
@@ -144,7 +144,13 @@ export default function RootLayout({
                   "@type": "OpeningHoursSpecification",
                   dayOfWeek: "Saturday",
                   opens: "10:00",
-                  closes: "18:00",
+                  closes: "19:00",
+                },
+                {
+                  "@type": "OpeningHoursSpecification",
+                  dayOfWeek: "Sunday",
+                  opens: "11:00",
+                  closes: "17:00",
                 },
               ],
               priceRange: "$$",
