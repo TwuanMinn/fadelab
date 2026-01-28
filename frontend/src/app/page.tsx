@@ -36,6 +36,14 @@ const CustomerReviews = dynamic(
   }
 );
 
+const ServicesGrid = dynamic(
+  () => import("@/components/ui/ServiceMenu").then(mod => ({ default: mod.ServicesGrid })),
+  {
+    loading: () => <div className="h-96 skeleton skeleton-card" />,
+    ssr: false
+  }
+);
+
 export default function Home() {
   const [wordIndex, setWordIndex] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -408,49 +416,8 @@ export default function Home() {
         {/* Stats Section with Animated Counters */}
         <StatsGrid stats={stats} />
 
-        {/* Services Section */}
-        <section id="services" className="py-20 bg-surface-dark">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <ScrollReveal className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Premium Services</h2>
-              <p className="text-gray-400 text-lg max-w-2xl mx-auto">Professional grooming services designed to elevate your style</p>
-            </ScrollReveal>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[
-                { icon: "content_cut", title: "Classic Cut", price: "$35", desc: "Precision haircut tailored to your style and face shape" },
-                { icon: "spa", title: "Hot Towel Shave", price: "$45", desc: "Traditional straight razor experience with premium products" },
-                { icon: "face_retouching_natural", title: "Beard Trim & Shape", price: "$25", desc: "Expert beard sculpting and maintenance" },
-                { icon: "styling", title: "Hair & Beard Combo", price: "$55", desc: "Complete grooming package for the modern gentleman" },
-                { icon: "child_care", title: "Kids Cut", price: "$20", desc: "Patient, professional cuts for children under 12" },
-                { icon: "face", title: "Deluxe Package", price: "$85", desc: "Cut, shave, beard trim, and facial treatment" },
-              ].map((service, i) => (
-                <ScrollReveal key={i} delay={i * 0.1}>
-                  <GlowCard>
-                    <div className="p-6 text-center h-full flex flex-col">
-                      <motion.div
-                        whileHover={{ scale: 1.1, rotate: 5 }}
-                        className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center"
-                      >
-                        <span className="material-symbols-outlined text-3xl text-primary">{service.icon}</span>
-                      </motion.div>
-                      <h3 className="text-xl font-bold text-white mb-2">{service.title}</h3>
-                      <p className="text-gray-400 mb-4 flex-grow">{service.desc}</p>
-                      <p className="text-3xl font-bold text-primary">{service.price}</p>
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => toast.success(`${service.title} added! Proceed to booking.`)}
-                        className="mt-4 w-full bg-white/5 hover:bg-white/10 border border-white/10 text-white py-2 px-4 rounded-lg font-semibold transition-all"
-                      >
-                        Book Now
-                      </motion.button>
-                    </div>
-                  </GlowCard>
-                </ScrollReveal>
-              ))}
-            </div>
-          </div>
-        </section>
+        {/* Services Section with Links to Detail Pages */}
+        <ServicesGrid />
 
         {/* Barber of the Month Spotlight */}
         <section className="py-20 bg-surface-dark border-y border-white/5 relative overflow-hidden">
