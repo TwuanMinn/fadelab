@@ -3,7 +3,18 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key';
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+        // Use implicit flow to avoid PKCE lock mechanism that causes AbortError
+        flowType: 'implicit',
+        // Persist session in localStorage
+        persistSession: true,
+        // Auto refresh tokens
+        autoRefreshToken: true,
+        // Detect session in URL (for OAuth callbacks)
+        detectSessionInUrl: true,
+    }
+});
 
 // ==================== TYPE DEFINITIONS ====================
 
@@ -278,17 +289,31 @@ export function subscribeToSlotUpdates(barberId: string, date: string, callback:
 // ==================== APPOINTMENTS ====================
 
 export async function createAppointment(appointment: Omit<Appointment, 'id' | 'created_at'>) {
-    // First, mark the time slot as booked
-    const { error: slotError } = await supabase
+    // First, try to check if the time slot exists and is available
+    const { data: existingSlot, error: checkError } = await supabase
         .from('time_slots')
-        .update({ is_booked: true })
+        .select('id, is_booked')
         .eq('barber_id', appointment.barber_id)
         .eq('date', appointment.date)
-        .eq('start_time', appointment.start_time);
+        .eq('start_time', appointment.start_time)
+        .maybeSingle();
 
-    if (slotError) {
-        console.error('Error booking slot:', slotError);
+    // If the slot exists and is already booked, return error
+    if (existingSlot?.is_booked) {
         return { appointment: null, error: 'Time slot no longer available' };
+    }
+
+    // If the slot exists and is available, mark it as booked
+    if (existingSlot && !existingSlot.is_booked) {
+        const { error: slotError } = await supabase
+            .from('time_slots')
+            .update({ is_booked: true })
+            .eq('id', existingSlot.id);
+
+        if (slotError) {
+            console.error('Error booking slot:', slotError);
+            // Continue anyway - we'll still try to create the appointment
+        }
     }
 
     // Create the appointment
@@ -300,13 +325,13 @@ export async function createAppointment(appointment: Omit<Appointment, 'id' | 'c
 
     if (error) {
         console.error('Error creating appointment:', error);
-        // Rollback slot booking
-        await supabase
-            .from('time_slots')
-            .update({ is_booked: false })
-            .eq('barber_id', appointment.barber_id)
-            .eq('date', appointment.date)
-            .eq('start_time', appointment.start_time);
+        // Rollback slot booking if we had marked it
+        if (existingSlot && !existingSlot.is_booked) {
+            await supabase
+                .from('time_slots')
+                .update({ is_booked: false })
+                .eq('id', existingSlot.id);
+        }
         return { appointment: null, error: error.message };
     }
 

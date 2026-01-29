@@ -7,8 +7,10 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Toolbar } from "../components/Toolbar";
 import { BarberProfileModal } from "../components/BarberProfileModal";
+import { getBarbers } from "@/lib/supabase";
 
-const BARBERS = [
+// Fallback barbers for when Supabase is not available
+const FALLBACK_BARBERS = [
     {
         id: 1,
         name: "Mark D.",
@@ -226,9 +228,41 @@ export default function BarbersPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectionDate, setSelectionDate] = useState<number | null>(null);
     const [selectionTime, setSelectionTime] = useState<string | null>(null);
+    const [barbers, setBarbers] = useState<any[]>(FALLBACK_BARBERS);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         setMounted(true);
+
+        // Fetch barbers from Supabase
+        async function fetchBarbers() {
+            try {
+                const data = await getBarbers();
+                if (data && data.length > 0) {
+                    // Map Supabase barbers to match the expected format
+                    const mappedBarbers = data.map((barber: any, index: number) => ({
+                        id: barber.id,
+                        name: barber.name,
+                        role: barber.title,
+                        status: barber.is_available ? 'Available Now' : 'Fully Booked',
+                        color: barber.is_available ? 'emerald' : 'red',
+                        rating: barber.rating || 5.0,
+                        exp: `${barber.years_experience} Years`,
+                        trait: barber.specialty?.[0] || 'Expert',
+                        img: barber.image || FALLBACK_BARBERS[index % FALLBACK_BARBERS.length]?.img,
+                        bio: barber.bio || '',
+                        traitIcon: 'psychology'
+                    }));
+                    setBarbers([...mappedBarbers, ...FALLBACK_BARBERS]);
+                }
+            } catch (error) {
+                console.log('Using fallback barbers data');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchBarbers();
     }, []);
 
     const openProfile = (barber: any) => {
@@ -351,7 +385,7 @@ export default function BarbersPage() {
                         {/* Barber Grid */}
                         <main className="w-full lg:w-3/4">
                             <div className="flex items-center justify-between mb-10 text-white">
-                                <p className="text-gray-500 text-xs font-black uppercase tracking-widest">Showing <span className="text-white">16</span> specialists</p>
+                                <p className="text-gray-500 text-xs font-black uppercase tracking-widest">Showing <span className="text-white">{barbers.length}</span> specialists</p>
                                 <div className="flex items-center gap-4">
                                     <select className="bg-surface-dark border border-white/10 text-white text-xs font-black uppercase tracking-widest rounded-xl focus:ring-primary focus:border-primary px-4 py-2.5 outline-none cursor-pointer">
                                         <option>Sort: Recommended</option>
@@ -362,7 +396,7 @@ export default function BarbersPage() {
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-                                {BARBERS.map((b, i) => (
+                                {barbers.map((b, i) => (
                                     <motion.div
                                         key={i}
                                         initial={{ opacity: 0, y: 20 }}

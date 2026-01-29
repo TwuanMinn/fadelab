@@ -5,12 +5,16 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect, Suspense } from "react";
 import { Toolbar } from "../components/Toolbar";
+import { getBarbers, createAppointment } from "@/lib/supabase";
+import { useAuth } from "@/lib/auth-context";
+import { services } from "@/lib/services-data";
 
-const BARBERS = [
-    { id: 1, name: "James", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBWv5GksqgjiUvlGn9iXiVXfWJtGlKWjTfq43bHxMg0jH9XkcXOHk8Dy-cXCbxaatOP6G_T0WxMZfWFA5LmCU7V1UZQCjwZM-qrBfSDSjoau9V7FU7B3uZiNb-sqkZSx2APGZ44IPDwVdKnHGHseAKQwOghnlRycq_mKtghZ_R3wCcDobfw3Ew7qh2vCxrkJ4ZbGvnhI12OoaxvxHg1g4MgQheRGQAvJ4ksZNgmyHUuZaGO0Qz-aAa0tFTVdNXPlcPk82niEcyfJPqZ" },
-    { id: 2, name: "Marcus", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDqsVxOkfu3CAg3at396RsEu3Eya1Fp525V09RGYg5zkMqDBoZdUJEqiAc_oN0CV0n3fYqPnY0_PFA4nHgdJ2AO4pV3jh-aHGOayZCmXaEcR9gEEWeQbrIvKV3juK1UUDIKklbeaEP6i7VwSzaUyWrO0FScQqzbVPyTRIriadJXBT18qgC-TyYBrr9ql4W_tMTgVlXiWRD4y7YK0ziUx4aZiYfOHFlsfP9D_N3h9lTB4dcS-TqppeBrDU4d-S7StecQEdRWUSDFxO2z" },
-    { id: 3, name: "Sarah", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDjv4ApnQ9hGbbk--qsMqy76gMnC-qHDFVTcqs7dXMo4zwOIfVl2fXDvqOx2oDdduDB_w1OJmra8wgFNYbEnoBg3pS60RfYBUDqmKzCf4uSUTrE-nVz8V2CkGY1Gvvs-hw04i1vw9JzXg331_KdOudaf-py-5z1vBViXN9KPT2Q2NCMWKMNf4XexQgyG_Lx26w8qaNrNYiKoWzR1Z5x7QvoQlrY7s1i33BHeTZd4tKLLqSbQzuyKIwzjpdXYpcIETnt6PKUWxdxKkJR" },
-    { id: 4, name: "Jason", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuCK2yCOLz9X5syA1VWcvnqx5qKLgny1cR_8mlJcwm4jQGfEXCtuCIAoouD_3_m0yKyZa7Zd1HtVv7eCTfoEOQEYHauG_DGbvFDv8A4zoqCd_7_19fNJwWctUgKbOvIBEDRD8BCQE4TXmImjOiIubeOPid_RLMl9ZW9mZH83sRNAB8o9eTSeIDOJd2lDeNLFan--XkKmzXgdF8KFb-254Xa8krbu4GFpoBCHtGoPikR86-Mu53u6e4mHo8W7jD_8q6EVHxxEco70T1_2" },
+// Fallback barbers if fetch fails
+const FALLBACK_BARBERS = [
+    { id: "1", name: "James", image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBWv5GksqgjiUvlGn9iXiVXfWJtGlKWjTfq43bHxMg0jH9XkcXOHk8Dy-cXCbxaatOP6G_T0WxMZfWFA5LmCU7V1UZQCjwZM-qrBfSDSjoau9V7FU7B3uZiNb-sqkZSx2APGZ44IPDwVdKnHGHseAKQwOghnlRycq_mKtghZ_R3wCcDobfw3Ew7qh2vCxrkJ4ZbGvnhI12OoaxvxHg1g4MgQheRGQAvJ4ksZNgmyHUuZaGO0Qz-aAa0tFTVdNXPlcPk82niEcyfJPqZ" },
+    { id: "2", name: "Marcus", image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDqsVxOkfu3CAg3at396RsEu3Eya1Fp525V09RGYg5zkMqDBoZdUJEqiAc_oN0CV0n3fYqPnY0_PFA4nHgdJ2AO4pV3jh-aHGOayZCmXaEcR9gEEWeQbrIvKV3juK1UUDIKklbeaEP6i7VwSzaUyWrO0FScQqzbVPyTRIriadJXBT18qgC-TyYBrr9ql4W_tMTgVlXiWRD4y7YK0ziUx4aZiYfOHFlsfP9D_N3h9lTB4dcS-TqppeBrDU4d-S7StecQEdRWUSDFxO2z" },
+    { id: "3", name: "Sarah", image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDjv4ApnQ9hGbbk--qsMqy76gMnC-qHDFVTcqs7dXMo4zwOIfVl2fXDvqOx2oDdduDB_w1OJmra8wgFNYbEnoBg3pS60RfYBUDqmKzCf4uSUTrE-nVz8V2CkGY1Gvvs-hw04i1vw9JzXg331_KdOudaf-py-5z1vBViXN9KPT2Q2NCMWKMNf4XexQgyG_Lx26w8qaNrNYiKoWzR1Z5x7QvoQlrY7s1i33BHeTZd4tKLLqSbQzuyKIwzjpdXYpcIETnt6PKUWxdxKkJR" },
+    { id: "4", name: "Jason", image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCK2yCOLz9X5syA1VWcvnqx5qKLgny1cR_8mlJcwm4jQGfEXCtuCIAoouD_3_m0yKyZa7Zd1HtVv7eCTfoEOQEYHauG_DGbvFDv8A4zoqCd_7_19fNJwWctUgKbOvIBEDRD8BCQE4TXmImjOiIubeOPid_RLMl9ZW9mZH83sRNAB8o9eTSeIDOJd2lDeNLFan--XkKmzXgdF8KFb-254Xa8krbu4GFpoBCHtGoPikR86-Mu53u6e4mHo8W7jD_8q6EVHxxEco70T1_2" },
 ];
 
 const ADDONS = [
@@ -19,6 +23,14 @@ const ADDONS = [
     { id: "beard-trim", name: "Beard Trim", price: 10, desc: "Precision shaping and lining" },
     { id: "scalp-massage", name: "Scalp Massage", price: 25, desc: "15 min soothing head massage" },
 ];
+
+// Get current date for calendar initialization
+const getCurrentDate = () => new Date();
+const getDefaultSelectedDate = () => {
+    const date = new Date();
+    date.setDate(date.getDate() + 1); // Default to tomorrow
+    return date;
+};
 
 export default function CheckoutPage() {
     return (
@@ -29,43 +41,77 @@ export default function CheckoutPage() {
 }
 
 function CheckoutContent() {
-    const SERVICES: Record<string, { name: string, price: number }> = {
-        'quick-trim': { name: "Quick Trim", price: 30 },
-        'classic-cut': { name: "Classic Cut", price: 50 },
-        'premium': { name: "Premium Experience", price: 85 }
-    };
-
     const router = useRouter();
     const searchParams = useSearchParams();
+    const { user } = useAuth();
     const barberIdParam = searchParams.get('barberId');
+    const serviceParam = searchParams.get('service');
+
+    // Barbers from Supabase
+    const [barbers, setBarbers] = useState<Array<{ id: string; name: string; image: string | null }>>([]);
+    const [loadingBarbers, setLoadingBarbers] = useState(true);
 
     // State
     const [mounted, setMounted] = useState(false);
-    const [selectedBarber, setSelectedBarber] = useState(1);
+    const [selectedBarberId, setSelectedBarberId] = useState<string | null>(null);
     const [selectedAddons, setSelectedAddons] = useState<string[]>(["hot-towel"]);
     const [selectedServiceSlug, setSelectedServiceSlug] = useState('classic-cut');
     const [payment, setPayment] = useState("now");
     const [selectedTime, setSelectedTime] = useState("11:30 AM");
+    const [isBooking, setIsBooking] = useState(false);
+    const [bookingError, setBookingError] = useState<string | null>(null);
 
-    // Calendar Engine
-    const [viewDate, setViewDate] = useState(new Date(2024, 9, 1));
-    const [selectedFullDate, setSelectedFullDate] = useState(new Date(2024, 9, 24));
+    // Calendar Engine - use current dates
+    const [viewDate, setViewDate] = useState(getCurrentDate);
+    const [selectedFullDate, setSelectedFullDate] = useState(getDefaultSelectedDate);
 
     // Payment states
     const [paymentMethod, setPaymentMethod] = useState("card");
     const [cardDetails, setCardDetails] = useState({ number: "", exp: "", cvc: "" });
     const [copied, setCopied] = useState(false);
 
+    // Fetch barbers from Supabase
+    useEffect(() => {
+        async function fetchBarbers() {
+            try {
+                const data = await getBarbers();
+                if (data && data.length > 0) {
+                    setBarbers(data);
+                    // Set default selected barber
+                    if (barberIdParam) {
+                        setSelectedBarberId(barberIdParam);
+                    } else {
+                        setSelectedBarberId(data[0].id);
+                    }
+                } else {
+                    // Use fallback if no barbers from database
+                    setBarbers(FALLBACK_BARBERS);
+                    setSelectedBarberId(barberIdParam || FALLBACK_BARBERS[0].id);
+                }
+            } catch (error) {
+                console.error('Error fetching barbers:', error);
+                setBarbers(FALLBACK_BARBERS);
+                setSelectedBarberId(barberIdParam || FALLBACK_BARBERS[0].id);
+            } finally {
+                setLoadingBarbers(false);
+            }
+        }
+        fetchBarbers();
+    }, [barberIdParam]);
+
     useEffect(() => {
         setMounted(true);
-        if (barberIdParam) {
-            setSelectedBarber(parseInt(barberIdParam));
+        if (serviceParam) {
+            // Check if service exists in our services data
+            const serviceExists = services.find(s => s.id === serviceParam);
+            if (serviceExists) {
+                setSelectedServiceSlug(serviceParam);
+            }
         }
-        const serviceParam = searchParams.get('service');
-        if (serviceParam && SERVICES[serviceParam]) {
-            setSelectedServiceSlug(serviceParam);
-        }
-    }, [searchParams, barberIdParam]);
+    }, [serviceParam]);
+
+    // Get current service from services data
+    const currentService = services.find(s => s.id === selectedServiceSlug) || services[0];
 
     // Calendar Helpers
     const changeMonth = (offset: number) => {
@@ -101,14 +147,93 @@ function CheckoutContent() {
         );
     };
 
-    if (!mounted) return null;
+    // Get the selected barber
+    const selectedBarber = barbers.find(b => b.id === selectedBarberId);
 
-    const currentService = SERVICES[selectedServiceSlug] || SERVICES['classic-cut'];
-    const basePrice = currentService.price;
+    // Calculate prices
+    const basePrice = currentService?.price || 35;
     const addonsTotal = ADDONS.filter(a => selectedAddons.includes(a.id)).reduce((acc, current) => acc + current.price, 0);
     const subtotal = basePrice + addonsTotal;
     const discount = payment === "now" ? subtotal * 0.1 : 0;
     const total = subtotal - discount;
+
+    // Handle booking confirmation
+    const handleConfirmBooking = async () => {
+        setBookingError(null);
+        setIsBooking(true);
+
+        // Format the date as YYYY-MM-DD to avoid timezone issues
+        const formatDateForDB = (date: Date): string => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+
+        const bookingDate = formatDateForDB(selectedFullDate);
+
+        try {
+            // Create appointment in database if user is logged in
+            if (user && selectedBarberId) {
+                // Parse time to get start_time in 24h format
+                const [timeStr, modifier] = selectedTime.split(' ');
+                let [hours, minutes] = timeStr.split(':').map(Number);
+                if (modifier === 'PM' && hours < 12) hours += 12;
+                if (modifier === 'AM' && hours === 12) hours = 0;
+                const startTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
+
+                // Calculate end time based on service duration
+                // Duration is a string like "30-45 min" - extract the first number
+                const durationStr = currentService?.duration || "45";
+                const durationMatch = durationStr.match(/\d+/);
+                const serviceDuration = durationMatch ? parseInt(durationMatch[0], 10) : 45;
+                const totalMinutes = hours * 60 + minutes + serviceDuration;
+                const endHours = Math.floor(totalMinutes / 60);
+                const endMinutes = totalMinutes % 60;
+                const endTime = `${endHours.toString().padStart(2, '0')}:${endMinutes.toString().padStart(2, '0')}:00`;
+
+                const result = await createAppointment({
+                    user_id: user.id,
+                    barber_id: selectedBarberId,
+                    service_id: currentService?.id || 'classic-cut',
+                    date: bookingDate,
+                    start_time: startTime,
+                    end_time: endTime,
+                    total_price: total,
+                    status: 'pending'
+                });
+
+                if (result.appointment && !result.error) {
+                    // Successfully created - redirect to success page with appointment ID
+                    const successUrl = `/success?service=${selectedServiceSlug}&barberId=${selectedBarberId}&time=${encodeURIComponent(selectedTime)}&date=${encodeURIComponent(bookingDate)}&appointmentId=${result.appointment.id}`;
+                    router.push(successUrl);
+                    return;
+                } else if (result.error) {
+                    // Ignore AbortError - it's a Supabase concurrency issue
+                    if (result.error.includes('aborted') || result.error.includes('AbortError')) {
+                        router.push(`/success?service=${selectedServiceSlug}&barberId=${selectedBarberId}&time=${encodeURIComponent(selectedTime)}&date=${encodeURIComponent(bookingDate)}`);
+                        return;
+                    }
+                    setBookingError(result.error);
+                    setIsBooking(false);
+                    return;
+                }
+            }
+
+            // If not logged in, redirect to success page (demo mode)
+            router.push(`/success?service=${selectedServiceSlug}&barberId=${selectedBarberId}&time=${encodeURIComponent(selectedTime)}&date=${encodeURIComponent(bookingDate)}`);
+        } catch (error: any) {
+            // Ignore AbortError - it's a Supabase concurrency issue
+            if (error?.name === 'AbortError' || error?.message?.includes('aborted')) {
+                router.push(`/success?service=${selectedServiceSlug}&barberId=${selectedBarberId}&time=${encodeURIComponent(selectedTime)}&date=${encodeURIComponent(bookingDate)}`);
+                return;
+            }
+            console.error('Error creating appointment:', error);
+            setBookingError('Failed to create appointment. Please try again.');
+        } finally {
+            setIsBooking(false);
+        }
+    };
 
     return (
         <div className="bg-gradient-to-br from-black via-[#0B1121] to-[#0f172a] text-white font-display min-h-screen antialiased flex flex-col selection:bg-blue-600 selection:text-white">
@@ -182,7 +307,7 @@ function CheckoutContent() {
                                     Primary Operation Selection
                                 </span>
                                 <div className="relative group">
-                                    <select className="appearance-none w-full bg-gradient-to-br from-black via-[#0B1121] to-[#0f172a]/80 border border-white/5 rounded-2xl h-20 px-8 text-lg font-black uppercase tracking-widest text-white focus:outline-none focus:border-blue-500/50 transition-all cursor-pointer hover:bg-gradient-to-br from-black via-[#0B1121] to-[#0f172a] active:scale-[0.99]">
+                                    <select className="appearance-none w-full bg-gradient-to-br from-black via-[#0B1121] to-[#0f172a] border border-white/5 rounded-2xl h-20 px-8 text-lg font-black uppercase tracking-widest text-white focus:outline-none focus:border-blue-500/50 transition-all cursor-pointer hover:border-white/10 active:scale-[0.99]">
                                         <option>Signature Haircut [45 MIN]</option>
                                         <option>Beard Sculpting [30 MIN]</option>
                                         <option>Elite Grooming Package [90 MIN]</option>
@@ -207,12 +332,12 @@ function CheckoutContent() {
                                     </div>
                                     <span className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-500 group-hover:text-white">Next Available</span>
                                 </div>
-                                {BARBERS.map((b) => (
-                                    <div key={b.id} onClick={() => setSelectedBarber(b.id)} className="flex flex-col items-center gap-4 cursor-pointer group min-w-[110px]">
-                                        <div className={`size-24 rounded-full p-1.5 transition-all duration-500 transform group-hover:scale-110 relative ${selectedBarber === b.id ? 'bg-blue-600 shadow-glow' : 'bg-white/5 group-hover:bg-white/10'}`}>
-                                            <div className="w-full h-full rounded-full bg-cover bg-center border-2 border-background-dark" style={{ backgroundImage: `url('${b.img}')` }} />
+                                {barbers.map((b) => (
+                                    <div key={b.id} onClick={() => setSelectedBarberId(b.id)} className="flex flex-col items-center gap-4 cursor-pointer group min-w-[110px]">
+                                        <div className={`size-24 rounded-full p-1.5 transition-all duration-500 transform group-hover:scale-110 relative ${selectedBarberId === b.id ? 'bg-blue-600 shadow-glow' : 'bg-white/5 group-hover:bg-white/10'}`}>
+                                            <div className="w-full h-full rounded-full bg-cover bg-center border-2 border-background-dark" style={{ backgroundImage: `url('${b.image}')` }} />
                                             <AnimatePresence>
-                                                {selectedBarber === b.id && (
+                                                {selectedBarberId === b.id && (
                                                     <motion.div
                                                         initial={{ scale: 0, opacity: 0 }}
                                                         animate={{ scale: 1, opacity: 1 }}
@@ -224,7 +349,7 @@ function CheckoutContent() {
                                                 )}
                                             </AnimatePresence>
                                         </div>
-                                        <span className={`text-[10px] font-black uppercase tracking-widest transition-colors duration-300 ${selectedBarber === b.id ? 'text-blue-500' : 'text-gray-500 group-hover:text-gray-300'}`}>{b.name}</span>
+                                        <span className={`text-[10px] font-black uppercase tracking-widest transition-colors duration-300 ${selectedBarberId === b.id ? 'text-blue-500' : 'text-gray-500 group-hover:text-gray-300'}`}>{b.name}</span>
                                     </div>
                                 ))}
                             </div>
@@ -474,8 +599,8 @@ function CheckoutContent() {
                                         <div>
                                             <p className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] mb-2">Deployed Specialist</p>
                                             <div className="flex items-center gap-4 mt-2 bg-white/5 p-3 rounded-2xl border border-white/5 pr-6">
-                                                <div className="size-10 rounded-full bg-cover bg-center border-2 border-background-dark shadow-xl" style={{ backgroundImage: `url('${BARBERS.find(b => b.id === selectedBarber)?.img}')` }} />
-                                                <p className="text-sm font-black text-white uppercase tracking-tight italic">{BARBERS.find(b => b.id === selectedBarber)?.name}</p>
+                                                <div className="size-10 rounded-full bg-cover bg-center border-2 border-background-dark shadow-xl" style={{ backgroundImage: `url('${selectedBarber?.image}')` }} />
+                                                <p className="text-sm font-black text-white uppercase tracking-tight italic">{selectedBarber?.name || 'Next Available'}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -530,14 +655,20 @@ function CheckoutContent() {
                                 </div>
 
                                 <div className="p-1.5 border border-white/20 rounded-[1.3rem] hover:border-white/40 transition-colors">
-                                    <Link
-                                        href={`/success?service=${selectedServiceSlug}&barberId=${selectedBarber}&time=${encodeURIComponent(selectedTime)}&date=${encodeURIComponent(selectedFullDate.toISOString())}`}
-                                        className="w-full bg-white text-black font-black text-xs uppercase tracking-[0.2em] py-5 rounded-2xl shadow-xl hover:bg-gray-50 transition-all transform active:scale-[0.98] flex justify-center items-center gap-4 relative z-50 cursor-pointer"
+                                    <button
+                                        onClick={handleConfirmBooking}
+                                        disabled={isBooking || !selectedBarberId}
+                                        className="w-full bg-white text-black font-black text-xs uppercase tracking-[0.2em] py-5 rounded-2xl shadow-xl hover:bg-gray-50 transition-all transform active:scale-[0.98] flex justify-center items-center gap-4 relative z-50 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
-                                        CONFIRM BOOKING
-                                        <span className="material-symbols-outlined text-xl">arrow_forward</span>
-                                    </Link>
+                                        {isBooking ? 'PROCESSING...' : 'CONFIRM BOOKING'}
+                                        <span className="material-symbols-outlined text-xl">{isBooking ? 'hourglass_empty' : 'arrow_forward'}</span>
+                                    </button>
                                 </div>
+                                {bookingError && (
+                                    <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm text-center">
+                                        {bookingError}
+                                    </div>
+                                )}
 
                                 <div className="mt-8 flex items-center justify-center gap-2">
                                     <span className="material-symbols-outlined text-[14px] text-gray-600">security</span>

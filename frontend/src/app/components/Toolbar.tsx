@@ -4,12 +4,14 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
 
 export function Toolbar() {
     const [showToolbar, setShowToolbar] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
     const pathname = usePathname();
     const isShopPage = pathname?.startsWith('/shop');
+    const { user, profile } = useAuth();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -25,6 +27,9 @@ export function Toolbar() {
         return () => window.removeEventListener("scroll", handleScroll);
     }, [lastScrollY]);
 
+    // Get user's first name or email prefix
+    const userName = profile?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'Profile';
+
     return (
         <motion.div
             initial={{ y: 0, x: "-50%" }}
@@ -32,12 +37,37 @@ export function Toolbar() {
                 y: showToolbar ? 0 : 100,
                 opacity: showToolbar ? 1 : 0
             }}
-            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[90] flex items-center px-6 py-4 rounded-3xl bg-surface-darker/80 backdrop-blur-2xl border border-white/10 shadow-2xl shadow-black/50 overflow-hidden"
+            className="fixed bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 z-[90] flex items-center px-3 sm:px-4 md:px-6 py-3 md:py-4 rounded-2xl md:rounded-3xl bg-surface-darker/90 backdrop-blur-2xl border border-white/10 shadow-2xl shadow-black/50 max-w-[95vw] md:max-w-none overflow-x-auto no-scrollbar"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-            <div className="flex items-center gap-8 md:gap-12">
-                <Link className="text-sm font-bold text-white hover:text-blue-500 transition-all flex flex-col items-center gap-1 group" href="/profile">
-                    <span className="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">person</span>
-                    <span className="text-[10px] uppercase tracking-widest opacity-60 group-hover:opacity-100 font-black">Profile</span>
+            <div className="flex items-center gap-4 sm:gap-6 md:gap-8 lg:gap-10">
+                <Link className="text-sm font-bold text-white hover:text-blue-500 transition-all flex flex-col items-center gap-1 group relative" href="/profile">
+                    {user ? (
+                        <>
+                            {/* Authenticated: Show avatar or first letter with green dot */}
+                            <div className="relative">
+                                {profile?.avatar_url ? (
+                                    <div
+                                        className="size-6 rounded-full bg-cover bg-center ring-2 ring-blue-500/50 group-hover:ring-blue-500 transition-all group-hover:scale-110"
+                                        style={{ backgroundImage: `url('${profile.avatar_url}')` }}
+                                    />
+                                ) : (
+                                    <div className="size-6 rounded-full bg-blue-600 flex items-center justify-center text-[10px] font-black text-white group-hover:scale-110 transition-all ring-2 ring-blue-500/50">
+                                        {userName.charAt(0).toUpperCase()}
+                                    </div>
+                                )}
+                                {/* Online indicator */}
+                                <div className="absolute -bottom-0.5 -right-0.5 size-2.5 bg-green-500 rounded-full border-2 border-[#0a0f16] animate-pulse" />
+                            </div>
+                            <span className="text-[10px] uppercase tracking-widest opacity-80 group-hover:opacity-100 font-black text-blue-400 max-w-[60px] truncate">{userName}</span>
+                        </>
+                    ) : (
+                        <>
+                            {/* Not authenticated: Show default profile icon */}
+                            <span className="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">person</span>
+                            <span className="text-[10px] uppercase tracking-widest opacity-60 group-hover:opacity-100 font-black">Profile</span>
+                        </>
+                    )}
                 </Link>
                 <Link className="text-sm font-bold text-white hover:text-blue-500 transition-all flex flex-col items-center gap-1 group" href="/">
                     <span className="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform">home</span>

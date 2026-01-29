@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Toolbar } from "../components/Toolbar";
+import { useCartStore } from "@/lib/cart-store";
+import { toast } from "sonner";
 
 const BUNDLES = [
     {
@@ -237,20 +239,33 @@ const FILTERS = ["All Bundles", "Hair Care", "Beard Grooming", "Gift Sets", "Lim
 
 export default function ShopPage() {
     const [activeFilter, setActiveFilter] = useState("All Bundles");
-    const [cart, setCart] = useState<number[]>([]);
     const [addingId, setAddingId] = useState<number | null>(null);
+    const addToCart = useCartStore((state) => state.addToCart);
 
     const filteredBundles = activeFilter === "All Bundles"
         ? BUNDLES
         : BUNDLES.filter(b => b.category === activeFilter);
 
-    const handleAddToCart = (id: number) => {
-        setAddingId(id);
+    // Helper to parse price string to number
+    const parsePrice = (priceStr: string) => {
+        return parseFloat(priceStr.replace('$', ''));
+    };
+
+    const handleAddToCart = (bundle: typeof BUNDLES[0]) => {
+        setAddingId(bundle.id);
         setTimeout(() => {
-            setCart([...cart, id]);
+            addToCart({
+                id: bundle.id + 100, // Offset to avoid ID conflicts with profile shop
+                name: bundle.title,
+                price: parsePrice(bundle.memberPrice),
+                img: bundle.image,
+                category: bundle.category
+            });
             setAddingId(null);
-            alert("Item added to cart successfully!");
-        }, 800);
+            toast.success(`${bundle.title} added to cart!`, {
+                description: `Member price: ${bundle.memberPrice}`
+            });
+        }, 500);
     };
 
     return (
@@ -377,7 +392,7 @@ export default function ShopPage() {
                                         </div>
 
                                         <button
-                                            onClick={() => handleAddToCart(bundle.id)}
+                                            onClick={() => handleAddToCart(bundle)}
                                             disabled={addingId === bundle.id}
                                             className="mt-6 w-full py-3 bg-white hover:bg-white/90 text-[#0f172a] font-black text-xs uppercase tracking-widest rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
                                         >

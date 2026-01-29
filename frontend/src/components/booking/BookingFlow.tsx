@@ -58,19 +58,17 @@ export function BookingFlow({ barbers, services }: BookingFlowProps) {
         {steps.map((step, index) => (
           <div key={step.id} className="flex items-center">
             <div
-              className={`w-12 h-12 rounded-full flex items-center justify-center font-bold transition-all ${
-                currentStep >= step.id
+              className={`w-12 h-12 rounded-full flex items-center justify-center font-bold transition-all ${currentStep >= step.id
                   ? 'bg-primary text-white'
                   : 'bg-surface-dark text-gray-400'
-              }`}
+                }`}
             >
               {step.id}
             </div>
             {index < steps.length - 1 && (
               <div
-                className={`w-24 h-1 mx-2 transition-all ${
-                  currentStep > step.id ? 'bg-primary' : 'bg-surface-dark'
-                }`}
+                className={`w-24 h-1 mx-2 transition-all ${currentStep > step.id ? 'bg-primary' : 'bg-surface-dark'
+                  }`}
               />
             )}
           </div>
@@ -144,14 +142,13 @@ function BarberSelection({ barbers, selectedBarber, onSelect, onNext }: any) {
             key={barber.id}
             whileHover={{ y: -5 }}
             onClick={() => onSelect(barber)}
-            className={`cursor-pointer rounded-2xl p-6 border-2 transition-all ${
-              selectedBarber?.id === barber.id
+            className={`cursor-pointer rounded-2xl p-6 border-2 transition-all ${selectedBarber?.id === barber.id
                 ? 'border-primary bg-primary/10'
                 : 'border-white/10 bg-surface-darker hover:border-white/20'
-            }`}
+              }`}
           >
             <OptimizedImage
-              src={barber.img}
+              src={barber.image || barber.img || ''}
               alt={barber.name}
               width={100}
               height={100}
@@ -187,11 +184,10 @@ function ServiceSelection({ services, selectedService, onSelect, onNext, onPrev 
             key={service.id}
             whileHover={{ x: 5 }}
             onClick={() => onSelect(service)}
-            className={`cursor-pointer rounded-xl p-6 border-2 transition-all ${
-              selectedService?.id === service.id
+            className={`cursor-pointer rounded-xl p-6 border-2 transition-all ${selectedService?.id === service.id
                 ? 'border-primary bg-primary/10'
                 : 'border-white/10 bg-surface-darker hover:border-white/20'
-            }`}
+              }`}
           >
             <div className="flex justify-between items-start">
               <div>
@@ -236,7 +232,7 @@ function DateTimeSelection({ availableSlots, selectedDate, selectedTime, onSelec
   return (
     <div>
       <h2 className="text-2xl font-bold text-white mb-6">Select Date & Time</h2>
-      
+
       <div className="mb-6">
         <label className="block text-gray-400 mb-2">Select Date</label>
         <input
@@ -257,13 +253,12 @@ function DateTimeSelection({ availableSlots, selectedDate, selectedTime, onSelec
                 key={slot.time}
                 onClick={() => onSelectTime(slot.time)}
                 disabled={!slot.available}
-                className={`p-3 rounded-xl font-medium transition-all ${
-                  selectedTime === slot.time
+                className={`p-3 rounded-xl font-medium transition-all ${selectedTime === slot.time
                     ? 'bg-primary text-white'
                     : slot.available
-                    ? 'bg-surface-darker text-white hover:bg-white/10'
-                    : 'bg-gray-800 text-gray-600 cursor-not-allowed'
-                }`}
+                      ? 'bg-surface-darker text-white hover:bg-white/10'
+                      : 'bg-gray-800 text-gray-600 cursor-not-allowed'
+                  }`}
               >
                 {slot.time}
               </button>
@@ -295,7 +290,7 @@ function ConfirmationStep({ booking, customerInfo, onCustomerInfoChange, onConfi
   return (
     <div>
       <h2 className="text-2xl font-bold text-white mb-6">Confirm Your Booking</h2>
-      
+
       <div className="bg-surface-darker rounded-xl p-6 mb-6">
         <h3 className="text-lg font-bold text-white mb-4">Appointment Details</h3>
         <div className="space-y-2 text-gray-300">

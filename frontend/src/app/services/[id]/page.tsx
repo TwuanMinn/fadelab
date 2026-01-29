@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { ServicePageClient } from "./ServicePageClient";
-import { services } from "@/components/ui/ServiceMenu";
+import { services } from "@/lib/services-data";
 
 interface Props {
     params: { id: string };

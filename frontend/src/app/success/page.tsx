@@ -4,13 +4,9 @@ import Link from "next/link";
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-
-const BARBERS = [
-    { id: 1, name: "James", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBWv5GksqgjiUvlGn9iXiVXfWJtGlKWjTfq43bHxMg0jH9XkcXOHk8Dy-cXCbxaatOP6G_T0WxMZfWFA5LmCU7V1UZQCjwZM-qrBfSDSjoau9V7FU7B3uZiNb-sqkZSx2APGZ44IPDwVdKnHGHseAKQwOghnlRycq_mKtghZ_R3wCcDobfw3Ew7qh2vCxrkJ4ZbGvnhI12OoaxvxHg1g4MgQheRGQAvJ4ksZNgmyHUuZaGO0Qz-aAa0tFTVdNXPlcPk82niEcyfJPqZ" },
-    { id: 2, name: "Marcus", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDqsVxOkfu3CAg3at396RsEu3Eya1Fp525V09RGYg5zkMqDBoZdUJEqiAc_oN0CV0n3fYqPnY0_PFA4nHgdJ2AO4pV3jh-aHGOayZCmXaEcR9gEEWeQbrIvKV3juK1UUDIKklbeaEP6i7VwSzaUyWrO0FScQqzbVPyTRIriadJXBT18qgC-TyYBrr9ql4W_tMTgVlXiWRD4y7YK0ziUx4aZiYfOHFlsfP9D_N3h9lTB4dcS-TqppeBrDU4d-S7StecQEdRWUSDFxO2z" },
-    { id: 3, name: "Sarah", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDjv4ApnQ9hGbbk--qsMqy76gMnC-qHDFVTcqs7dXMo4zwOIfVl2fXDvqOx2oDdduDB_w1OJmra8wgFNYbEnoBg3pS60RfYBUDqmKzCf4uSUTrE-nVz8V2CkGY1Gvvs-hw04i1vw9JzXg331_KdOudaf-py-5z1vBViXN9KPT2Q2NCMWKMNf4XexQgyG_Lx26w8qaNrNYiKoWzR1Z5x7QvoQlrY7s1i33BHeTZd4tKLLqSbQzuyKIwzjpdXYpcIETnt6PKUWxdxKkJR" },
-    { id: 4, name: "Jason", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuCK2yCOLz9X5syA1VWcvnqx5qKLgny1cR_8mlJcwm4jQGfEXCtuCIAoouD_3_m0yKyZa7Zd1HtVv7eCTfoEOQEYHauG_DGbvFDv8A4zoqCd_7_19fNJwWctUgKbOvIBEDRD8BCQE4TXmImjOiIubeOPid_RLMl9ZW9mZH83sRNAB8o9eTSeIDOJd2lDeNLFan--XkKmzXgdF8KFb-254Xa8krbu4GFpoBCHtGoPikR86-Mu53u6e4mHo8W7jD_8q6EVHxxEco70T1_2" },
-];
+import { getBarberById } from "@/lib/supabase";
+import { services } from "@/lib/services-data";
+import { useAuth } from "@/lib/auth-context";
 
 export default function SuccessPage() {
     return (
@@ -22,55 +18,140 @@ export default function SuccessPage() {
 
 function SuccessContent() {
     const searchParams = useSearchParams();
-    const service = searchParams.get('service');
-    const isBooking = !!service;
+    const { user } = useAuth();
+    const serviceSlug = searchParams.get('service');
+    const isBooking = !!serviceSlug;
 
-    // Booking Data
+    // Booking Data from URL params
     const barberId = searchParams.get('barberId');
     const timeParam = searchParams.get('time');
     const time = timeParam ? decodeURIComponent(timeParam) : null;
     const dateParam = searchParams.get('date');
-    const dateStr = dateParam ? decodeURIComponent(dateParam) : null;
-    const date = dateStr ? new Date(dateStr) : null;
-    const barber = BARBERS.find(b => b.id.toString() === barberId);
+    const appointmentId = searchParams.get('appointmentId');
+
+    // Parse date carefully to avoid timezone issues
+    // The date param can be either:
+    // 1. YYYY-MM-DD format (new format)
+    // 2. Full ISO string (legacy)
+    const parseBookingDate = (dateStr: string | null): Date | null => {
+        if (!dateStr) return null;
+        try {
+            // Check if it's YYYY-MM-DD format
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+                const [year, month, day] = dateStr.split('-').map(Number);
+                return new Date(year, month - 1, day);
+            }
+            // Otherwise treat as ISO string
+            const isoDate = new Date(dateStr);
+            return new Date(isoDate.getFullYear(), isoDate.getMonth(), isoDate.getDate());
+        } catch {
+            return null;
+        }
+    };
+
+    const date = parseBookingDate(dateParam);
+
+    // Dynamic barber data from database
+    const [barberName, setBarberName] = useState<string | null>(null);
+    const [barberImage, setBarberImage] = useState<string | null>(null);
+    const [loadingBarber, setLoadingBarber] = useState(true);
+
+    // Get service details from services data
+    const serviceDetails = services.find(s => s.id === serviceSlug);
+    const serviceName = serviceDetails?.name || "Grooming Session";
+    const servicePrice = serviceDetails?.price || 50;
+    // Duration is a string like "30-45 min" - extract the first number
+    const durationStr = serviceDetails?.duration || "45";
+    const durationMatch = durationStr.match(/\d+/);
+    const serviceDuration = durationMatch ? parseInt(durationMatch[0], 10) : 45;
+
+    // Fetch barber details from database
+    useEffect(() => {
+        async function fetchBarber() {
+            if (!barberId) {
+                setLoadingBarber(false);
+                return;
+            }
+
+            try {
+                const barber = await getBarberById(barberId);
+                if (barber) {
+                    setBarberName(barber.name);
+                    setBarberImage(barber.image);
+                }
+            } catch (error) {
+                console.error('Error fetching barber:', error);
+            } finally {
+                setLoadingBarber(false);
+            }
+        }
+
+        fetchBarber();
+    }, [barberId]);
 
     const [isDownloading, setIsDownloading] = useState(false);
     const [isJoining, setIsJoining] = useState(false);
     const [hasJoined, setHasJoined] = useState(false);
-
-    // Booking Action State
     const [isAddingCalendar, setIsAddingCalendar] = useState(false);
+
+    // Generate unique reference number - client-side only to avoid hydration mismatch
+    const [refNumber, setRefNumber] = useState<string>('');
+
+    useEffect(() => {
+        if (appointmentId) {
+            setRefNumber(`LAB-${appointmentId.slice(-6).toUpperCase()}`);
+        } else {
+            // Generate random ref only on client to avoid hydration mismatch
+            setRefNumber(`LAB-${Math.random().toString(36).slice(2, 8).toUpperCase()}`);
+        }
+    }, [appointmentId]);
 
     const handleDownload = () => {
         setIsDownloading(true);
 
-        // Generate a text invoice
+        // Generate a detailed invoice
+        const invoiceItems = [
+            { name: serviceName, price: servicePrice },
+            { name: "Hot Towel Treatment", price: 15 },
+        ];
+        const subtotal = invoiceItems.reduce((sum, item) => sum + item.price, 0);
+        const discount = subtotal * 0.1;
+        const total = subtotal - discount;
+
         const invoiceContent = `FADELAB - OFFICIAL RECEIPT
---------------------------------
-Ref: #LAB-772
+================================
+Reference: #${refNumber}
 Date: ${new Date().toLocaleDateString()}
+================================
+
+BOOKING DETAILS:
+Service: ${serviceName}
+Specialist: ${barberName || "Assigned"}
+Appointment: ${date?.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+Time: ${time}
+Duration: ${serviceDuration} minutes
+
 --------------------------------
-
-Item:                 Price
-Signature Haircut     $50.00
-Hot Towel Shave       $15.00
-Optimization Bonus   -$6.50
+CHARGES:
+${invoiceItems.map(item => `${item.name.padEnd(25)} $${item.price.toFixed(2)}`).join('\n')}
 
 --------------------------------
-TOTAL PAID:           $38.50
+Subtotal:                  $${subtotal.toFixed(2)}
+Loyalty Discount (10%):   -$${discount.toFixed(2)}
 --------------------------------
+TOTAL PAID:               $${total.toFixed(2)}
+================================
 
-Specialist: ${barber?.name || "Assigned"}
-Session: ${date?.toLocaleDateString()} @ ${time}
-
-Thank you for your business.
-FadeLab - Tactical Grooming`;
+Thank you for choosing FadeLab.
+Tactical Grooming Excellence.
+Location: 123 Barber Lane, NY 10001
+`;
 
         const blob = new Blob([invoiceContent], { type: 'text/plain' });
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `Invoice_LAB-772.txt`;
+        a.download = `Invoice_${refNumber}.txt`;
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
@@ -92,33 +173,44 @@ FadeLab - Tactical Grooming`;
     const handleAddToCalendar = () => {
         setIsAddingCalendar(true);
 
-        // Parse date and time to creates start/end times
         if (date && time) {
             const [timeStr, modifier] = time.split(' ');
             let [hours, minutes] = timeStr.split(':').map(Number);
             if (modifier === 'PM' && hours < 12) hours += 12;
             if (modifier === 'AM' && hours === 12) hours = 0;
 
+            // Create start date using the parsed local date
             const startDate = new Date(date);
-            startDate.setHours(hours, minutes);
+            startDate.setHours(hours, minutes, 0, 0);
 
             const endDate = new Date(startDate);
-            endDate.setMinutes(startDate.getMinutes() + 45); // 45 min duration
+            endDate.setMinutes(startDate.getMinutes() + serviceDuration);
 
-            // Format for ICS (YYYYMMDDTHHmmSS)
-            const formatICSDate = (d: Date) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+            // Format for ICS (YYYYMMDDTHHmmSS) - using local time
+            const formatICSDate = (d: Date) => {
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                const hour = String(d.getHours()).padStart(2, '0');
+                const min = String(d.getMinutes()).padStart(2, '0');
+                const sec = String(d.getSeconds()).padStart(2, '0');
+                return `${year}${month}${day}T${hour}${min}${sec}`;
+            };
 
             const icsContent = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//FadeLab//NONSGML v1.0//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
 BEGIN:VEVENT
-UID:${Date.now()}@fadelab.com
+UID:${appointmentId || Date.now()}@fadelab.com
 DTSTAMP:${formatICSDate(new Date())}
 DTSTART:${formatICSDate(startDate)}
 DTEND:${formatICSDate(endDate)}
-SUMMARY:FadeLab Session with ${barber?.name || 'Specialist'}
-DESCRIPTION:Premium grooming session at FadeLab.
+SUMMARY:FadeLab: ${serviceName} with ${barberName || 'Specialist'}
+DESCRIPTION:Premium grooming session at FadeLab.\\nService: ${serviceName}\\nSpecialist: ${barberName || 'Assigned'}\\nRef: ${refNumber}
 LOCATION:123 Barber Lane, NY 10001
+STATUS:CONFIRMED
 END:VEVENT
 END:VCALENDAR`;
 
@@ -126,7 +218,7 @@ END:VCALENDAR`;
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'fadelab-session.ics';
+            a.download = `fadelab-${refNumber}.ics`;
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
@@ -138,13 +230,34 @@ END:VCALENDAR`;
         }, 1000);
     };
 
+    const handleNeedHelp = () => {
+        // Open email client with pre-filled support request
+        const subject = encodeURIComponent(`Help with Order ${refNumber}`);
+        const body = encodeURIComponent(`Hi FadeLab Support,
+
+I need assistance with my booking:
+
+Reference: ${refNumber}
+Service: ${serviceName}
+Date: ${date?.toLocaleDateString() || 'N/A'}
+Time: ${time || 'N/A'}
+Specialist: ${barberName || 'N/A'}
+
+My issue:
+[Please describe your issue here]
+
+Thank you,
+${user?.email || 'Customer'}`);
+
+        window.location.href = `mailto:support@fadelab.com?subject=${subject}&body=${body}`;
+    };
+
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setMounted(true);
     }, []);
 
-    // Animation variants
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
@@ -178,7 +291,7 @@ END:VCALENDAR`;
     return (
         <div className="bg-gradient-to-br from-black via-[#0B1121] to-[#0f172a] text-white font-display antialiased min-h-screen flex flex-col transition-colors duration-300">
             {/* Navbar */}
-            <header className="w-full flex justify-start py-6 px-6 lg:px-10 border-b border-transparent bg-transparent sticky top-0 z-50 pointer-events-none">
+            <header className="w-full flex justify-between py-6 px-6 lg:px-10 border-b border-transparent bg-transparent sticky top-0 z-50 pointer-events-none">
                 <div className="pointer-events-auto">
                     <Link href={isBooking ? "/" : "/shop"} className="group flex items-center gap-2 px-5 py-3 rounded-full bg-[#1e293b]/50 backdrop-blur-md border border-white/10 text-white hover:bg-blue-600 hover:text-white transition-all duration-300">
                         <span className="material-symbols-outlined text-lg group-hover:-translate-x-1 transition-transform">arrow_back</span>
@@ -187,6 +300,16 @@ END:VCALENDAR`;
                         </span>
                     </Link>
                 </div>
+                {isBooking && (
+                    <div className="pointer-events-auto">
+                        <Link href="/profile?tab=bookings" className="group flex items-center gap-2 px-5 py-3 rounded-full bg-blue-600/20 backdrop-blur-md border border-blue-500/30 text-blue-400 hover:bg-blue-600 hover:text-white transition-all duration-300">
+                            <span className="material-symbols-outlined text-lg">calendar_month</span>
+                            <span className="text-xs font-black uppercase tracking-widest">
+                                View My Bookings
+                            </span>
+                        </Link>
+                    </div>
+                )}
             </header>
 
             {/* Main Content */}
@@ -216,10 +339,14 @@ END:VCALENDAR`;
                         {isBooking ? "Session Established" : "Order Confirmed"}
                     </motion.h1>
 
-                    <motion.p variants={itemVariants} className="text-white/60 text-lg mb-8 font-light">
+                    <motion.p variants={itemVariants} className="text-white/60 text-lg mb-4 font-light">
                         {isBooking
                             ? "Your appointment has been successfully secured."
-                            : "Thank you for choosing Premium Barber."}
+                            : "Thank you for choosing FadeLab."}
+                    </motion.p>
+
+                    <motion.p variants={itemVariants} className="text-blue-500 text-sm font-bold uppercase tracking-widest mb-8" suppressHydrationWarning>
+                        Reference: #{refNumber || 'Loading...'}
                     </motion.p>
 
                     <motion.div variants={itemVariants} className="w-full h-px bg-white/10 max-w-xs mb-8"></motion.div>
@@ -227,23 +354,31 @@ END:VCALENDAR`;
                     {isBooking && date ? (
                         <>
                             <motion.h2 variants={itemVariants} className="text-2xl font-bold text-white mb-2 uppercase tracking-wide">
-                                {date.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
+                                {date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
                             </motion.h2>
                             <motion.div variants={itemVariants} className="flex flex-col items-center gap-2">
                                 <span className="text-4xl font-black text-blue-500 tracking-tighter">{time}</span>
                                 <div className="flex items-center gap-2 text-white/60 bg-white/5 px-4 py-2 rounded-full mt-2">
                                     <span className="material-symbols-outlined text-sm">content_cut</span>
-                                    <span className="text-sm uppercase tracking-widest font-bold">Specialist: {barber?.name || "Next Available"}</span>
+                                    <span className="text-sm uppercase tracking-widest font-bold">
+                                        {loadingBarber ? "Loading..." : `Specialist: ${barberName || "Next Available"}`}
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-2 text-white/40 mt-1">
+                                    <span className="material-symbols-outlined text-sm">schedule</span>
+                                    <span className="text-xs uppercase tracking-widest font-medium">
+                                        {serviceName} • {serviceDuration} min
+                                    </span>
                                 </div>
                             </motion.div>
                         </>
                     ) : (
                         <>
-                            <motion.h2 variants={itemVariants} className="text-2xl font-bold text-white mb-2">
-                                Order #8492-B
+                            <motion.h2 variants={itemVariants} className="text-2xl font-bold text-white mb-2" suppressHydrationWarning>
+                                Order #{refNumber || 'Loading...'}
                             </motion.h2>
                             <motion.p variants={itemVariants} className="text-white/60">
-                                We’ve sent a receipt to <span className="font-medium text-white">alex.smith@example.com</span>
+                                We've sent a receipt to <span className="font-medium text-white">{user?.email || "your email"}</span>
                             </motion.p>
                         </>
                     )}
@@ -257,7 +392,6 @@ END:VCALENDAR`;
                     className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl"
                 >
                     {isBooking ? (
-                        // Booking Specific Actions
                         <>
                             <motion.div variants={itemVariants} className="bg-[#1e293b]/50 backdrop-blur-md rounded-2xl p-6 border border-white/5 hover:border-blue-500/50 transition-all duration-300 group flex flex-col items-center text-center">
                                 <div className="size-12 rounded-full bg-blue-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
@@ -267,7 +401,7 @@ END:VCALENDAR`;
                                 <p className="text-sm text-white/50 mb-6">Don't miss your session.</p>
                                 <button
                                     onClick={handleAddToCalendar}
-                                    disabled={isAddingCalendar}
+                                    disabled={isAddingCalendar || !date}
                                     className="text-sm font-bold text-blue-500 hover:text-blue-400 flex items-center gap-1 transition-colors disabled:opacity-50"
                                 >
                                     {isAddingCalendar ? "Downloading..." : <>Add Event <span className="material-symbols-outlined text-sm">add_circle</span></>}
@@ -295,17 +429,17 @@ END:VCALENDAR`;
                                     <span className="material-symbols-outlined text-[#8b5cf6] group-hover:text-blue-500 transition-colors">receipt</span>
                                 </div>
                                 <h3 className="font-bold text-lg mb-1 text-white">Invoice</h3>
-                                <p className="text-sm text-white/50 mb-6">Booking reference: #LAB-772</p>
+                                <p className="text-sm text-white/50 mb-6">Ref: #{refNumber}</p>
                                 <button
                                     onClick={handleDownload}
-                                    className="text-sm font-bold text-blue-500 hover:text-blue-400 flex items-center gap-1 transition-colors"
+                                    disabled={isDownloading}
+                                    className="text-sm font-bold text-blue-500 hover:text-blue-400 flex items-center gap-1 transition-colors disabled:opacity-50"
                                 >
-                                    Download <span className="material-symbols-outlined text-sm">download</span>
+                                    {isDownloading ? "Downloading..." : <>Download <span className="material-symbols-outlined text-sm">download</span></>}
                                 </button>
                             </motion.div>
                         </>
                     ) : (
-                        // Product Specific Actions (Original)
                         <>
                             <motion.div variants={itemVariants} className="bg-[#1e293b]/50 backdrop-blur-md rounded-2xl p-6 border border-white/5 hover:border-blue-500/50 transition-all duration-300 group flex flex-col items-center text-center">
                                 <div className="size-12 rounded-full bg-blue-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
@@ -323,7 +457,7 @@ END:VCALENDAR`;
                                     <span className="material-symbols-outlined text-[#8b5cf6] group-hover:text-blue-500 transition-colors">receipt_long</span>
                                 </div>
                                 <h3 className="font-bold text-lg mb-1 text-white">Download Invoice</h3>
-                                <p className="text-sm text-white/50 mb-6">Get your purchase PDF for records.</p>
+                                <p className="text-sm text-white/50 mb-6">Get your purchase receipt.</p>
                                 <button
                                     onClick={handleDownload}
                                     disabled={isDownloading}
@@ -361,7 +495,24 @@ END:VCALENDAR`;
                     )}
                 </motion.div>
 
-                {/* Footer / Upsell - Only for Products or Generic */}
+                {/* Need Help Button - Always visible */}
+                <motion.div
+                    initial="hidden"
+                    animate={mounted ? "visible" : "hidden"}
+                    variants={containerVariants}
+                    className="w-full max-w-4xl"
+                >
+                    <motion.button
+                        variants={itemVariants}
+                        onClick={handleNeedHelp}
+                        className="w-full py-4 rounded-xl border border-white/10 bg-white/5 text-white font-bold hover:bg-blue-600 hover:border-blue-500 transition-all flex items-center justify-center gap-2"
+                    >
+                        <span className="material-symbols-outlined">help</span>
+                        Need Help with this {isBooking ? "Booking" : "Order"}?
+                    </motion.button>
+                </motion.div>
+
+                {/* Footer / Upsell - Only for Products */}
                 {!isBooking && (
                     <motion.div
                         initial="hidden"
