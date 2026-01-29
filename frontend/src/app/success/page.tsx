@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { getBarberById } from "@/lib/supabase";
 import { services } from "@/lib/services-data";
 import { useAuth } from "@/lib/auth-context";
+import { SupportModal } from "@/components/ui/SupportModal";
 
 export default function SuccessPage() {
     return (
@@ -177,19 +178,29 @@ Location: 123 Barber Lane, NY 10001
         setIsAddingCalendar(true);
 
         if (date && time) {
-            const [timeStr, modifier] = time.split(' ');
-            let [hours, minutes] = timeStr.split(':').map(Number);
-            if (modifier === 'PM' && hours < 12) hours += 12;
-            if (modifier === 'AM' && hours === 12) hours = 0;
+            // Enhanced time parsing
+            const parseTime = (timeStr: string): { hours: number; minutes: number } => {
+                const [mainTime, modifier] = timeStr.trim().split(' ');
+                const [hours, minutes] = mainTime.split(':').map(Number);
+                
+                let parsedHours = hours;
+                if (modifier === 'PM' && hours < 12) parsedHours += 12;
+                if (modifier === 'AM' && hours === 12) parsedHours = 0;
+                
+                return { hours: parsedHours, minutes: minutes || 0 };
+            };
 
-            // Create start date using the parsed local date
+            const { hours, minutes } = parseTime(time);
+
+            // Create start date using the parsed date and time
             const startDate = new Date(date);
             startDate.setHours(hours, minutes, 0, 0);
+            startDate.setSeconds(0, 0); // Clear seconds and milliseconds
 
             const endDate = new Date(startDate);
             endDate.setMinutes(startDate.getMinutes() + serviceDuration);
 
-            // Format for ICS (YYYYMMDDTHHmmSS) - using local time
+            // Format for ICS (YYYYMMDDTHHmmSS) - using UTC to avoid timezone issues
             const formatICSDate = (d: Date) => {
                 const year = d.getFullYear();
                 const month = String(d.getMonth() + 1).padStart(2, '0');
@@ -200,20 +211,45 @@ Location: 123 Barber Lane, NY 10001
                 return `${year}${month}${day}T${hour}${min}${sec}`;
             };
 
+            // Create comprehensive ICS content
             const icsContent = `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//FadeLab//NONSGML v1.0//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
+BEGIN:VTIMEZONE
+TZID:America/New_York
+BEGIN:STANDARD
+DTSTART:20071104T020000
+RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU
+TZNAME:EST
+TZOFFSETFROM:-0400
+TZOFFSETTO:-0500
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:20070311T020000
+RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU
+TZNAME:EDT
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0400
+END:DAYLIGHT
+END:VTIMEZONE
 BEGIN:VEVENT
 UID:${appointmentId || Date.now()}@fadelab.com
 DTSTAMP:${formatICSDate(new Date())}
-DTSTART:${formatICSDate(startDate)}
-DTEND:${formatICSDate(endDate)}
+DTSTART;TZID=America/New_York:${formatICSDate(startDate)}
+DTEND;TZID=America/New_York:${formatICSDate(endDate)}
 SUMMARY:FadeLab: ${serviceName} with ${barberName || 'Specialist'}
-DESCRIPTION:Premium grooming session at FadeLab.\\nService: ${serviceName}\\nSpecialist: ${barberName || 'Assigned'}\\nRef: ${refNumber}
+DESCRIPTION:Premium grooming session at FadeLab.\\n\\nService: ${serviceName}\\nSpecialist: ${barberName || 'Assigned'}\\nDuration: ${serviceDuration} minutes\\nReference: ${refNumber}\\n\\nPlease arrive 5 minutes early.\\n\\nLocation: 123 Barber Lane, NY 10001\\nPhone: (555) 123-4567
 LOCATION:123 Barber Lane, NY 10001
 STATUS:CONFIRMED
+SEQUENCE:0
+TRANSP:OPAQUE
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Reminder: FadeLab appointment in 30 minutes
+TRIGGER:-PT30M
+END:VALARM
 END:VEVENT
 END:VCALENDAR`;
 
@@ -226,6 +262,14 @@ END:VCALENDAR`;
             a.click();
             window.URL.revokeObjectURL(url);
             document.body.removeChild(a);
+
+            // Also add to Google Calendar option
+            const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=FadeLab:+${encodeURIComponent(serviceName)}+with+${encodeURIComponent(barberName || 'Specialist')}&dates=${formatICSDate(startDate)}/${formatICSDate(endDate)}&details=Premium+grooming+session+at+FadeLab.%0A%0AService:+${encodeURIComponent(serviceName)}%0ASpecialist:+${encodeURIComponent(barberName || 'Assigned')}%0ADuration:+${serviceDuration}+minutes%0AReference:+${refNumber}%0A%0APlease+arrive+5+minutes+early.%0A%0ALocation:+123+Barber+Lane,+NY+10001&location=123+Barber+Lane,+NY+10001&sf=true&output=xml`;
+            
+            // Open Google Calendar in a new tab as an alternative
+            setTimeout(() => {
+                window.open(googleCalendarUrl, '_blank');
+            }, 500);
         }
 
         setTimeout(() => {
@@ -233,26 +277,10 @@ END:VCALENDAR`;
         }, 1000);
     };
 
+const [showSupportModal, setShowSupportModal] = useState(false);
+
     const handleNeedHelp = () => {
-        // Open email client with pre-filled support request
-        const subject = encodeURIComponent(`Help with Order ${refNumber}`);
-        const body = encodeURIComponent(`Hi FadeLab Support,
-
-I need assistance with my booking:
-
-Reference: ${refNumber}
-Service: ${serviceName}
-Date: ${date?.toLocaleDateString() || 'N/A'}
-Time: ${time || 'N/A'}
-Specialist: ${barberName || 'N/A'}
-
-My issue:
-[Please describe your issue here]
-
-Thank you,
-${user?.email || 'Customer'}`);
-
-        window.location.href = `mailto:support@fadelab.com?subject=${subject}&body=${body}`;
+        setShowSupportModal(true);
     };
 
     const [mounted, setMounted] = useState(false);
@@ -540,6 +568,21 @@ ${user?.email || 'Customer'}`);
                 )}
 
             </main>
+
+            {/* Support Modal */}
+            <SupportModal
+                isOpen={showSupportModal}
+                onClose={() => setShowSupportModal(false)}
+                type={isBooking ? 'booking' : 'order'}
+                reference={refNumber}
+                details={{
+                    serviceName: isBooking ? serviceName : undefined,
+                    date: isBooking && date ? date.toISOString() : undefined,
+                    time: isBooking ? time : undefined,
+                    specialist: isBooking ? barberName : undefined,
+                    userEmail: user?.email
+                }}
+            />
         </div>
     );
 }

@@ -206,7 +206,7 @@ function CheckoutContent() {
                 if (result.appointment && !result.error) {
                     // Successfully created - wait for database sync then redirect
                     await new Promise(resolve => setTimeout(resolve, 500)); // Ensure DB write is committed
-                    
+
                     // Create ISO date string to preserve exact date
                     const isoDate = selectedFullDate.toISOString();
                     const successUrl = `/success?service=${selectedServiceSlug}&barberId=${selectedBarberId}&time=${encodeURIComponent(selectedTime)}&date=${encodeURIComponent(isoDate)}&appointmentId=${result.appointment.id}`;
@@ -223,24 +223,16 @@ function CheckoutContent() {
                     setIsBooking(false);
                     return;
                 }
+            }
 
             // If not logged in, redirect to success page (demo mode)
             const isoDate = selectedFullDate.toISOString();
             router.push(`/success?service=${selectedServiceSlug}&barberId=${selectedBarberId}&time=${encodeURIComponent(selectedTime)}&date=${encodeURIComponent(isoDate)}`);
-                        return;
-                    }
-                    setBookingError(result.error);
-                    setIsBooking(false);
-                    return;
-                }
-            }
-
-            // If not logged in, redirect to success page (demo mode)
-            router.push(`/success?service=${selectedServiceSlug}&barberId=${selectedBarberId}&time=${encodeURIComponent(selectedTime)}&date=${encodeURIComponent(bookingDate)}`);
         } catch (error: any) {
             // Ignore AbortError - it's a Supabase concurrency issue
             if (error?.name === 'AbortError' || error?.message?.includes('aborted')) {
-                router.push(`/success?service=${selectedServiceSlug}&barberId=${selectedBarberId}&time=${encodeURIComponent(selectedTime)}&date=${encodeURIComponent(bookingDate)}`);
+                const isoDate = selectedFullDate.toISOString();
+                router.push(`/success?service=${selectedServiceSlug}&barberId=${selectedBarberId}&time=${encodeURIComponent(selectedTime)}&date=${encodeURIComponent(isoDate)}`);
                 return;
             }
             console.error('Error creating appointment:', error);
