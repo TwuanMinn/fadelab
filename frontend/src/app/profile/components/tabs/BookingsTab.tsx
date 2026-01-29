@@ -71,7 +71,7 @@ export function BookingsTab() {
         return appointmentDate >= today;
     };
 
-    const fetchAppointments = useCallback(async () => {
+    const fetchAppointments = useCallback(async (retryCount = 0) => {
         if (!user) {
             setLoadingAppointments(false);
             return;
@@ -95,18 +95,43 @@ export function BookingsTab() {
                 .eq('user_id', user.id)
                 .order('date', { ascending: false });
 
+            // Handle AbortError - retry once
+            if (aptError?.message?.includes('aborted') || aptError?.message?.includes('AbortError')) {
+                if (retryCount < 2) {
+                    console.log('AbortError detected, retrying...', retryCount + 1);
+                    setTimeout(() => fetchAppointments(retryCount + 1), 100);
+                    return;
+                }
+            }
+
             // If join fails, try fetching without the join
             if (aptError) {
-                console.warn('Join failed, trying simple query:', aptError);
+                console.warn('Join failed, trying simple query:', aptError.message, aptError.code);
                 const simpleResult = await supabase
                     .from('appointments')
                     .select('*')
                     .eq('user_id', user.id)
                     .order('date', { ascending: false });
 
+                // Handle AbortError on simple query too
+                if (simpleResult.error?.message?.includes('aborted') || simpleResult.error?.message?.includes('AbortError')) {
+                    if (retryCount < 2) {
+                        console.log('AbortError on simple query, retrying...', retryCount + 1);
+                        setTimeout(() => fetchAppointments(retryCount + 1), 100);
+                        return;
+                    }
+                }
+
                 if (simpleResult.error) {
-                    console.error('Error fetching appointments:', simpleResult.error);
-                    setError('Failed to load appointments. Please try again.');
+                    console.error('Simple query also failed:', simpleResult.error.message, simpleResult.error.code);
+                    // Check for common issues
+                    if (simpleResult.error.code === '42P01') {
+                        setError('Appointments table not found. Please contact support.');
+                    } else if (simpleResult.error.code === '42501') {
+                        setError('Access denied. Please ensure you are logged in.');
+                    } else {
+                        setError(`Failed to load appointments: ${simpleResult.error.message}`);
+                    }
                     setLoadingAppointments(false);
                     return;
                 }
@@ -128,7 +153,15 @@ export function BookingsTab() {
             }));
 
             setAppointments(enhancedAppointments);
-        } catch (err) {
+        } catch (err: any) {
+            // Ignore AbortError and retry
+            if (err?.message?.includes('aborted') || err?.name === 'AbortError') {
+                if (retryCount < 2) {
+                    console.log('Caught AbortError, retrying...', retryCount + 1);
+                    setTimeout(() => fetchAppointments(retryCount + 1), 100);
+                    return;
+                }
+            }
             console.error('Error fetching appointments:', err);
             setError('An unexpected error occurred. Please try again.');
         } finally {
@@ -275,7 +308,7 @@ END:VCALENDAR`;
                     <span className="material-symbols-outlined text-4xl text-red-500 mb-2">error</span>
                     <p className="text-red-400">{error}</p>
                     <button
-                        onClick={fetchAppointments}
+                        onClick={() => fetchAppointments()}
                         className="mt-4 px-6 py-2 bg-red-500/20 hover:bg-red-500/30 rounded-xl text-red-400 text-sm font-bold transition-all"
                     >
                         Try Again
