@@ -81,8 +81,8 @@ export function BookingsTab() {
         setError(null);
 
         try {
-            // Fetch appointments with barber data joined
-            const { data: appointmentsData, error: aptError } = await supabase
+            // First try to fetch appointments with barber data joined
+            let { data: appointmentsData, error: aptError } = await supabase
                 .from('appointments')
                 .select(`
                     *,
@@ -95,11 +95,22 @@ export function BookingsTab() {
                 .eq('user_id', user.id)
                 .order('date', { ascending: false });
 
+            // If join fails, try fetching without the join
             if (aptError) {
-                console.error('Error fetching appointments:', aptError);
-                setError('Failed to load appointments. Please try again.');
-                setLoadingAppointments(false);
-                return;
+                console.warn('Join failed, trying simple query:', aptError);
+                const simpleResult = await supabase
+                    .from('appointments')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .order('date', { ascending: false });
+
+                if (simpleResult.error) {
+                    console.error('Error fetching appointments:', simpleResult.error);
+                    setError('Failed to load appointments. Please try again.');
+                    setLoadingAppointments(false);
+                    return;
+                }
+                appointmentsData = simpleResult.data;
             }
 
             if (!appointmentsData || appointmentsData.length === 0) {

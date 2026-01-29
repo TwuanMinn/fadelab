@@ -110,23 +110,168 @@ function SuccessContent() {
         }
     }, [appointmentId]);
 
-    const handleDownload = () => {
+    const handleDownload = async () => {
         setIsDownloading(true);
 
-        // Generate a detailed invoice
-        const invoiceItems = [
-            { name: serviceName, price: servicePrice },
-            { name: "Hot Towel Treatment", price: 15 },
-        ];
-        const subtotal = invoiceItems.reduce((sum, item) => sum + item.price, 0);
-        const discount = subtotal * 0.1;
-        const total = subtotal - discount;
+        try {
+            // Generate professional PDF invoice via API
+            const invoiceData = {
+                type: 'booking',
+                reference: refNumber,
+                details: {
+                    serviceName,
+                    servicePrice,
+                    specialist: barberName,
+                    date: date?.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }),
+                    time,
+                    duration: serviceDuration,
+                    customerEmail: user?.email,
+                    addons: [
+                        { name: "Hot Towel Treatment", description: "Relaxing steam towel treatment", price: 15 }
+                    ]
+                }
+            };
 
-        const invoiceContent = `FADELAB - OFFICIAL RECEIPT
-================================
+            const response = await fetch('/api/invoices', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(invoiceData),
+            });
+
+            if (response.ok) {
+                const { invoice } = await response.json();
+                
+                // Generate HTML for professional invoice
+                const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>FadeLab Invoice - ${refNumber}</title>
+    <style>
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        .invoice { background: white; max-width: 800px; margin: 0 auto; padding: 40px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header { text-align: center; margin-bottom: 40px; border-bottom: 2px solid #333; padding-bottom: 20px; }
+        .header h1 { font-size: 32px; margin: 0; color: #333; }
+        .header p { font-size: 14px; color: #666; margin: 5px 0; }
+        .info { display: flex; justify-content: space-between; margin-bottom: 30px; }
+        .info-section { flex: 1; }
+        .info-section h3 { font-size: 16px; margin: 0 0 10px 0; color: #333; }
+        .info-section p { font-size: 14px; margin: 5px 0; color: #666; }
+        .items { margin-bottom: 30px; }
+        .items table { width: 100%; border-collapse: collapse; }
+        .items th, .items td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        .items th { background: #f8f8f8; font-weight: bold; }
+        .items td:last-child { text-align: right; }
+        .summary { text-align: right; margin-top: 20px; }
+        .summary p { font-size: 14px; margin: 5px 0; color: #666; }
+        .summary .total { font-size: 24px; font-weight: bold; color: #333; margin-top: 10px; }
+        .footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666; }
+        @media print { body { background: white; } .invoice { box-shadow: none; } }
+    </style>
+</head>
+<body>
+    <div class="invoice">
+        <div class="header">
+            <h1>FADELAB</h1>
+            <p>Official Receipt</p>
+            <p><strong>Reference:</strong> #${invoice.reference}</p>
+            <p><strong>Date:</strong> ${invoice.date}</p>
+        </div>
+
+        <div class="info">
+            <div class="info-section">
+                <h3>BILLING INFORMATION</h3>
+                <p><strong>Service:</strong> ${invoice.service.name}</p>
+                <p><strong>Specialist:</strong> ${invoice.service.specialist}</p>
+                <p><strong>Date:</strong> ${invoice.service.date}</p>
+                <p><strong>Time:</strong> ${invoice.service.time}</p>
+                <p><strong>Duration:</strong> ${invoice.service.duration} minutes</p>
+            </div>
+            <div class="info-section">
+                <h3>COMPANY INFORMATION</h3>
+                <p><strong>FadeLab</strong></p>
+                <p>${invoice.company.address}</p>
+                <p>${invoice.company.phone}</p>
+                <p>${invoice.company.email}</p>
+            </div>
+        </div>
+
+        <div class="items">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Service Description</th>
+                        <th>Qty</th>
+                        <th>Unit Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${invoice.items.map(item => `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.quantity}</td>
+                        <td>$${item.unitPrice.toFixed(2)}</td>
+                        <td>$${item.total.toFixed(2)}</td>
+                    </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="summary">
+            <p>Subtotal: $${invoice.summary.subtotal.toFixed(2)}</p>
+            <p>Discount (10%): -$${invoice.summary.discount.toFixed(2)}</p>
+            <p>Tax: $${invoice.summary.tax.toFixed(2)}</p>
+            <p class="total">Total Paid: $${invoice.summary.total.toFixed(2)}</p>
+        </div>
+
+        <div class="footer">
+            <p>Thank you for choosing FadeLab - Tactical Grooming Excellence</p>
+            <p>This is a computer-generated receipt and does not require a signature</p>
+        </div>
+    </div>
+</body>
+</html>`;
+
+                // Create blob and download
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Invoice_${refNumber}.html`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+
+                // Open print dialog for PDF generation
+                setTimeout(() => {
+                    window.print();
+                }, 500);
+            } else {
+                throw new Error('Failed to generate invoice');
+            }
+        } catch (error) {
+            console.error('Error generating invoice:', error);
+            
+            // Fallback to simple text invoice
+            const invoiceItems = [
+                { name: serviceName, price: servicePrice },
+                { name: "Hot Towel Treatment", price: 15 },
+            ];
+            const subtotal = invoiceItems.reduce((sum, item) => sum + item.price, 0);
+            const discount = subtotal * 0.1;
+            const total = subtotal - discount;
+
+            const invoiceContent = `FADELAB - OFFICIAL RECEIPT
+===============================
 Reference: #${refNumber}
 Date: ${new Date().toLocaleDateString()}
-================================
+===============================
 
 BOOKING DETAILS:
 Service: ${serviceName}
@@ -144,26 +289,27 @@ Subtotal:                  $${subtotal.toFixed(2)}
 Loyalty Discount (10%):   -$${discount.toFixed(2)}
 --------------------------------
 TOTAL PAID:               $${total.toFixed(2)}
-================================
+===============================
 
 Thank you for choosing FadeLab.
 Tactical Grooming Excellence.
 Location: 123 Barber Lane, NY 10001
 `;
 
-        const blob = new Blob([invoiceContent], { type: 'text/plain' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `Invoice_${refNumber}.txt`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-
-        setTimeout(() => {
-            setIsDownloading(false);
-        }, 1000);
+            const blob = new Blob([invoiceContent], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Invoice_${refNumber}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        } finally {
+            setTimeout(() => {
+                setIsDownloading(false);
+            }, 1000);
+        }
     };
 
     const handleJoinClub = () => {

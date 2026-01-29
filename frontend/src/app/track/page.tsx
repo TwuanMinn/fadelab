@@ -6,6 +6,8 @@ import { useSearchParams } from "next/navigation";
 import { motion, Variants } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth-context";
+import { SupportModal } from "@/components/ui/SupportModal";
+import { useCartStore } from "@/lib/cart-store";
 
 interface OrderItem {
     id: number;
@@ -55,12 +57,16 @@ function TrackOrderContent() {
     const { user } = useAuth();
     const orderId = searchParams.get('orderId');
 
+    // Get cart items as fallback
+    const cartItems = useCartStore(state => state.items);
+
     const [mounted, setMounted] = useState(false);
     const [order, setOrder] = useState<Order | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [copySuccess, setCopySuccess] = useState(false);
     const [isDownloading, setIsDownloading] = useState(false);
+    const [showSupportModal, setShowSupportModal] = useState(false);
 
     // Fetch order from database
     useEffect(() => {
@@ -107,9 +113,19 @@ function TrackOrderContent() {
         setMounted(true);
     }, []);
 
-    // Use order items if available, otherwise show demo items
-    const orderItems = order?.items || DEMO_ITEMS;
+    // Use order items if available, then cart items, finally demo items
+    const cartItemsAsOrderItems: OrderItem[] = cartItems.map((item, idx) => ({
+        id: idx + 1,
+        name: item.name,
+        price: item.price,
+        img: item.img,
+        category: item.category || 'Product',
+        quantity: item.quantity
+    }));
+
+    const orderItems = order?.items || (cartItemsAsOrderItems.length > 0 ? cartItemsAsOrderItems : DEMO_ITEMS);
     const orderTotal = order?.total || orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const isShowingDemoData = !order && cartItemsAsOrderItems.length === 0;
 
     // Generate tracking number only on client-side to avoid hydration mismatch
     // Use order data as source of truth
@@ -143,15 +159,169 @@ function TrackOrderContent() {
         }
     };
 
-    const handleDownloadInvoice = () => {
+    const handleDownloadInvoice = async () => {
         setIsDownloading(true);
 
-        const invoiceContent = `FADELAB - ORDER INVOICE
-================================
+        try {
+            // Generate professional PDF invoice via API
+            const invoiceData = {
+                type: 'order',
+                reference: trackingNumber,
+                details: {
+                    items: orderItems,
+                    orderDate: orderDate.toLocaleDateString(),
+                    shippingAddress: order?.shipping_address,
+                    shipping: order?.shipping || 0,
+                    trackingNumber,
+                    customerEmail: user?.email,
+                    subtotal: order?.subtotal || orderTotal * 0.9,
+                    tax: order?.tax || orderTotal * 0.08,
+                }
+            };
+
+            const response = await fetch('/api/invoices', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(invoiceData),
+            });
+
+            if (response.ok) {
+                const { invoice } = await response.json();
+
+                // Generate HTML for professional invoice
+                const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>FadeLab Order Invoice - ${trackingNumber}</title>
+    <style>
+        body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        .invoice { background: white; max-width: 800px; margin: 0 auto; padding: 40px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header { text-align: center; margin-bottom: 40px; border-bottom: 2px solid #333; padding-bottom: 20px; }
+        .header h1 { font-size: 32px; margin: 0; color: #333; }
+        .header p { font-size: 14px; color: #666; margin: 5px 0; }
+        .info { display: flex; justify-content: space-between; margin-bottom: 30px; }
+        .info-section { flex: 1; }
+        .info-section h3 { font-size: 16px; margin: 0 0 10px 0; color: #333; }
+        .info-section p { font-size: 14px; margin: 5px 0; color: #666; }
+        .items { margin-bottom: 30px; }
+        .items table { width: 100%; border-collapse: collapse; }
+        .items th, .items td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        .items th { background: #f8f8f8; font-weight: bold; }
+        .items td:last-child { text-align: right; }
+        .summary { text-align: right; margin-top: 20px; }
+        .summary p { font-size: 14px; margin: 5px 0; color: #666; }
+        .summary .total { font-size: 24px; font-weight: bold; color: #333; margin-top: 10px; }
+        .footer { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666; }
+        @media print { body { background: white; } .invoice { box-shadow: none; } }
+    </style>
+</head>
+<body>
+    <div class="invoice">
+        <div class="header">
+            <h1>FADELAB</h1>
+            <p>Order Invoice</p>
+            <p><strong>Tracking:</strong> #${invoice.reference}</p>
+            <p><strong>Order Date:</strong> ${invoice.orderDate}</p>
+        </div>
+
+        <div class="info">
+            <div class="info-section">
+                <h3>SHIPPING ADDRESS</h3>
+                ${invoice.shipping.address ? `
+                <p><strong>${invoice.shipping.address.firstName} ${invoice.shipping.address.lastName}</strong></p>
+                <p>${invoice.shipping.address.address}</p>
+                <p>${invoice.shipping.address.city}, ${invoice.shipping.address.state} ${invoice.shipping.address.zipCode}</p>
+                ` : '<p>No shipping address provided</p>'}
+            </div>
+            <div class="info-section">
+                <h3>COMPANY INFORMATION</h3>
+                <p><strong>FadeLab</strong></p>
+                <p>${invoice.company.address}</p>
+                <p>${invoice.company.phone}</p>
+                <p>${invoice.company.email}</p>
+            </div>
+        </div>
+
+        <div class="items">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item Description</th>
+                        <th>Category</th>
+                        <th>Qty</th>
+                        <th>Unit Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${invoice.items.map(item => `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.description}</td>
+                        <td>${item.quantity}</td>
+                        <td>$${item.unitPrice.toFixed(2)}</td>
+                        <td>$${item.total.toFixed(2)}</td>
+                    </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="summary">
+            <p>Subtotal: $${invoice.summary.subtotal.toFixed(2)}</p>
+            <p>Tax: $${invoice.summary.tax.toFixed(2)}</p>
+            <p>Shipping: $${invoice.summary.shipping.toFixed(2)}</p>
+            <p class="total">Total: $${invoice.summary.total.toFixed(2)}</p>
+        </div>
+
+        ${invoice.shipping.tracking ? `
+        <div style="margin-top: 30px; padding: 20px; background: #f8f8f8; border-radius: 8px;">
+            <h3 style="margin: 0 0 10px 0; color: #333;">Tracking Information</h3>
+            <p style="margin: 5px 0; color: #666;"><strong>Tracking Number:</strong> ${invoice.shipping.tracking}</p>
+            <p style="margin: 5px 0; color: #666;"><strong>Shipping Method:</strong> ${invoice.shipping.method}</p>
+        </div>
+        ` : ''}
+
+        <div class="footer">
+            <p>Thank you for shopping with FadeLab</p>
+            <p>This is a computer-generated invoice and does not require a signature</p>
+        </div>
+    </div>
+</body>
+</html>`;
+
+                // Create blob and download
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Invoice_${trackingNumber}.html`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+
+                // Open print dialog for PDF generation
+                setTimeout(() => {
+                    window.print();
+                }, 500);
+            } else {
+                throw new Error('Failed to generate invoice');
+            }
+        } catch (error) {
+            console.error('Error generating invoice:', error);
+
+            // Fallback to simple text invoice
+            const invoiceContent = `FADELAB - ORDER INVOICE
+===============================
 Order ID: ${order?.id || 'DEMO-ORDER'}
 Tracking: #${trackingNumber}
 Date: ${orderDate.toLocaleDateString()}
-================================
+===============================
 
 ITEMS ORDERED:
 ${orderItems.map(item => `${item.name} (x${item.quantity}) - $${(item.price * item.quantity).toFixed(2)}`).join('\n')}
@@ -162,7 +332,7 @@ Tax:         $${(order?.tax || orderTotal * 0.08).toFixed(2)}
 Shipping:    $${(order?.shipping || 0).toFixed(2)}
 --------------------------------
 TOTAL:       $${orderTotal.toFixed(2)}
-================================
+===============================
 
 ${order?.shipping_address ? `
 SHIPPING TO:
@@ -174,40 +344,22 @@ ${order.shipping_address.city}, ${order.shipping_address.state} ${order.shipping
 Thank you for shopping with FadeLab!
 `;
 
-        const blob = new Blob([invoiceContent], { type: 'text/plain' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `Invoice_${trackingNumber}.txt`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-
-        setTimeout(() => setIsDownloading(false), 1000);
+            const blob = new Blob([invoiceContent], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Invoice_${trackingNumber}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        } finally {
+            setTimeout(() => setIsDownloading(false), 1000);
+        }
     };
 
     const handleNeedHelp = () => {
-        const subject = encodeURIComponent(`Help with Order #${trackingNumber}`);
-        const body = encodeURIComponent(`Hi FadeLab Support,
-
-I need assistance with my order:
-
-Order ID: ${order?.id || 'N/A'}
-Tracking Number: ${trackingNumber}
-Order Date: ${orderDate.toLocaleDateString()}
-Total: $${orderTotal.toFixed(2)}
-
-Items:
-${orderItems.map(item => `- ${item.name} (x${item.quantity})`).join('\n')}
-
-My issue:
-[Please describe your issue here]
-
-Thank you,
-${user?.email || 'Customer'}`);
-
-        window.location.href = `mailto:support@fadelab.com?subject=${subject}&body=${body}`;
+        setShowSupportModal(true);
     };
 
     // Animation variants
@@ -497,6 +649,22 @@ ${user?.email || 'Customer'}`);
                     </div>
                 </motion.div>
             </main>
+
+            {/* Support Modal */}
+            <SupportModal
+                isOpen={showSupportModal}
+                onClose={() => setShowSupportModal(false)}
+                type={'order'}
+                reference={trackingNumber}
+                details={{
+                    orderId: order?.id,
+                    orderDate: orderDate.toLocaleDateString(),
+                    total: orderTotal,
+                    items: orderItems,
+                    userEmail: user?.email,
+                    shippingAddress: order?.shipping_address
+                }}
+            />
         </div>
     );
 }
