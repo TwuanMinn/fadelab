@@ -38,6 +38,14 @@ interface Order {
     };
 }
 
+interface InvoiceItem {
+    name: string;
+    description: string;
+    quantity: number;
+    unitPrice: number;
+    total: number;
+}
+
 // Fallback demo items if no order found
 const DEMO_ITEMS: OrderItem[] = [
     { id: 1, name: "Royal Cut Clippers", category: "Professional Series", price: 120, quantity: 1, img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDsGEuvAyNAFanVYyQfZi7Sb4RalLFPU71J2PG3RbFhSCnMMClS_33oY5oClkaApwrn_0j6KVsjWTEzAlvZR48mKAPIfNn-9xBCeAD8Sks2zh44czBRVJ3sIXto_KBZuNXweSyL8Ry0kGCbiQo8h6HycrRAVI8-C8IkDrA6AnI_PRA5g98kcAvzuLnZpH0TkaJAab0qXzRP37H-FBfI7oKczQHdc76GqJGBf48wgSdqWEQaEVtAKEH4J7o8h3yK6erObzbsS1qCv4ql" },
@@ -258,7 +266,7 @@ function TrackOrderContent() {
                     </tr>
                 </thead>
                 <tbody>
-                    ${invoice.items.map(item => `
+                    ${invoice.items.map((item: InvoiceItem) => `
                     <tr>
                         <td>${item.name}</td>
                         <td>${item.description}</td>
