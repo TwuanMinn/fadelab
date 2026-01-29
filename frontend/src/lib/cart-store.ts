@@ -195,6 +195,8 @@ export const useCartStore = create<CartStore>()(
                 set({ isSyncing: true });
 
                 try {
+                    console.log('Syncing cart to server:', { userId, items, wishlist });
+
                     // Upsert cart data to Supabase
                     const { error } = await supabase
                         .from('user_carts')
@@ -210,7 +212,17 @@ export const useCartStore = create<CartStore>()(
                     if (error) {
                         console.error('Error syncing cart:', error);
                     } else {
+                        console.log('Cart synced successfully');
                         set({ lastSyncedAt: new Date() });
+                        
+                        // Trigger real-time update notification
+                        await supabase
+                            .from('cart_updates')
+                            .insert({
+                                user_id: userId,
+                                update_type: 'synced',
+                                timestamp: new Date().toISOString()
+                            });
                     }
                 } catch (error) {
                     console.error('Error syncing cart:', error);
@@ -220,7 +232,7 @@ export const useCartStore = create<CartStore>()(
             },
 
             loadFromServer: async () => {
-                const { userId, items: localItems, wishlist: localWishlist } = get();
+                const { userId } = get();
 
                 if (!userId) return;
 
@@ -237,39 +249,20 @@ export const useCartStore = create<CartStore>()(
                         if (error.code !== 'PGRST116') { // Not found is ok
                             console.error('Error loading cart:', error);
                         }
-                        // If no server cart exists, sync current local cart to server
-                        if (localItems.length > 0 || localWishlist.length > 0) {
-                            await get().syncWithServer();
-                        }
+                        // If no server cart exists, create one with current local data
+                        await get().syncWithServer();
                     } else if (data) {
-                        // Merge server cart with local cart (local takes priority for conflicts)
+                        // Use server data as source of truth
                         const serverItems = (data.cart_items || []) as CartItem[];
                         const serverWishlist = (data.wishlist_items || []) as WishlistItem[];
 
-                        // Merge items: local items take priority, add server-only items
-                        const mergedItems = [...localItems];
-                        serverItems.forEach(serverItem => {
-                            if (!mergedItems.find(item => item.id === serverItem.id)) {
-                                mergedItems.push(serverItem);
-                            }
-                        });
-
-                        // Merge wishlist
-                        const mergedWishlist = [...localWishlist];
-                        serverWishlist.forEach(serverItem => {
-                            if (!mergedWishlist.find(item => item.id === serverItem.id)) {
-                                mergedWishlist.push(serverItem);
-                            }
-                        });
+                        console.log('Loading cart from server:', { serverItems, serverWishlist });
 
                         set({
-                            items: mergedItems,
-                            wishlist: mergedWishlist,
+                            items: serverItems,
+                            wishlist: serverWishlist,
                             lastSyncedAt: new Date()
                         });
-
-                        // Sync merged cart back to server
-                        await get().syncWithServer();
                     }
                 } catch (error) {
                     console.error('Error loading cart:', error);

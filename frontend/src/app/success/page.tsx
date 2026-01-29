@@ -31,19 +31,22 @@ function SuccessContent() {
 
     // Parse date carefully to avoid timezone issues
     // The date param can be either:
-    // 1. YYYY-MM-DD format (new format)
-    // 2. Full ISO string (legacy)
+    // 1. YYYY-MM-DD format (legacy)
+    // 2. Full ISO string (new format - preserves exact date)
     const parseBookingDate = (dateStr: string | null): Date | null => {
         if (!dateStr) return null;
         try {
-            // Check if it's YYYY-MM-DD format
+            // Check if it's YYYY-MM-DD format (legacy)
             if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
                 const [year, month, day] = dateStr.split('-').map(Number);
                 return new Date(year, month - 1, day);
             }
-            // Otherwise treat as ISO string
-            const isoDate = new Date(dateStr);
-            return new Date(isoDate.getFullYear(), isoDate.getMonth(), isoDate.getDate());
+            // Check if it's ISO string (new format)
+            if (dateStr.includes('T') && dateStr.includes('-')) {
+                return new Date(dateStr);
+            }
+            // Fallback: try as any date string
+            return new Date(dateStr);
         } catch {
             return null;
         }

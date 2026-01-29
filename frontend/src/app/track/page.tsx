@@ -112,15 +112,15 @@ function TrackOrderContent() {
     const orderTotal = order?.total || orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
     // Generate tracking number only on client-side to avoid hydration mismatch
-    // Use a stable fallback ID based on orderId or a fixed demo value
+    // Use order data as source of truth
     const [trackingNumber, setTrackingNumber] = useState<string>('');
 
     useEffect(() => {
         if (order?.tracking_number) {
             setTrackingNumber(order.tracking_number);
         } else if (orderId) {
-            // Use orderId to generate a stable tracking number
-            setTrackingNumber(`US-${orderId.slice(-6).toUpperCase()}`);
+            // Fallback: use orderId to generate a stable tracking number
+            setTrackingNumber(`US-${orderId.slice(-8).toUpperCase()}`);
         } else {
             // For demo, generate a random tracking number only on client
             setTrackingNumber(`US-${Math.random().toString(36).slice(2, 8).toUpperCase()}`);

@@ -39,12 +39,27 @@ export async function POST(request: NextRequest) {
         const shipping = subtotal > 50 ? 0 : 9.99;
         const total = subtotal + tax + shipping;
 
-        // Create order
+        // Create order with enhanced product data
+        const enhancedItems = order.items.map(item => ({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            category: item.category || 'products',
+            img: item.img || '',
+            // Store product snapshot for order history
+            product_snapshot: {
+                name: item.name,
+                price: item.price,
+                image: item.img
+            }
+        }));
+
         const { data: newOrder, error } = await supabase
             .from('orders')
             .insert({
                 user_id: order.userId,
-                items: order.items,
+                items: enhancedItems,
                 subtotal: subtotal,
                 tax: tax,
                 shipping: shipping,
@@ -53,6 +68,8 @@ export async function POST(request: NextRequest) {
                 shipping_address: order.shippingAddress,
                 payment_method: order.paymentMethod,
                 payment_status: 'pending',
+                // Generate tracking number immediately
+                tracking_number: `US-${Date.now().toString(36).toUpperCase()}`
             })
             .select()
             .single();

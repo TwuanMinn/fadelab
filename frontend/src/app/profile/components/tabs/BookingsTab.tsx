@@ -205,6 +205,11 @@ END:VCALENDAR`;
     useEffect(() => {
         if (!user) return;
 
+        // Force initial refresh after subscription setup
+        const refreshTimer = setTimeout(() => {
+            fetchAppointments();
+        }, 1000);
+
         const channel = supabase
             .channel(`appointments-${user.id}`)
             .on(
@@ -217,12 +222,20 @@ END:VCALENDAR`;
                 },
                 () => {
                     // Refetch appointments when there's a change
+                    console.log('Appointment update detected, refreshing...');
                     fetchAppointments();
                 }
             )
-            .subscribe();
+            .subscribe((status) => {
+                if (status === 'SUBSCRIBED') {
+                    console.log('Successfully subscribed to appointment updates');
+                    // Additional fetch to ensure we have latest data
+                    fetchAppointments();
+                }
+            });
 
         return () => {
+            clearTimeout(refreshTimer);
             supabase.removeChannel(channel);
         };
     }, [user, fetchAppointments]);
