@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
         const total = subtotal + tax + shipping;
 
         // Create order with enhanced product data
-        const enhancedItems = order.items.map(item => ({
+        const enhancedItems = order.items.map((item: any) => ({
             id: item.id,
             name: item.name,
             price: item.price,
