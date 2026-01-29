@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { TiltCard, LiftCard } from "@/components/ui/MicroInteractions";
 import { Toolbar } from "../components/Toolbar";
 import { useCartStore } from "@/lib/cart-store";
 import { toast } from "sonner";
@@ -309,8 +310,10 @@ export default function ShopPage() {
                     <div className="flex flex-wrap items-center justify-between gap-6 mb-12">
                         <div className="flex flex-wrap gap-2">
                             {FILTERS.map((filter) => (
-                                <button
+                                <motion.button
                                     key={filter}
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
                                     onClick={() => setActiveFilter(filter)}
                                     className={`px-5 py-2.5 rounded-full text-xs font-bold transition-all border ${activeFilter === filter
                                         ? "bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-900/20"
@@ -318,7 +321,7 @@ export default function ShopPage() {
                                         }`}
                                 >
                                     {filter}
-                                </button>
+                                </motion.button>
                             ))}
                         </div>
                         <div className="flex items-center gap-3">
@@ -391,7 +394,9 @@ export default function ShopPage() {
                                             </div>
                                         </div>
 
-                                        <button
+                                        <motion.button
+                                            whileHover={{ scale: 1.03, y: -2 }}
+                                            whileTap={{ scale: 0.97 }}
                                             onClick={() => handleAddToCart(bundle)}
                                             disabled={addingId === bundle.id}
                                             className="mt-6 w-full py-3 bg-white hover:bg-white/90 text-[#0f172a] font-black text-xs uppercase tracking-widest rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
@@ -407,7 +412,7 @@ export default function ShopPage() {
                                                     <span className="material-symbols-outlined text-sm">shopping_cart</span>
                                                 </>
                                             )}
-                                        </button>
+                                        </motion.button>
                                     </div>
                                 </motion.div>
                             ))}

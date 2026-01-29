@@ -8,7 +8,7 @@ import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
 import { StatsGrid } from "@/components/ui/AnimatedCounter";
 import { ScrollReveal, FloatingElement } from "@/components/ui/ParallaxEffects";
-import { GlowCard } from "@/components/ui/MicroInteractions";
+import { GlowCard, LiftCard, TiltCard, IconBounce, ShimmerText, AnimatedBorder } from "@/components/ui/MicroInteractions";
 import { toast } from "sonner";
 
 // Dynamic imports for code splitting - these heavy components load on demand
@@ -72,8 +72,8 @@ export default function Home() {
 
   return (
     <>
-      {/* Premium Loading Screen */}
-      <LoadingScreen onComplete={() => setIsLoaded(true)} minDuration={1200} />
+      {/* Loading Screen */}
+      <LoadingScreen onComplete={() => setIsLoaded(true)} minDuration={1500} />
 
       <motion.div
         initial={{ opacity: 0 }}
@@ -249,27 +249,30 @@ export default function Home() {
                 </p>
               </ScrollReveal>
               <ScrollReveal delay={0.2} className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-                <motion.div
-                  whileHover={{ y: -5 }}
-                  className="text-center p-6 rounded-xl bg-white/5 border border-white/10 backdrop-blur"
-                >
-                  <div className="text-4xl font-black text-primary mb-2">6+</div>
-                  <div className="text-white font-semibold">Years of Excellence</div>
-                </motion.div>
-                <motion.div
-                  whileHover={{ y: -5 }}
-                  className="text-center p-6 rounded-xl bg-white/5 border border-white/10 backdrop-blur"
-                >
-                  <div className="text-4xl font-black text-primary mb-2">4</div>
-                  <div className="text-white font-semibold">Master Barbers</div>
-                </motion.div>
-                <motion.div
-                  whileHover={{ y: -5 }}
-                  className="text-center p-6 rounded-xl bg-white/5 border border-white/10 backdrop-blur"
-                >
-                  <div className="text-4xl font-black text-primary mb-2">100%</div>
-                  <div className="text-white font-semibold">Satisfaction Rate</div>
-                </motion.div>
+                <LiftCard>
+                  <div className="text-center p-6 rounded-xl bg-white/5 border border-white/10 backdrop-blur">
+                    <IconBounce>
+                      <div className="text-4xl font-black text-primary mb-2">6+</div>
+                    </IconBounce>
+                    <div className="text-white font-semibold">Years of Excellence</div>
+                  </div>
+                </LiftCard>
+                <LiftCard>
+                  <div className="text-center p-6 rounded-xl bg-white/5 border border-white/10 backdrop-blur">
+                    <IconBounce>
+                      <div className="text-4xl font-black text-primary mb-2">4</div>
+                    </IconBounce>
+                    <div className="text-white font-semibold">Master Barbers</div>
+                  </div>
+                </LiftCard>
+                <LiftCard>
+                  <div className="text-center p-6 rounded-xl bg-white/5 border border-white/10 backdrop-blur">
+                    <IconBounce>
+                      <div className="text-4xl font-black text-primary mb-2">100%</div>
+                    </IconBounce>
+                    <div className="text-white font-semibold">Satisfaction Rate</div>
+                  </div>
+                </LiftCard>
               </ScrollReveal>
             </div>
           </div>
@@ -580,7 +583,9 @@ export default function Home() {
             <div className="max-w-2xl mx-auto text-center">
               <ScrollReveal>
                 <div className="mb-6">
-                  <span className="material-symbols-outlined text-6xl text-primary mb-4 inline-block">mail</span>
+                  <IconBounce>
+                    <span className="material-symbols-outlined text-6xl text-primary mb-4 inline-block">mail</span>
+                  </IconBounce>
                 </div>
                 <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Stay Sharp</h2>
                 <p className="text-gray-400 text-lg mb-8">
