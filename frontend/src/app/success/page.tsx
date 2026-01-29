@@ -142,7 +142,7 @@ function SuccessContent() {
 
             if (response.ok) {
                 const { invoice } = await response.json();
-                
+
                 // Generate HTML for professional invoice
                 const htmlContent = `
 <!DOCTYPE html>
@@ -210,7 +210,7 @@ function SuccessContent() {
                     </tr>
                 </thead>
                 <tbody>
-                    ${invoice.items.map(item => `
+                    ${invoice.items.map((item: any) => `
                     <tr>
                         <td>${item.name}</td>
                         <td>${item.quantity}</td>
@@ -257,7 +257,7 @@ function SuccessContent() {
             }
         } catch (error) {
             console.error('Error generating invoice:', error);
-            
+
             // Fallback to simple text invoice
             const invoiceItems = [
                 { name: serviceName, price: servicePrice },
@@ -328,11 +328,11 @@ Location: 123 Barber Lane, NY 10001
             const parseTime = (timeStr: string): { hours: number; minutes: number } => {
                 const [mainTime, modifier] = timeStr.trim().split(' ');
                 const [hours, minutes] = mainTime.split(':').map(Number);
-                
+
                 let parsedHours = hours;
                 if (modifier === 'PM' && hours < 12) parsedHours += 12;
                 if (modifier === 'AM' && hours === 12) parsedHours = 0;
-                
+
                 return { hours: parsedHours, minutes: minutes || 0 };
             };
 
@@ -411,7 +411,7 @@ END:VCALENDAR`;
 
             // Also add to Google Calendar option
             const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=FadeLab:+${encodeURIComponent(serviceName)}+with+${encodeURIComponent(barberName || 'Specialist')}&dates=${formatICSDate(startDate)}/${formatICSDate(endDate)}&details=Premium+grooming+session+at+FadeLab.%0A%0AService:+${encodeURIComponent(serviceName)}%0ASpecialist:+${encodeURIComponent(barberName || 'Assigned')}%0ADuration:+${serviceDuration}+minutes%0AReference:+${refNumber}%0A%0APlease+arrive+5+minutes+early.%0A%0ALocation:+123+Barber+Lane,+NY+10001&location=123+Barber+Lane,+NY+10001&sf=true&output=xml`;
-            
+
             // Open Google Calendar in a new tab as an alternative
             setTimeout(() => {
                 window.open(googleCalendarUrl, '_blank');
@@ -423,7 +423,7 @@ END:VCALENDAR`;
         }, 1000);
     };
 
-const [showSupportModal, setShowSupportModal] = useState(false);
+    const [showSupportModal, setShowSupportModal] = useState(false);
 
     const handleNeedHelp = () => {
         setShowSupportModal(true);
